@@ -20,11 +20,17 @@ export function GamificationSection() {
       id="gamification"
       className="relative border-b border-ink/8 py-24 sm:py-32"
     >
+      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div
+          className="absolute -left-32 top-40 h-[380px] w-[380px] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, hsl(var(--ember-deep) / 0.16), transparent 70%)" }}
+        />
+      </div>
       <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember-deep">
                 — The compounding
               </div>
             </Reveal>
@@ -118,8 +124,8 @@ export function GamificationSection() {
             <Reveal delay={0.5}>
               <div className="mt-8 rounded-2xl border border-ink/10 bg-paper/70 p-6">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember/15">
-                    <Flame className="h-5 w-5 text-ember" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember-deep/15">
+                    <Flame className="h-5 w-5 text-ember-deep" />
                   </div>
                   <div>
                     <h4
@@ -259,7 +265,7 @@ function StreakRow({
 
       <div className="flex items-baseline gap-1.5">
         <span
-          className="font-display-soft text-2xl text-ember"
+          className="font-display-soft text-2xl text-ember-deep"
           style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
         >
           {mult}

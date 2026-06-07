@@ -106,11 +106,17 @@ export function LibrarySection() {
       id="library"
       className="relative border-b border-ink/8 py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-6 lg:px-10">
+      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div
+          className="absolute -right-32 top-40 h-[340px] w-[340px] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, hsl(var(--honey) / 0.2), transparent 70%)" }}
+        />
+      </div>
+      <div className="relative z-10 mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="mb-16 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-rust">
                 — The library
               </div>
             </Reveal>
@@ -162,7 +168,7 @@ function DeckCard({ deck }: { deck: Deck }) {
             </div>
           )}
 
-          <div className="absolute inset-0 p-5">
+          <div className={cn("absolute inset-0 p-5", deck.featured && "pt-14")}>
             <div className="flex h-full flex-col gap-2">
               {deck.preview.map((p, j) => (
                 <motion.div

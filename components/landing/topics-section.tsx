@@ -56,11 +56,17 @@ export function TopicsSection() {
       id="topics"
       className="relative border-b border-ink/8 py-24 sm:py-32"
     >
-      <div className="mx-auto max-w-[1280px] px-6 lg:px-10">
+      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
+        <div
+          className="absolute -left-32 top-40 h-[340px] w-[340px] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, hsl(var(--forest) / 0.16), transparent 70%)" }}
+        />
+      </div>
+      <div className="relative z-10 mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="grid items-end gap-10 sm:grid-cols-[1fr_auto]">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-forest">
                 — Topics in the workshop
               </div>
             </Reveal>
