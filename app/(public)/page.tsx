@@ -1,5 +1,4 @@
 import { HeroSection } from "@/components/landing/hero-section"
-import { ManifestoSection } from "@/components/landing/manifesto-section"
 import { ProcessSection } from "@/components/landing/process-section"
 import { TopicsSection } from "@/components/landing/topics-section"
 import { LibrarySection } from "@/components/landing/library-section"
@@ -11,7 +10,6 @@ export default function LandingPage() {
   return (
     <>
       <HeroSection />
-      <ManifestoSection />
       <ProcessSection />
       <TopicsSection />
       <LibrarySection />
