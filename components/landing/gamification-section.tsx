@@ -35,12 +35,7 @@ export function GamificationSection() {
               >
                 XP that
                 <br />
-                <span
-                  className="font-display-soft italic"
-                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-                >
-                  compounds,
-                </span>
+                compounds,
                 <br />
                 streaks that
                 <br />

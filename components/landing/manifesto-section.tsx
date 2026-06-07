@@ -17,25 +17,23 @@ export function ManifestoSection() {
             className="mt-8 font-display text-[clamp(1.6rem,3.4vw,2.6rem)] font-normal leading-[1.25] tracking-[-0.02em] text-ink"
             style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
           >
-            <span className="font-display-soft text-ember" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>&ldquo;</span>
-            We don&rsquo;t believe in streaks that shame you, in notifications that
-            beg, in algorithms that pick your next word for you. A vocabulary
-            workshop is a quiet place.{" "}
             <span
-              className="font-display-soft italic"
+              className="text-ember"
               style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
             >
-              Show up,
-            </span>{" "}
-            flip the card, find the word you were missing.{" "}
+              &ldquo;
+            </span>
+            We don&rsquo;t believe in streaks that shame you, in notifications
+            that beg, in algorithms that pick your next word for you. A
+            vocabulary workshop is a quiet place. Show up, flip the card, find
+            the word you were missing. Do that enough, and a language becomes
+            yours.
             <span
-              className="font-display-soft italic text-ink/70"
+              className="text-ember"
               style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
             >
-              Do that enough,
-            </span>{" "}
-            and a language becomes yours.
-            <span className="font-display-soft text-ember" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>&rdquo;</span>
+              &rdquo;
+            </span>
           </blockquote>
         </Reveal>
 

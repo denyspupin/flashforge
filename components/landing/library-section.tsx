@@ -121,12 +121,7 @@ export function LibrarySection() {
               >
                 Borrow a deck.
                 <br />
-                <span
-                  className="font-display-soft italic text-ink/80"
-                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-                >
-                  Make it yours.
-                </span>
+                Make it yours.
               </h2>
             </Reveal>
           </div>

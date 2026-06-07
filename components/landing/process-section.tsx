@@ -6,8 +6,7 @@ import { Reveal } from "./reveal"
 const STEPS = [
   {
     n: "01",
-    title: "Compose",
-    italic: "your deck",
+    title: "Compose your deck",
     icon: Layers,
     body:
       "Pair any two languages. Add cards one at a time, paste a list, or fork a deck the community has already polished. Every deck is yours to shape.",
@@ -15,8 +14,7 @@ const STEPS = [
   },
   {
     n: "02",
-    title: "Study with",
-    italic: "focus",
+    title: "Study with focus",
     icon: BookOpen,
     body:
       "One card. No scroll. Flip, self-assess, and retry the ones that miss. Sessions save themselves — step away and return to exactly where you left off.",
@@ -24,8 +22,7 @@ const STEPS = [
   },
   {
     n: "03",
-    title: "Stack the",
-    italic: "small wins",
+    title: "Stack the small wins",
     icon: Trophy,
     body:
       "XP for cards reviewed, multipliers for streaks that hold. A daily practice that asks for ten minutes, but rewards a lifetime of vocabulary.",
@@ -54,12 +51,7 @@ export function ProcessSection() {
               >
                 Three quiet
                 <br />
-                <span
-                  className="font-display-soft italic"
-                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-                >
-                  rituals,
-                </span>
+                rituals,
                 <br />
                 every day.
               </h2>
@@ -97,14 +89,11 @@ export function ProcessSection() {
                         <div className="mb-1 inline-flex items-center gap-2 rounded-full bg-ink/5 px-2.5 py-0.5 font-mono-tag text-[10px] uppercase tracking-wider text-ink/55">
                           {step.chip}
                         </div>
-                        <h3 className="font-display text-3xl font-medium leading-tight tracking-tight text-ink sm:text-4xl" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 50" }}>
-                          {step.title}{" "}
-                          <span
-                            className="font-display-soft italic text-ink/70"
-                            style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-                          >
-                            {step.italic}
-                          </span>
+                        <h3
+                          className="font-display text-3xl font-medium leading-tight tracking-tight text-ink sm:text-4xl"
+                          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 50" }}
+                        >
+                          {step.title}
                         </h3>
                         <p className="mt-4 max-w-md text-pretty leading-relaxed text-ink/65">
                           {step.body}

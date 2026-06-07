@@ -54,17 +54,12 @@ export function LanguagesStrip() {
                 {pair.from}
               </span>
               <span
-                className="font-display-soft text-xl text-ember"
+                className="text-xl text-ember"
                 style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
               >
                 →
               </span>
-              <span
-                className="font-display-soft italic"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-              >
-                {pair.to}
-              </span>
+              <span>{pair.to}</span>
             </div>
           ))}
         </div>

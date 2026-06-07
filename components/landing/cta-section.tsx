@@ -24,12 +24,7 @@ export function CtaSection() {
             >
               Begin your
               <br />
-              <span
-                className="font-display-soft italic text-ember"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-              >
-                forge.
-              </span>
+              <span className="text-ember">forge.</span>
             </h2>
 
             <p className="mx-auto mt-8 max-w-xl text-pretty text-lg leading-relaxed text-ink/65">

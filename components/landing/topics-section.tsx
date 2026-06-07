@@ -69,14 +69,7 @@ export function TopicsSection() {
                 className="mt-4 max-w-2xl font-display text-[clamp(2rem,4vw,3.2rem)] font-medium leading-[1] tracking-[-0.03em] text-ink"
                 style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
               >
-                Curated subjects,{" "}
-                <span
-                  className="font-display-soft italic"
-                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-                >
-                  for any
-                </span>{" "}
-                moment.
+                Curated subjects, for any moment.
               </h2>
             </Reveal>
           </div>

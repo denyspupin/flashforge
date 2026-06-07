@@ -27,12 +27,7 @@ export function HeroSection() {
             <h1 className="font-display text-[clamp(3.2rem,8vw,7.2rem)] font-medium leading-[0.92] tracking-[-0.04em] text-ink">
               Forge your
               <br />
-              <span
-                className="font-display-soft italic"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-              >
-                fluency,
-              </span>
+              fluency,
               <br />
               one flash{" "}
               <span className="relative inline-block">
@@ -49,11 +44,7 @@ export function HeroSection() {
             <p className="mt-8 max-w-xl text-pretty text-lg leading-relaxed text-ink/70">
               FlashForge is a quiet workshop for learning vocabulary — build
               decks your way, study them with focus, and watch a streak of
-              small sessions compound into something{" "}
-              <em className="font-display-soft not-italic text-ink/90" style={{ fontVariationSettings: "'opsz' 60, 'SOFT' 80" }}>
-                remarkable
-              </em>
-              .
+              small sessions compound into something remarkable.
             </p>
           </Reveal>
 
