@@ -45,7 +45,7 @@ export function FlashcardPreview() {
     if (reduce) return
     const cycle = setInterval(() => {
       setFlipped((f) => !f)
-    }, 3200)
+    }, 5500)
     return () => clearInterval(cycle)
   }, [reduce])
 
@@ -53,13 +53,13 @@ export function FlashcardPreview() {
     if (reduce) return
     const advance = setInterval(() => {
       setIndex((i) => (i + 1) % CARDS.length)
-    }, 6800)
+    }, 12000)
     return () => clearInterval(advance)
   }, [reduce])
 
   return (
     <div className="relative w-full max-w-[460px]">
-      <div className="absolute -inset-8 -z-10 rounded-[3rem] bg-gradient-to-br from-honey/30 via-ember/20 to-rust/20 blur-2xl" />
+      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-honey/20 via-ember/10 to-rust/10 blur-2xl" />
 
       <div className="relative">
         <div className="mb-4 flex items-center justify-between text-xs">
@@ -82,7 +82,7 @@ export function FlashcardPreview() {
               initial={reduce ? false : { rotateY: flipped ? -180 : 180, opacity: 0 }}
               animate={{ rotateY: 0, opacity: 1 }}
               exit={reduce ? { opacity: 0 } : { rotateY: flipped ? 180 : -180, opacity: 0 }}
-              transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
+              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
               className="preserve-3d absolute inset-0"
             >
               {!flipped ? (

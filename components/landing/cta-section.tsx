@@ -8,7 +8,7 @@ import { Reveal } from "./reveal"
 export function CtaSection() {
   return (
     <section className="relative overflow-hidden border-b border-ink/8 py-24 sm:py-32">
-      <div className="ember-glow-strong pointer-events-none absolute left-1/2 top-1/2 h-[600px] w-[800px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
+      <div className="ember-glow pointer-events-none absolute left-1/2 top-1/2 h-[480px] w-[640px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
 
       <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10">
         <Reveal>

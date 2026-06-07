@@ -39,10 +39,10 @@ export function Wordmark({
 export function SiteHeader() {
   return (
     <header className="sticky top-0 z-50 border-b border-ink/8 bg-paper/70 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center justify-between px-6 lg:px-10">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-8 px-6 lg:px-10">
         <Link
           href="/"
-          className="group flex items-center text-ink transition-opacity hover:opacity-80"
+          className="group flex shrink-0 items-center text-ink transition-opacity hover:opacity-80"
         >
           <Wordmark />
         </Link>
@@ -68,7 +68,7 @@ export function SiteHeader() {
           </Link>
         </nav>
 
-        <div className="flex items-center gap-2">
+        <div className="ml-auto flex items-center gap-2">
           <Link href="/login" className="hidden sm:block">
             <Button
               variant="ghost"

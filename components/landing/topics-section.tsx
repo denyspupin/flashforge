@@ -54,7 +54,7 @@ export function TopicsSection() {
   return (
     <section
       id="topics"
-      className="paper-warm relative border-b border-ink/8 py-24 sm:py-32"
+      className="relative border-b border-ink/8 py-24 sm:py-32"
     >
       <div className="mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="grid items-end gap-10 sm:grid-cols-[1fr_auto]">

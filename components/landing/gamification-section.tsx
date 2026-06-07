@@ -18,10 +18,8 @@ export function GamificationSection() {
   return (
     <section
       id="gamification"
-      className="paper-warm relative overflow-hidden border-b border-ink/8 py-24 sm:py-32"
+      className="relative border-b border-ink/8 py-24 sm:py-32"
     >
-      <div className="ember-glow pointer-events-none absolute -right-32 top-1/2 h-[500px] w-[500px] -translate-y-1/2 rounded-full blur-3xl" />
-
       <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr]">
           <div>

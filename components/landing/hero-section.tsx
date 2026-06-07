@@ -14,10 +14,10 @@ export function HeroSection() {
   return (
     <section className="paper-warm relative overflow-hidden border-b border-ink/8">
       <div className="pointer-events-none absolute inset-0 -z-0">
-        <div className="ember-glow-strong absolute -left-32 top-20 h-[480px] w-[480px] rounded-full blur-3xl" />
+        <div className="ember-glow absolute -left-32 top-20 h-[420px] w-[420px] rounded-full blur-3xl" />
         <div
-          className="ember-glow absolute -right-20 top-1/2 h-[320px] w-[320px] rounded-full blur-3xl"
-          style={{ background: "radial-gradient(circle, hsl(var(--honey) / 0.35), transparent 70%)" }}
+          className="absolute -right-20 top-1/2 h-[280px] w-[280px] rounded-full blur-3xl"
+          style={{ background: "radial-gradient(circle, hsl(var(--honey) / 0.22), transparent 70%)" }}
         />
       </div>
 

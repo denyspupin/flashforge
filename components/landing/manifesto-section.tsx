@@ -4,9 +4,7 @@ import { Reveal } from "./reveal"
 
 export function ManifestoSection() {
   return (
-    <section className="paper-warm relative overflow-hidden border-b border-ink/8 py-28 sm:py-40">
-      <div className="ember-glow pointer-events-none absolute left-1/2 top-1/2 h-[400px] w-[600px] -translate-x-1/2 -translate-y-1/2 rounded-full blur-3xl" />
-
+    <section className="relative overflow-hidden border-b border-ink/8 py-28 sm:py-40">
       <div className="relative mx-auto max-w-3xl px-6 text-center lg:px-10">
         <Reveal>
           <div className="font-mono-tag text-[10px] uppercase tracking-[0.3em] text-ember">
