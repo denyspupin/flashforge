@@ -14,12 +14,10 @@ export function CtaSection() {
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
             <h2
-              className="font-display text-[clamp(3rem,9vw,8rem)] font-medium leading-[0.92] tracking-[-0.04em] text-ink"
+              className="font-display text-[clamp(2.5rem,8vw,7rem)] font-medium leading-[0.95] tracking-[-0.04em] text-ink"
               style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
             >
-              Begin your
-              <br />
-              <span className="text-ember">forge.</span>
+              Begin your <span className="text-ember">forge.</span>
             </h2>
 
             <p className="mx-auto mt-8 max-w-xl text-pretty text-lg leading-relaxed text-ink/65">
