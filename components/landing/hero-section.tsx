@@ -23,19 +23,7 @@ export function HeroSection() {
 
       <div className="relative z-10 mx-auto grid max-w-[1280px] gap-16 px-6 pb-24 pt-16 lg:grid-cols-[1.1fr_1fr] lg:gap-12 lg:px-10 lg:pb-32 lg:pt-24">
         <div className="flex flex-col justify-center">
-          <Reveal>
-            <div className="mb-8 inline-flex items-center gap-2 self-start rounded-full border border-ink/12 bg-paper/60 px-3 py-1 text-xs text-ink/70 backdrop-blur-sm">
-              <span className="relative flex h-1.5 w-1.5">
-                <span className="absolute inset-0 animate-ping rounded-full bg-ember/70" />
-                <span className="relative inline-flex h-1.5 w-1.5 rounded-full bg-ember" />
-              </span>
-              <span className="font-mono-tag uppercase tracking-wider">
-                Vol. 01 — A vocabulary workshop
-              </span>
-            </div>
-          </Reveal>
-
-          <Reveal delay={0.1}>
+          <Reveal delay={0.05}>
             <h1 className="font-display text-[clamp(3.2rem,8vw,7.2rem)] font-medium leading-[0.92] tracking-[-0.04em] text-ink">
               Forge your
               <br />

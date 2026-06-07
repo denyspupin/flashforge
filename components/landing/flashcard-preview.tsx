@@ -62,16 +62,6 @@ export function FlashcardPreview() {
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-honey/20 via-ember/10 to-rust/10 blur-2xl" />
 
       <div className="relative">
-        <div className="mb-4 flex items-center justify-between text-xs">
-          <div className="flex items-center gap-2 font-mono-tag uppercase tracking-wider text-ink/55">
-            <span className="h-1.5 w-1.5 animate-ember-pulse rounded-full bg-ember" />
-            Live preview
-          </div>
-          <div className="font-mono-tag text-ink/55">
-            {String(index + 1).padStart(2, "0")} / {String(CARDS.length).padStart(2, "0")}
-          </div>
-        </div>
-
         <div
           className="perspective-1000 relative aspect-[5/6] w-full cursor-pointer"
           onClick={() => setFlipped((f) => !f)}
