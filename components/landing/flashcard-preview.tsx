@@ -1,7 +1,8 @@
 "use client"
 
 import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
-import { useEffect, useState } from "react"
+import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react"
+import { useState } from "react"
 import { cn } from "@/lib/utils"
 
 const CARDS = [
@@ -40,38 +41,29 @@ export function FlashcardPreview() {
   const [flipped, setFlipped] = useState(false)
   const reduce = useReducedMotion()
   const card = CARDS[index]
+  const isFirst = index === 0
+  const isLast = index === CARDS.length - 1
 
-  useEffect(() => {
-    if (reduce) return
-    const cycle = setInterval(() => {
-      setFlipped((f) => !f)
-    }, 5500)
-    return () => clearInterval(cycle)
-  }, [reduce])
-
-  useEffect(() => {
-    if (reduce) return
-    const advance = setInterval(() => {
-      setIndex((i) => (i + 1) % CARDS.length)
-    }, 12000)
-    return () => clearInterval(advance)
-  }, [reduce])
+  function goTo(i: number) {
+    setIndex(i)
+    setFlipped(false)
+  }
 
   return (
     <div className="relative w-full max-w-[460px]">
       <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-honey/20 via-ember/10 to-rust/10 blur-2xl" />
 
       <div className="relative">
-        <div className="mb-4 flex items-center justify-end text-xs">
-          <div className="font-mono-tag text-ink/55">
+        <div className="mb-4 flex items-center justify-between text-xs">
+          <span className="font-mono-tag uppercase tracking-wider text-ink/45">
+            {card.source} → {card.target}
+          </span>
+          <span className="font-mono-tag text-ink/55">
             {String(index + 1).padStart(2, "0")} / {String(CARDS.length).padStart(2, "0")}
-          </div>
+          </span>
         </div>
 
-        <div
-          className="perspective-1000 relative aspect-[5/6] w-full cursor-pointer"
-          onClick={() => setFlipped((f) => !f)}
-        >
+        <div className="perspective-1000 relative aspect-[5/6] w-full">
           <AnimatePresence mode="wait">
             <motion.div
               key={`${index}-${flipped}`}
@@ -81,37 +73,56 @@ export function FlashcardPreview() {
               transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
               className="preserve-3d absolute inset-0"
             >
-              {!flipped ? (
-                <CardFront card={card} />
-              ) : (
-                <CardBack card={card} />
-              )}
+              {!flipped ? <CardFront card={card} /> : <CardBack card={card} />}
             </motion.div>
           </AnimatePresence>
         </div>
 
         <div className="mt-5 flex items-center justify-between">
-          <div className="flex gap-1.5">
-            {CARDS.map((_, i) => (
-              <button
-                key={i}
-                onClick={() => {
-                  setIndex(i)
-                  setFlipped(false)
-                }}
-                className={cn(
-                  "h-1 rounded-full transition-all",
-                  i === index ? "w-8 bg-ink" : "w-1.5 bg-ink/20 hover:bg-ink/40",
-                )}
-                aria-label={`Go to card ${i + 1}`}
-              />
-            ))}
+          <div className="flex items-center gap-1">
+            <button
+              onClick={() => goTo((index - 1 + CARDS.length) % CARDS.length)}
+              className="flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-ink/5 hover:text-ink"
+              aria-label="Previous card"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+            </button>
+            <button
+              onClick={() => goTo((index + 1) % CARDS.length)}
+              disabled={isLast}
+              className={cn(
+                "flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-ink/5 hover:text-ink",
+                isLast && "opacity-30 hover:bg-transparent hover:text-ink/55",
+              )}
+              aria-label="Next card"
+            >
+              <ArrowRight className="h-3.5 w-3.5" />
+            </button>
+            <span className="ml-2 font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+              {isFirst ? "Try the first" : isLast ? "Last card" : `${CARDS.length - index - 1} to go`}
+            </span>
           </div>
+
           <button
             onClick={() => setFlipped((f) => !f)}
-            className="font-mono-tag text-xs uppercase tracking-wider text-ink/55 transition-colors hover:text-ink"
+            className={cn(
+              "group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono-tag text-[11px] uppercase tracking-wider transition-all",
+              flipped
+                ? "border-ink/15 bg-paper text-ink/65 hover:border-ink/30 hover:text-ink"
+                : "border-ink bg-ink text-paper hover:bg-ink/85",
+            )}
           >
-            {flipped ? "Show term" : "Reveal meaning"}
+            {flipped ? (
+              <>
+                <RotateCcw className="h-3 w-3" />
+                Show term
+              </>
+            ) : (
+              <>
+                Reveal meaning
+                <ArrowRight className="h-3 w-3 transition-transform group-hover:translate-x-0.5" />
+              </>
+            )}
           </button>
         </div>
       </div>
@@ -148,7 +159,7 @@ function CardFront({
       </div>
 
       <div className="flex items-center justify-between text-xs text-ink/45">
-        <span className="font-mono-tag uppercase tracking-wider">Tap to reveal</span>
+        <span className="font-mono-tag uppercase tracking-wider">Press reveal to see meaning</span>
         <div className="flex items-center gap-1">
           <span className="h-1 w-1 rounded-full bg-ink/30" />
           <span className="h-1 w-1 rounded-full bg-ink/30" />
