@@ -9,8 +9,8 @@ export function LandingFooter() {
           <div>
             <Wordmark />
             <p className="mt-4 max-w-xs text-pretty text-sm leading-relaxed text-ink/55">
-              A vocabulary workshop, quietly running since 2024. Built for
-              people who would rather learn than be sold to.
+              A vocabulary workshop, quietly running. Built for people who
+              would rather learn than be sold to.
             </p>
           </div>
 
