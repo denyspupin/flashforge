@@ -1,12 +1,13 @@
 "use client"
 
+import { Layers, BookOpen, Trophy } from "lucide-react"
 import { Reveal } from "./reveal"
-import { FlameMark } from "./flame-mark"
 
 const STEPS = [
   {
     n: "01",
     title: "Compose your deck",
+    icon: Layers,
     body:
       "Pair any two languages. Add cards one at a time, paste a list, or fork a deck the community has already polished. Every deck is yours to shape.",
     chip: "Build",
@@ -14,6 +15,7 @@ const STEPS = [
   {
     n: "02",
     title: "Study with focus",
+    icon: BookOpen,
     body:
       "One card. No scroll. Flip, self-assess, and retry the ones that miss. Sessions save themselves — step away and return to exactly where you left off.",
     chip: "Practice",
@@ -21,6 +23,7 @@ const STEPS = [
   {
     n: "03",
     title: "Stack the small wins",
+    icon: Trophy,
     body:
       "XP for cards reviewed, multipliers for streaks that hold. A daily practice that asks for ten minutes, but rewards a lifetime of vocabulary.",
     chip: "Compound",
@@ -69,6 +72,7 @@ export function ProcessSection() {
 
           <div className="space-y-6">
             {STEPS.map((step, i) => {
+              const Icon = step.icon
               return (
                 <Reveal key={step.n} delay={0.1 + i * 0.08}>
                   <article className="group relative overflow-hidden rounded-2xl border border-ink/10 bg-paper/60 p-8 transition-all duration-300 hover:-translate-y-0.5 hover:border-ink/20 hover:bg-paper hover:shadow-[0_20px_40px_-20px_rgba(0,0,0,0.15)] sm:p-10">
@@ -80,8 +84,8 @@ export function ProcessSection() {
                         >
                           {step.n}
                         </span>
-                        <div className="flex h-10 w-10 items-center justify-center rounded-full border border-ink/15 bg-paper">
-                          <FlameMark className="h-5 w-5" />
+                        <div className="flex h-9 w-9 items-center justify-center rounded-full border border-ink/15 bg-paper">
+                          <Icon className="h-4 w-4 text-ink/70" />
                         </div>
                       </div>
 

@@ -1,22 +1,20 @@
 import Link from "next/link"
-import { FlameMark } from "./flame-mark"
+import { CreditCard } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 export function Wordmark({
   className,
-  flameClassName,
   textClassName,
   italic = true,
 }: {
   className?: string
-  flameClassName?: string
   textClassName?: string
   italic?: boolean
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <FlameMark className={flameClassName} withSparks={false} />
+      <CreditCard className="h-5 w-5 text-ember" strokeWidth={1.75} />
       <span
         className={cn(
           "font-display text-[1.05em] font-medium leading-none tracking-tight",
