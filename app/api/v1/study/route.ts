@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server"
 import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
-import { studySessions, users } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { studySessions, users, decks, cards } from "@/lib/db/schema"
+import { eq, and, asc } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { z } from "zod"
 
@@ -41,6 +41,18 @@ export async function POST(request: Request) {
     )
   }
 
+  const deck = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, parsed.data.deck_id), eq(decks.creatorId, user[0].id)))
+
+  if (!deck.length) {
+    return NextResponse.json(
+      errorResponse("Deck not found", "NOT_FOUND"),
+      { status: 404 }
+    )
+  }
+
   const existing = await db
     .select()
     .from(studySessions)
@@ -52,18 +64,32 @@ export async function POST(request: Request) {
       )
     )
 
-  if (existing.length) {
-    return NextResponse.json(successResponse(existing[0]))
+  let session = existing[0]
+
+  if (!session) {
+    const [created] = await db
+      .insert(studySessions)
+      .values({
+        userId: user[0].id,
+        deckId: parsed.data.deck_id,
+        status: "active",
+      })
+      .returning()
+
+    session = created
   }
 
-  const [session] = await db
-    .insert(studySessions)
-    .values({
-      userId: user[0].id,
-      deckId: parsed.data.deck_id,
-      status: "active",
-    })
-    .returning()
+  const deckCards = await db
+    .select()
+    .from(cards)
+    .where(eq(cards.deckId, parsed.data.deck_id))
+    .orderBy(asc(cards.createdAt))
 
-  return NextResponse.json(successResponse(session))
+  return NextResponse.json(
+    successResponse({
+      session,
+      deck: deck[0],
+      cards: deckCards,
+    })
+  )
 }
