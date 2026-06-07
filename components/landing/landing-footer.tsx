@@ -14,7 +14,7 @@ export function LandingFooter() {
             </p>
           </div>
 
-          <div className="grid grid-cols-2 gap-8 sm:grid-cols-3">
+          <div className="grid grid-cols-2 gap-8">
             <FooterCol
               title="Learn"
               links={[
@@ -29,14 +29,6 @@ export function LandingFooter() {
                 { label: "Sign in", href: "/login" },
                 { label: "Get started", href: "/register" },
                 { label: "Profile", href: "/profile" },
-              ]}
-            />
-            <FooterCol
-              title="Colophon"
-              links={[
-                { label: "Type: Fraunces & Geist", href: "#" },
-                { label: "Set in Inter", href: "#" },
-                { label: "Edition · 01", href: "#" },
               ]}
             />
           </div>
