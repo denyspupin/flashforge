@@ -1,6 +1,6 @@
 "use client"
 
-import { motion, AnimatePresence, useReducedMotion } from "framer-motion"
+import { motion, useReducedMotion } from "framer-motion"
 import { ArrowLeft, ArrowRight, RotateCcw } from "lucide-react"
 import { useState } from "react"
 import { cn } from "@/lib/utils"
@@ -64,18 +64,26 @@ export function FlashcardPreview() {
         </div>
 
         <div className="perspective-1000 relative aspect-[5/6] w-full">
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={`${index}-${flipped}`}
-              initial={reduce ? false : { rotateY: flipped ? -180 : 180, opacity: 0 }}
-              animate={{ rotateY: 0, opacity: 1 }}
-              exit={reduce ? { opacity: 0 } : { rotateY: flipped ? 180 : -180, opacity: 0 }}
-              transition={{ duration: 1.1, ease: [0.16, 1, 0.3, 1] }}
-              className="preserve-3d absolute inset-0"
+          <motion.div
+            className="preserve-3d relative h-full w-full"
+            initial={false}
+            animate={{ rotateY: flipped ? 180 : 0 }}
+            transition={
+              reduce
+                ? { duration: 0 }
+                : { duration: 0.9, ease: [0.16, 1, 0.3, 1] }
+            }
+          >
+            <div className="backface-hidden absolute inset-0">
+              <CardFront card={card} />
+            </div>
+            <div
+              className="backface-hidden absolute inset-0"
+              style={{ transform: "rotateY(180deg)" }}
             >
-              {!flipped ? <CardFront card={card} /> : <CardBack card={card} />}
-            </motion.div>
-          </AnimatePresence>
+              <CardBack card={card} />
+            </div>
+          </motion.div>
         </div>
 
         <div className="mt-5 flex items-center justify-between">
