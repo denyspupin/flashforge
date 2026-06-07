@@ -1,0 +1,47 @@
+export const XP_VALUES = {
+  CARD_REVIEWED: 5,
+  CARD_CORRECT: 10,
+  DECK_COMPLETE: 50,
+  DECK_PERFECT: 100,
+  STREAK_BONUS_MULTIPLIER: 0.1,
+} as const
+
+export const STREAK_MULTIPLIERS = [
+  { days: 0, multiplier: 1 },
+  { days: 3, multiplier: 1.5 },
+  { days: 7, multiplier: 2 },
+  { days: 14, multiplier: 2.5 },
+  { days: 30, multiplier: 3 },
+] as const
+
+export const DEFAULT_TOPICS = [
+  { name: "Food", slug: "food" },
+  { name: "Animals", slug: "animals" },
+  { name: "Household", slug: "household" },
+  { name: "Work Meeting", slug: "work-meeting" },
+  { name: "Doctor Visit", slug: "doctor-visit" },
+  { name: "Travel", slug: "travel" },
+  { name: "Shopping", slug: "shopping" },
+] as const
+
+export const DEFAULT_LANGUAGES = [
+  { name: "English", code: "en" },
+  { name: "Spanish", code: "es" },
+  { name: "German", code: "de" },
+  { name: "French", code: "fr" },
+  { name: "Italian", code: "it" },
+  { name: "Portuguese", code: "pt" },
+  { name: "Russian", code: "ru" },
+  { name: "Japanese", code: "ja" },
+  { name: "Chinese", code: "zh" },
+] as const
+
+export const PAGINATION = {
+  DEFAULT_PAGE: 1,
+  DEFAULT_LIMIT: 20,
+  MAX_LIMIT: 100,
+} as const
+
+export const STUDY_SESSION = {
+  ABANDON_THRESHOLD_HOURS: 24,
+} as const
