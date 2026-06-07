@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { ArrowUpRight, Flame } from "lucide-react"
+import { ArrowUpRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Reveal } from "./reveal"
 
@@ -13,11 +13,6 @@ export function CtaSection() {
       <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10">
         <Reveal>
           <div className="mx-auto max-w-4xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-ink/12 bg-paper/60 px-3 py-1.5 font-mono-tag text-[10px] uppercase tracking-widest text-ink/55 backdrop-blur-sm">
-              <Flame className="h-3 w-3 text-ember" />
-              The fire is waiting
-            </div>
-
             <h2
               className="font-display text-[clamp(3rem,9vw,8rem)] font-medium leading-[0.92] tracking-[-0.04em] text-ink"
               style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
