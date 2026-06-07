@@ -15,7 +15,7 @@ A vocabulary learning platform built around flashcard decks, study sessions, and
 
 | Layer       | Technology                                      |
 | ----------- | ----------------------------------------------- |
-| Framework   | Next.js 15 (App Router)                         |
+| Framework   | Next.js 16 (App Router)                         |
 | Database    | PostgreSQL + Drizzle ORM                        |
 | Auth        | Clerk (credentials + OAuth, webhook user sync)  |
 | Styling     | Tailwind CSS + shadcn/ui                        |
@@ -113,7 +113,7 @@ The app runs at [http://localhost:3000](http://localhost:3000).
 | `pnpm dev`        | Start the Next.js dev server                   |
 | `pnpm build`      | Production build                               |
 | `pnpm start`      | Start the production server                    |
-| `pnpm lint`       | Run ESLint via `next lint`                     |
+| `pnpm lint`       | Run ESLint (`eslint .`)                        |
 | `pnpm db:push`    | Push the Drizzle schema to the dev database    |
 | `pnpm db:generate`| Generate a new migration from schema changes   |
 | `pnpm db:migrate` | Apply generated migrations                     |
@@ -145,6 +145,8 @@ Full endpoint table and database schema live in [`docs/PROJECT.md`](./docs/PROJE
 - Type-based component organization (`components/deck/`, `components/card/`, etc.)
 - shadcn/ui primitives in `components/ui/`
 - Custom hooks in `hooks/`, Zustand stores in `stores/`
+- Tailwind 4 with CSS-first config — no `tailwind.config.ts`; theme tokens live in `app/globals.css` under `@theme inline`
+- ESLint flat config in `eslint.config.mjs`; `pnpm lint` runs `eslint .`
 - All tables include `created_at` and `updated_at`
 - UUIDs for decks, cards, and sessions (future import/export)
 - UTC timestamps on the server; client renders in local time

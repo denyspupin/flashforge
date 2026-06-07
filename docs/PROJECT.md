@@ -127,7 +127,7 @@ Example: English → German + Food → Restaurant Vocabulary → [apple/apfel, b
 
 | Layer | Technology |
 |-------|------------|
-| Framework | Next.js 15 (App Router) |
+| Framework | Next.js 16 (App Router) |
 | Database | PostgreSQL (Neon) + Drizzle ORM |
 | Auth | Clerk (credentials + OAuth) |
 | Styling | Tailwind CSS + shadcn/ui |

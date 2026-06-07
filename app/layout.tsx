@@ -20,7 +20,7 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider>
+    <ClerkProvider afterSignOutUrl="/">
       <html lang="en" className={cn("font-sans", geist.variable)}>
         <body className="antialiased">
           <Providers>{children}</Providers>

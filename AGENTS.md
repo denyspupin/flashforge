@@ -6,7 +6,7 @@ FlashForge is a vocabulary learning platform with flashcard decks, study session
 
 | Item    | Value                                                         |
 | ------- | ------------------------------------------------------------- |
-| Stack   | Next.js 15, PostgreSQL, Drizzle, Clerk, Tailwind + shadcn/ui |
+| Stack   | Next.js 16, React 19, PostgreSQL, Drizzle, Clerk, Tailwind 4 + shadcn/ui |
 | State   | TanStack Query (server) + Zustand (UI)                        |
 | Hosting | Vercel                                                        |
 
@@ -27,6 +27,8 @@ Full documentation: `docs/PROJECT.md`
 ## Code Conventions
 
 - No comments in code unless required
+- ESLint flat config in `eslint.config.mjs` (replaces legacy `.eslintrc`); `pnpm lint` runs `eslint .`
+- Tailwind 4 (CSS-first config) — no `tailwind.config.ts`; theme tokens live in `app/globals.css`
 - shadcn/ui components in `components/ui/`
 - Custom hooks in `hooks/`
 - Zustand stores in `stores/`

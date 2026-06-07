@@ -35,7 +35,7 @@ export default function DashboardLayout({
                 Notifications
               </Button>
             </Link>
-            <UserButton afterSignOutUrl="/" />
+            <UserButton />
           </nav>
         </div>
       </header>
