@@ -112,6 +112,11 @@
   html {
     font-family: var(--font-sans);
   }
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]),
+  a[href] {
+    cursor: pointer;
+  }
   ::selection {
     background-color: hsl(var(--ember) / 0.3);
     color: hsl(var(--ink));
