@@ -2,14 +2,16 @@ import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 import Providers from "@/components/providers"
-import "./globals.css"
+import { fontSerif, fontMono } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
+import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
 export const metadata: Metadata = {
-  title: "FlashForge",
-  description: "Master vocabulary with flashcards",
+  title: "FlashForge — Forge your fluency, one flash at a time",
+  description:
+    "A vocabulary learning workshop. Build flashcard decks, study with focus, and craft habits that last — one streak at a time.",
 }
 
 export const dynamic = "force-dynamic"
@@ -21,8 +23,16 @@ export default function RootLayout({
 }) {
   return (
     <ClerkProvider afterSignOutUrl="/">
-      <html lang="en" className={cn("font-sans", geist.variable)}>
-        <body className="antialiased">
+      <html
+        lang="en"
+        className={cn(
+          "font-sans",
+          geist.variable,
+          fontSerif.variable,
+          fontMono.variable,
+        )}
+      >
+        <body className="grain antialiased">
           <Providers>{children}</Providers>
         </body>
       </html>
