@@ -24,7 +24,7 @@ export function GamificationSection() {
         <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[10px] uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
                 — The compounding
               </div>
             </Reveal>

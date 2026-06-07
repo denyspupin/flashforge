@@ -40,7 +40,7 @@ export function ProcessSection() {
         <div className="grid gap-12 lg:grid-cols-[1fr_2fr]">
           <div className="lg:sticky lg:top-32 lg:self-start">
             <Reveal>
-              <div className="font-mono-tag text-[10px] uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
                 — The process
               </div>
             </Reveal>

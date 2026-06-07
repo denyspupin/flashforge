@@ -60,7 +60,7 @@ export function TopicsSection() {
         <div className="grid items-end gap-10 sm:grid-cols-[1fr_auto]">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[10px] uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
                 — Topics in the workshop
               </div>
             </Reveal>

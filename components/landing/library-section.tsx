@@ -110,7 +110,7 @@ export function LibrarySection() {
         <div className="mb-16 flex flex-col items-start justify-between gap-6 sm:flex-row sm:items-end">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[10px] uppercase tracking-[0.3em] text-ember">
+              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember">
                 — The library
               </div>
             </Reveal>
