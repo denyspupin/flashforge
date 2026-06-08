@@ -1,91 +1,32 @@
 import Link from "next/link"
-import { CreditCard } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { cn } from "@/lib/utils"
+import { AppHeader } from "@/components/layout/app-header"
+import { HeaderActions } from "@/components/layout/header-actions"
 
-export function Wordmark({
-  className,
-  textClassName,
-  italic = true,
-}: {
-  className?: string
-  textClassName?: string
-  italic?: boolean
-}) {
+function PublicNav() {
   return (
-    <span className={cn("inline-flex items-center gap-2", className)}>
-      <CreditCard className="h-5 w-5 text-ember" strokeWidth={1.75} />
-      <span
-        className={cn(
-          "font-display text-[1.05em] font-medium leading-none tracking-tight",
-          textClassName,
-        )}
+    <nav className="flex items-center gap-1">
+      <Link
+        href="/explore"
+        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
       >
-        Flash
-        {italic ? (
-          <span className="font-display-soft italic" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>
-            forge
-          </span>
-        ) : (
-          "Forge"
-        )}
-      </span>
-    </span>
+        Explore
+      </Link>
+      <Link
+        href="#process"
+        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
+      >
+        How it works
+      </Link>
+      <Link
+        href="#library"
+        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
+      >
+        Library
+      </Link>
+    </nav>
   )
 }
 
 export function SiteHeader() {
-  return (
-    <header className="sticky top-0 z-50 border-b border-ink/8 bg-paper/70 backdrop-blur-md">
-      <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-8 px-6 lg:px-10">
-        <Link
-          href="/"
-          className="group flex shrink-0 items-center text-ink transition-opacity hover:opacity-80"
-        >
-          <Wordmark />
-        </Link>
-
-        <nav className="hidden items-center gap-1 md:flex">
-          <Link
-            href="/explore"
-            className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
-          >
-            Explore
-          </Link>
-          <Link
-            href="#process"
-            className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
-          >
-            How it works
-          </Link>
-          <Link
-            href="#library"
-            className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
-          >
-            Library
-          </Link>
-        </nav>
-
-        <div className="ml-auto flex items-center gap-2">
-          <Link href="/login" className="hidden sm:block">
-            <Button
-              variant="ghost"
-              size="sm"
-              className="h-9 px-3 text-ink/80 hover:text-ink"
-            >
-              Sign in
-            </Button>
-          </Link>
-          <Link href="/register">
-            <Button
-              size="sm"
-              className="h-9 rounded-full bg-ink px-4 text-paper hover:bg-ink/85"
-            >
-              Start forging
-            </Button>
-          </Link>
-        </div>
-      </div>
-    </header>
-  )
+  return <AppHeader nav={<PublicNav />} actions={<HeaderActions />} />
 }
