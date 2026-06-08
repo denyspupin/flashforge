@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 import Providers from "@/components/providers"
+import { clerkAppearance } from "@/lib/clerk/appearance"
 import { fontSerif, fontMono } from "@/lib/fonts"
 import { cn } from "@/lib/utils"
 import "./globals.css"
@@ -22,7 +23,10 @@ export default function RootLayout({
   children: React.ReactNode
 }) {
   return (
-    <ClerkProvider afterSignOutUrl="/">
+    <ClerkProvider
+      appearance={clerkAppearance}
+      afterSignOutUrl="/"
+    >
       <html
         lang="en"
         className={cn(

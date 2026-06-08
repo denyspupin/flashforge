@@ -1,7 +1,57 @@
 import { UserButton } from "@clerk/nextjs"
 import Link from "next/link"
+import { LayoutDashboard, Library, Bell } from "lucide-react"
+import { AppHeader } from "@/components/layout/app-header"
 import { Button } from "@/components/ui/button"
-import { BookOpen, LayoutDashboard, Library, Bell } from "lucide-react"
+
+function DashboardNav() {
+  return (
+    <nav className="flex items-center gap-1">
+      <Link href="/dashboard">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-9 px-3 text-ink/80 hover:text-ink"
+        >
+          <LayoutDashboard className="mr-1.5 h-4 w-4" />
+          Dashboard
+        </Button>
+      </Link>
+      <Link href="/decks">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-9 px-3 text-ink/80 hover:text-ink"
+        >
+          <Library className="mr-1.5 h-4 w-4" />
+          My Decks
+        </Button>
+      </Link>
+      <Link href="/notifications">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-9 px-3 text-ink/80 hover:text-ink"
+        >
+          <Bell className="mr-1.5 h-4 w-4" />
+          Notifications
+        </Button>
+      </Link>
+    </nav>
+  )
+}
+
+function DashboardActions() {
+  return (
+    <UserButton
+      appearance={{
+        elements: {
+          avatarBox: "h-8 w-8",
+        },
+      }}
+    />
+  )
+}
 
 export default function DashboardLayout({
   children,
@@ -10,35 +60,7 @@ export default function DashboardLayout({
 }) {
   return (
     <div className="min-h-screen flex flex-col">
-      <header className="border-b px-6 py-3">
-        <div className="mx-auto flex max-w-6xl items-center justify-between">
-          <Link href="/" className="flex items-center gap-2">
-            <BookOpen className="h-5 w-5" />
-            <span className="text-lg font-bold">FlashForge</span>
-          </Link>
-          <nav className="flex items-center gap-1">
-            <Link href="/dashboard">
-              <Button variant="ghost" size="sm">
-                <LayoutDashboard className="mr-2 h-4 w-4" />
-                Dashboard
-              </Button>
-            </Link>
-            <Link href="/decks">
-              <Button variant="ghost" size="sm">
-                <Library className="mr-2 h-4 w-4" />
-                My Decks
-              </Button>
-            </Link>
-            <Link href="/notifications">
-              <Button variant="ghost" size="sm">
-                <Bell className="mr-2 h-4 w-4" />
-                Notifications
-              </Button>
-            </Link>
-            <UserButton />
-          </nav>
-        </div>
-      </header>
+      <AppHeader nav={<DashboardNav />} actions={<DashboardActions />} />
       <main className="flex-1 mx-auto w-full max-w-6xl p-6">{children}</main>
     </div>
   )

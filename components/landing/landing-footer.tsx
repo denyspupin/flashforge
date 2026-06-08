@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Wordmark } from "./site-header"
+import { Wordmark } from "@/components/layout/wordmark"
 
 export function LandingFooter() {
   return (
