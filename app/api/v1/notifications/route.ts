@@ -1,35 +1,26 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
-import { notifications, users } from "@/lib/db/schema"
+import { notifications } from "@/lib/db/schema"
 import { eq } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
     )
   }
 
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
-    )
-  }
-
   const data = await db
     .select()
     .from(notifications)
-    .where(eq(notifications.userId, user[0].id))
+    .where(eq(notifications.userId, user.id))
 
   return NextResponse.json(successResponse(data))
 }

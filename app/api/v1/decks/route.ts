@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
-import { decks, users, deckTopics, topics, languages, cards } from "@/lib/db/schema"
-import { eq, and, inArray } from "drizzle-orm"
+import { decks, deckTopics } from "@/lib/db/schema"
+import { eq } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -18,48 +18,30 @@ const createDeckSchema = z.object({
 })
 
 export async function GET() {
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
-    )
-  }
-
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
     )
   }
 
   const userDecks = await db
     .select()
     .from(decks)
-    .where(eq(decks.creatorId, user[0].id))
+    .where(eq(decks.creatorId, user.id))
 
   return NextResponse.json(successResponse(userDecks))
 }
 
 export async function POST(request: Request) {
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
-    )
-  }
-
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
     )
   }
 
@@ -86,7 +68,7 @@ export async function POST(request: Request) {
       description: parsed.data.description || null,
       sourceLanguageId: parsed.data.sourceLanguageId,
       targetLanguageId: parsed.data.targetLanguageId,
-      creatorId: user[0].id,
+      creatorId: user.id,
       visibility: parsed.data.visibility,
     })
     .returning()

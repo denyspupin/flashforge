@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
-import { decks } from "@/lib/db/schema"
+import { studySessions } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
@@ -9,9 +9,9 @@ export const dynamic = "force-dynamic"
 
 export async function POST(
   request: Request,
-  { params }: { params: Promise<{ id: string }> }
+  { params }: { params: Promise<{ sessionId: string }> }
 ) {
-  const { id } = await params
+  const { sessionId } = await params
   const user = await requireCurrentUser()
 
   if (!user) {
@@ -21,22 +21,31 @@ export async function POST(
     )
   }
 
-  const deck = await db
+  const sessionRows = await db
     .select()
-    .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.creatorId, user.id)))
+    .from(studySessions)
+    .where(
+      and(
+        eq(studySessions.id, sessionId),
+        eq(studySessions.userId, user.id),
+        eq(studySessions.status, "active")
+      )
+    )
 
-  if (!deck.length) {
+  if (!sessionRows.length) {
     return NextResponse.json(
-      errorResponse("Deck not found", "NOT_FOUND"),
+      errorResponse("Active session not found", "NOT_FOUND"),
       { status: 404 }
     )
   }
 
   const [updated] = await db
-    .update(decks)
-    .set({ visibility: "public" })
-    .where(eq(decks.id, id))
+    .update(studySessions)
+    .set({
+      status: "abandoned",
+      updatedAt: new Date(),
+    })
+    .where(eq(studySessions.id, sessionId))
     .returning()
 
   return NextResponse.json(successResponse(updated))

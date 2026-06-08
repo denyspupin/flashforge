@@ -80,6 +80,9 @@ interface Language {
   code: string
 }
 
+const languageItems = (languages: Language[]) =>
+  Object.fromEntries(languages.map((l) => [l.id, l.name]))
+
 async function fetchDecks(): Promise<{ data: Deck[] }> {
   const res = await fetch("/api/v1/decks")
   if (!res.ok) throw new Error("Failed to fetch decks")
@@ -121,6 +124,7 @@ export default function DeckList() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
     queryKey: ["decks"],
@@ -138,6 +142,11 @@ export default function DeckList() {
       queryClient.invalidateQueries({ queryKey: ["decks"] })
       setOpen(false)
       form.reset()
+      setSubmitError(null)
+    },
+    onError: (error) => {
+      console.error("[create deck] mutation failed:", error)
+      setSubmitError(error instanceof Error ? error.message : "Couldn’t create the deck. Try again.")
     },
   })
 
@@ -174,7 +183,18 @@ export default function DeckList() {
   })
 
   const onSubmit = (data: CreateDeckInput) => {
+    console.log("[create deck] submitting:", data)
+    setSubmitError(null)
     createMutation.mutate(data)
+  }
+
+  const onSubmitInvalid = (errors: unknown) => {
+    console.warn("[create deck] validation failed:", errors)
+    const errs = errors as Record<string, { message?: string }>
+    const messages = Object.entries(errs)
+      .map(([k, v]) => v?.message)
+      .filter(Boolean)
+    setSubmitError(messages.length ? messages.join(" · ") : "Please fill all required fields.")
   }
 
   const decks = decksData?.data || []
@@ -190,11 +210,9 @@ export default function DeckList() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger>
-            <Button>
-              <Plus className="mr-2 h-4 w-4" />
-              New Deck
-            </Button>
+          <DialogTrigger render={<Button />}>
+            <Plus className="mr-2 h-4 w-4" />
+            New Deck
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogHeader>
@@ -205,9 +223,18 @@ export default function DeckList() {
             </DialogHeader>
             <Form {...form}>
               <form
-                onSubmit={form.handleSubmit(onSubmit)}
+                onSubmit={form.handleSubmit(onSubmit, onSubmitInvalid)}
                 className="space-y-4"
+                noValidate
               >
+                {submitError && (
+                  <div
+                    role="alert"
+                    className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+                  >
+                    {submitError}
+                  </div>
+                )}
                 <FormField
                   control={form.control}
                   name="title"
@@ -245,8 +272,9 @@ export default function DeckList() {
                       <FormItem>
                         <FormLabel>From</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          items={languageItems(languages)}
+                          value={field.value || null}
+                          onValueChange={(v) => field.onChange(v ?? "")}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -272,8 +300,9 @@ export default function DeckList() {
                       <FormItem>
                         <FormLabel>To</FormLabel>
                         <Select
-                          onValueChange={field.onChange}
-                          defaultValue={field.value}
+                          items={languageItems(languages)}
+                          value={field.value || null}
+                          onValueChange={(v) => field.onChange(v ?? "")}
                         >
                           <FormControl>
                             <SelectTrigger>
@@ -300,8 +329,9 @@ export default function DeckList() {
                     <FormItem>
                       <FormLabel>Visibility</FormLabel>
                       <Select
-                        onValueChange={field.onChange}
-                        defaultValue={field.value}
+                        items={{ private: "Private", public: "Public" }}
+                        value={field.value || null}
+                        onValueChange={(v) => field.onChange(v ?? "")}
                       >
                         <FormControl>
                           <SelectTrigger>
@@ -321,6 +351,9 @@ export default function DeckList() {
                   type="submit"
                   className="w-full"
                   disabled={createMutation.isPending}
+                  onClick={() => {
+                    console.log("[create deck] submit clicked, form state:", form.getValues())
+                  }}
                 >
                   {createMutation.isPending ? "Creating..." : "Create Deck"}
                 </Button>
@@ -367,12 +400,16 @@ export default function DeckList() {
                   </div>
                   <DropdownMenu>
                     <DropdownMenuTrigger
-                      className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
-                      onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                      render={
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                        />
+                      }
                     >
-                      <Button variant="ghost" size="icon">
-                        <MoreHorizontal className="h-4 w-4" />
-                      </Button>
+                      <MoreHorizontal className="h-4 w-4" />
                     </DropdownMenuTrigger>
                     <DropdownMenuContent align="end">
                       <DropdownMenuItem

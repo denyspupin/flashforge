@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
-import { studySessions, users } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { studySessions, decks, cards } from "@/lib/db/schema"
+import { eq, and, asc } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -13,9 +13,9 @@ const startSchema = z.object({
 })
 
 export async function POST(request: Request) {
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
@@ -32,11 +32,14 @@ export async function POST(request: Request) {
     )
   }
 
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
+  const deck = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, parsed.data.deck_id), eq(decks.creatorId, user.id)))
 
-  if (!user.length) {
+  if (!deck.length) {
     return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
+      errorResponse("Deck not found", "NOT_FOUND"),
       { status: 404 }
     )
   }
@@ -46,24 +49,38 @@ export async function POST(request: Request) {
     .from(studySessions)
     .where(
       and(
-        eq(studySessions.userId, user[0].id),
+        eq(studySessions.userId, user.id),
         eq(studySessions.deckId, parsed.data.deck_id),
         eq(studySessions.status, "active")
       )
     )
 
-  if (existing.length) {
-    return NextResponse.json(successResponse(existing[0]))
+  let session = existing[0]
+
+  if (!session) {
+    const [created] = await db
+      .insert(studySessions)
+      .values({
+        userId: user.id,
+        deckId: parsed.data.deck_id,
+        status: "active",
+      })
+      .returning()
+
+    session = created
   }
 
-  const [session] = await db
-    .insert(studySessions)
-    .values({
-      userId: user[0].id,
-      deckId: parsed.data.deck_id,
-      status: "active",
-    })
-    .returning()
+  const deckCards = await db
+    .select()
+    .from(cards)
+    .where(eq(cards.deckId, parsed.data.deck_id))
+    .orderBy(asc(cards.createdAt))
 
-  return NextResponse.json(successResponse(session))
+  return NextResponse.json(
+    successResponse({
+      session,
+      deck: deck[0],
+      cards: deckCards,
+    })
+  )
 }

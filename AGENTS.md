@@ -26,6 +26,7 @@ Full documentation: `docs/PROJECT.md`
 
 ## Code Conventions
 
+- **Never edit or "fix" anything inside `node_modules/`** — it is managed by the package manager and changes are wiped on every install. If a 3rd-party dependency has a bug, use `pnpm` overrides, `pnpm patch`, or fork/upstream PRs — never patch the installed copy directly.
 - No comments in code unless required
 - ESLint flat config in `eslint.config.mjs` (replaces legacy `.eslintrc`); `pnpm lint` runs `eslint .`
 - Tailwind 4 (CSS-first config) — no `tailwind.config.ts`; theme tokens live in `app/globals.css`
