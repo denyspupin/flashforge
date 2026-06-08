@@ -1,5 +1,5 @@
-import { db } from "../lib/db/client"
-import { languages, topics } from "../lib/db/schema"
+import { db } from "../lib/db/client.ts"
+import { languages, topics } from "../lib/db/schema.ts"
 
 async function seed() {
   console.log("Seeding database...")
