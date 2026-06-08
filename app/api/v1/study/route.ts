@@ -35,9 +35,19 @@ export async function POST(request: Request) {
   const deck = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, parsed.data.deck_id), eq(decks.creatorId, user.id)))
+    .where(eq(decks.id, parsed.data.deck_id))
 
   if (!deck.length) {
+    return NextResponse.json(
+      errorResponse("Deck not found", "NOT_FOUND"),
+      { status: 404 }
+    )
+  }
+
+  const isOwner = deck[0].creatorId === user.id
+  const isPublic = deck[0].visibility === "public"
+
+  if (!isOwner && !isPublic) {
     return NextResponse.json(
       errorResponse("Deck not found", "NOT_FOUND"),
       { status: 404 }
