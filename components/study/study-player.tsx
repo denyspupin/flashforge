@@ -215,8 +215,8 @@ export function StudyPlayer({
             <FlipCard
               flipped={flipped}
               onFlip={flip}
-              front={<CardFront data={cardData} />}
-              back={<CardBack data={cardData} />}
+              front={<CardFront data={cardData} size="lg" />}
+              back={<CardBack data={cardData} size="lg" />}
               className="h-full"
             />
           </motion.div>

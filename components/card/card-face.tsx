@@ -4,9 +4,20 @@ import type { FlashcardContent } from "@/types/flashcard"
 type FaceProps = {
   data: FlashcardContent
   className?: string
+  size?: "default" | "lg"
 }
 
-export function CardFront({ data, className }: FaceProps) {
+const TERM_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
+  default: "text-[2.6rem] leading-[1.05]",
+  lg: "text-[3.4rem] leading-[1.02]",
+}
+
+const DEFINITION_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
+  default: "text-[1.7rem] leading-[1.25]",
+  lg: "text-[2.1rem] leading-[1.2]",
+}
+
+export function CardFront({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
@@ -32,7 +43,10 @@ export function CardFront({ data, className }: FaceProps) {
 
       <div className="flex flex-1 items-center justify-center px-2">
         <h3
-          className="text-balance text-center font-display text-[2.6rem] font-medium leading-[1.05] tracking-tight text-ink"
+          className={cn(
+            "text-balance text-center font-display font-medium tracking-tight text-ink",
+            TERM_SIZE[size],
+          )}
           style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
         >
           {data.front}
@@ -53,7 +67,7 @@ export function CardFront({ data, className }: FaceProps) {
   )
 }
 
-export function CardBack({ data, className }: FaceProps) {
+export function CardBack({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
@@ -79,7 +93,10 @@ export function CardBack({ data, className }: FaceProps) {
 
       <div className="flex flex-1 items-center">
         <p
-          className="text-pretty font-display text-[1.7rem] font-normal leading-[1.25] tracking-tight text-paper"
+          className={cn(
+            "text-pretty font-display font-normal tracking-tight text-paper",
+            DEFINITION_SIZE[size],
+          )}
           style={{ fontVariationSettings: "'opsz' 100, 'SOFT' 50" }}
         >
           {data.back}

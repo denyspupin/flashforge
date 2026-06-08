@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
-import { decks, deckTopics } from "@/lib/db/schema"
-import { eq } from "drizzle-orm"
+import { decks, deckTopics, cards } from "@/lib/db/schema"
+import { eq, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
@@ -28,7 +28,23 @@ export async function GET() {
   }
 
   const userDecks = await db
-    .select()
+    .select({
+      id: decks.id,
+      title: decks.title,
+      slug: decks.slug,
+      description: decks.description,
+      visibility: decks.visibility,
+      sourceLanguageId: decks.sourceLanguageId,
+      targetLanguageId: decks.targetLanguageId,
+      creatorId: decks.creatorId,
+      isCurated: decks.isCurated,
+      forkedFromDeckId: decks.forkedFromDeckId,
+      createdAt: decks.createdAt,
+      updatedAt: decks.updatedAt,
+      cardCount: sql<number>`(
+        SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = ${decks.id}
+      )`,
+    })
     .from(decks)
     .where(eq(decks.creatorId, user.id))
 

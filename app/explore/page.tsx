@@ -4,36 +4,17 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useState } from "react"
 import { useUser } from "@clerk/nextjs"
-import { BookOpen, Globe, Copy, Sparkles, Loader2 } from "lucide-react"
+import { Copy, Globe, Loader2 } from "lucide-react"
 
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import {
+  DeckCard,
+  DeckCardEmptyState,
+  DeckCardSkeleton,
+} from "@/components/deck/deck-card"
 import { cn } from "@/lib/utils"
-
-interface Topic {
-  id: string
-  name: string
-  slug: string
-}
-
-interface Deck {
-  id: string
-  title: string
-  description: string | null
-  slug: string
-  visibility: "private" | "public"
-  sourceLanguageId: string
-  targetLanguageId: string
-  creatorId: string
-  creatorName: string | null
-  isCurated: boolean
-  forkedFromDeckId: string | null
-  cardCount: number
-  createdAt: string
-  topics: Topic[]
-}
+import type { Deck, Language } from "@/types/deck"
 
 async function fetchCommunityDecks(query?: string): Promise<{ data: Deck[] }> {
   const params = new URLSearchParams()
@@ -48,6 +29,12 @@ async function fetchMe(): Promise<{ data: { id: string } | null }> {
   const res = await fetch("/api/v1/users/me")
   if (res.status === 401) return { data: null }
   if (!res.ok) throw new Error("Failed to fetch user")
+  return res.json()
+}
+
+async function fetchLanguages(): Promise<{ data: Language[] }> {
+  const res = await fetch("/api/v1/languages")
+  if (!res.ok) throw new Error("Failed to fetch languages")
   return res.json()
 }
 
@@ -80,7 +67,15 @@ export default function ExplorePage() {
     enabled: isLoaded && isSignedIn,
   })
 
+  const { data: languagesData } = useQuery({
+    queryKey: ["languages"],
+    queryFn: fetchLanguages,
+  })
+
   const myId = meQuery.data?.data?.id ?? null
+  const languagesById = Object.fromEntries(
+    (languagesData?.data ?? []).map((l) => [l.id, l]),
+  )
 
   const forkMutation = useMutation({
     mutationFn: forkDeck,
@@ -137,97 +132,70 @@ export default function ExplorePage() {
       {isLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3, 4, 5, 6].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="h-24 bg-muted" />
-            </Card>
+            <DeckCardSkeleton key={i} />
           ))}
         </div>
       ) : decks.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-12 text-center">
-          <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">No public decks yet</h3>
-          <p className="text-muted-foreground mt-1">
-            Be the first to share a deck with the community
-          </p>
-        </Card>
+        <DeckCardEmptyState
+          title="No public decks yet"
+          description="Be the first to share a deck with the community"
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {decks.map((deck) => {
             const isMine = myId && deck.creatorId === myId
             const isForking = pendingForkId === deck.id
             return (
-              <Card
+              <DeckCard
                 key={deck.id}
-                className="group cursor-pointer transition-shadow hover:shadow-md"
-                onClick={() => router.push(`/explore/decks/${deck.id}`)}
-              >
-                <CardHeader className="pb-3">
-                  <div className="flex items-start justify-between gap-2">
-                    <div className="min-w-0 flex-1">
-                      <CardTitle className="text-lg line-clamp-1">{deck.title}</CardTitle>
-                      <CardDescription className="line-clamp-2 mt-1">
-                        {deck.description || "No description"}
-                      </CardDescription>
-                    </div>
-                  </div>
-                </CardHeader>
-                <CardContent>
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <Badge variant="default">
-                      <Globe className="mr-1 h-3 w-3" />
-                      Public
-                    </Badge>
-                    {deck.isCurated && (
-                      <Badge variant="secondary">
-                        <Sparkles className="mr-1 h-3 w-3" />
-                        Curated
-                      </Badge>
-                    )}
-                    {deck.topics.slice(0, 2).map((topic) => (
-                      <Badge key={topic.id} variant="outline" className="font-normal">
-                        {topic.name}
-                      </Badge>
-                    ))}
-                  </div>
-                  <div className="mt-4 flex items-center justify-between">
-                    <div className="text-xs text-muted-foreground">
-                      <span className="font-medium text-ink/80">
-                        {deck.creatorName ?? "Unknown"}
-                      </span>
-                      <span className="mx-1.5">·</span>
-                      <span>{deck.cardCount} cards</span>
-                    </div>
-                    {isSignedIn && (
-                      <Button
-                        size="sm"
-                        variant={isMine ? "outline" : "default"}
-                        className={cn(
-                          "h-8 gap-1.5 px-3 text-xs",
-                          !isMine && "bg-ember text-primary-foreground hover:bg-ember-deep"
-                        )}
-                        disabled={isForking}
-                        onClick={(e) => {
-                          e.stopPropagation()
-                          if (isMine) {
-                            router.push(`/decks/${deck.id}`)
-                            return
-                          }
-                          onFork(deck)
-                        }}
-                      >
-                        {isForking ? (
-                          <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        ) : isMine ? (
-                          <Globe className="h-3.5 w-3.5" />
-                        ) : (
-                          <Copy className="h-3.5 w-3.5" />
-                        )}
-                        {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
-                      </Button>
-                    )}
-                  </div>
-                </CardContent>
-              </Card>
+                deck={deck}
+                href={`/explore/decks/${deck.id}`}
+                languageNames={{
+                  source: languagesById[deck.sourceLanguageId]?.name,
+                  target: languagesById[deck.targetLanguageId]?.name,
+                }}
+                footerLeft={
+                  <span>
+                    <span className="font-medium text-ink/80">
+                      {deck.creatorName ?? "Unknown"}
+                    </span>
+                    <span className="mx-1.5">·</span>
+                    <span>
+                      {deck.cardCount} {deck.cardCount === 1 ? "card" : "cards"}
+                    </span>
+                  </span>
+                }
+                actions={
+                  isSignedIn ? (
+                    <Button
+                      size="sm"
+                      variant={isMine ? "outline" : "default"}
+                      className={cn(
+                        "h-8 gap-1.5 px-3 text-xs",
+                        !isMine && "bg-ember text-primary-foreground hover:bg-ember-deep",
+                      )}
+                      disabled={isForking}
+                      onClick={(e) => {
+                        e.stopPropagation()
+                        if (isMine) {
+                          router.push(`/decks/${deck.id}`)
+                          return
+                        }
+                        onFork(deck)
+                      }}
+                    >
+                      {isForking ? (
+                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      ) : isMine ? (
+                        <Globe className="h-3.5 w-3.5" />
+                      ) : (
+                        <Copy className="h-3.5 w-3.5" />
+                      )}
+                      {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
+                    </Button>
+                  ) : undefined
+                }
+              />
             )
           })}
         </div>

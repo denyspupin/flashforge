@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Plus, BookOpen, MoreHorizontal, Pencil, Trash2, Copy, Globe, Lock } from "lucide-react"
+import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -34,20 +34,18 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import {
+  DeckCard,
+  DeckCardEmptyState,
+  DeckCardSkeleton,
+} from "@/components/deck/deck-card"
+import type { Deck, Language } from "@/types/deck"
 
 const createDeckSchema = z.object({
   title: z.string().min(1).max(256),
@@ -58,27 +56,6 @@ const createDeckSchema = z.object({
 })
 
 type CreateDeckInput = z.infer<typeof createDeckSchema>
-
-interface Deck {
-  id: string
-  title: string
-  description: string | null
-  slug: string
-  visibility: "private" | "public"
-  sourceLanguageId: string
-  targetLanguageId: string
-  creatorId: string
-  isCurated: boolean
-  forkedFromDeckId: string | null
-  createdAt: string
-  updatedAt: string
-}
-
-interface Language {
-  id: string
-  name: string
-  code: string
-}
 
 const languageItems = (languages: Language[]) =>
   Object.fromEntries(languages.map((l) => [l.id, l.name]))
@@ -199,6 +176,7 @@ export default function DeckList() {
 
   const decks = decksData?.data || []
   const languages = languagesData?.data || []
+  const languagesById = Object.fromEntries(languages.map((l) => [l.id, l]))
 
   return (
     <div className="space-y-6">
@@ -366,45 +344,42 @@ export default function DeckList() {
       {decksLoading ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
           {[1, 2, 3].map((i) => (
-            <Card key={i} className="animate-pulse">
-              <CardHeader className="h-24 bg-muted" />
-            </Card>
+            <DeckCardSkeleton key={i} />
           ))}
         </div>
       ) : decks.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-12 text-center">
-          <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-semibold">No decks yet</h3>
-          <p className="text-muted-foreground mt-1 mb-4">
-            Create your first deck to start learning
-          </p>
-          <Button onClick={() => setOpen(true)}>
-            <Plus className="mr-2 h-4 w-4" />
-            Create Deck
-          </Button>
-        </Card>
+        <DeckCardEmptyState
+          title="No decks yet"
+          description="Create your first deck to start learning"
+          action={
+            <Button onClick={() => setOpen(true)}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Deck
+            </Button>
+          }
+        />
       ) : (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-          {decks.map((deck) => (
-            <Card key={deck.id} className="group cursor-pointer hover:shadow-md transition-shadow">
-              <CardHeader className="pb-3">
-                <div className="flex items-start justify-between">
-                  <div
-                    className="flex-1"
-                    onClick={() => router.push(`/decks/${deck.id}`)}
-                  >
-                    <CardTitle className="text-lg">{deck.title}</CardTitle>
-                    <CardDescription className="line-clamp-2 mt-1">
-                      {deck.description || "No description"}
-                    </CardDescription>
-                  </div>
+          {decks.map((deck) => {
+            const sourceName = languagesById[deck.sourceLanguageId]?.name
+            const targetName = languagesById[deck.targetLanguageId]?.name
+            return (
+              <DeckCard
+                key={deck.id}
+                deck={deck}
+                href={`/decks/${deck.id}`}
+                languageNames={{
+                  source: sourceName,
+                  target: targetName,
+                }}
+                actions={
                   <DropdownMenu>
                     <DropdownMenuTrigger
                       render={
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 opacity-0 group-hover:opacity-100 transition-opacity"
+                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                           onClick={(e: React.MouseEvent) => e.stopPropagation()}
                         />
                       }
@@ -442,28 +417,10 @@ export default function DeckList() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-                </div>
-              </CardHeader>
-              <CardContent onClick={() => router.push(`/decks/${deck.id}`)}>
-                <div className="flex items-center gap-2">
-                  <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
-                    {deck.visibility === "public" ? (
-                      <Globe className="mr-1 h-3 w-3" />
-                    ) : (
-                      <Lock className="mr-1 h-3 w-3" />
-                    )}
-                    {deck.visibility}
-                  </Badge>
-                  {deck.forkedFromDeckId && (
-                    <Badge variant="outline">
-                      <Copy className="mr-1 h-3 w-3" />
-                      Forked
-                    </Badge>
-                  )}
-                </div>
-              </CardContent>
-            </Card>
-          ))}
+                }
+              />
+            )
+          })}
         </div>
       )}
     </div>
