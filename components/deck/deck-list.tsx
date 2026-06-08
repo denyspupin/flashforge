@@ -372,6 +372,8 @@ export default function DeckList() {
                   source: sourceName,
                   target: targetName,
                 }}
+                showHoverStudy
+                onStudy={(deckId) => router.push(`/study?deckId=${deckId}`)}
                 actions={
                   <DropdownMenu>
                     <DropdownMenuTrigger

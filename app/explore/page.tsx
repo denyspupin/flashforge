@@ -150,6 +150,7 @@ export default function ExplorePage() {
                 key={deck.id}
                 deck={deck}
                 href={`/explore/decks/${deck.id}`}
+                hideVisibilityBadge
                 languageNames={{
                   source: languagesById[deck.sourceLanguageId]?.name,
                   target: languagesById[deck.targetLanguageId]?.name,

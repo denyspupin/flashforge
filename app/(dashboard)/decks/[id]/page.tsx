@@ -86,6 +86,12 @@ async function fetchDeck(id: string): Promise<{ data: Deck }> {
   return res.json()
 }
 
+async function fetchLanguages(): Promise<{ data: { id: string; name: string; code: string }[] }> {
+  const res = await fetch("/api/v1/languages")
+  if (!res.ok) throw new Error("Failed to fetch languages")
+  return res.json()
+}
+
 async function addCard(deckId: string, data: CardInput): Promise<{ data: Card }> {
   const res = await fetch(`/api/v1/decks/${deckId}/cards`, {
     method: "POST",
@@ -147,7 +153,18 @@ export default function DeckDetailPage() {
     queryFn: () => fetchDeck(deckId),
   })
 
+  const { data: languagesData } = useQuery({
+    queryKey: ["languages"],
+    queryFn: fetchLanguages,
+  })
+
   const deck = data?.data
+  const languages = languagesData?.data || []
+  const languagesById = Object.fromEntries(
+    languages.map((l) => [l.id, l] as const)
+  )
+  const sourceLanguage = deck ? languagesById[deck.sourceLanguageId] : null
+  const targetLanguage = deck ? languagesById[deck.targetLanguageId] : null
 
   const addCardMutation = useMutation({
     mutationFn: (cardData: CardInput) => addCard(deckId, cardData),
@@ -282,15 +299,23 @@ export default function DeckDetailPage() {
               )}
             </div>
           )}
+          {sourceLanguage && targetLanguage && (
+            <div className="text-muted-foreground mt-2 flex items-center gap-1.5 font-mono-tag text-[11px] uppercase tracking-widest">
+              <span>{sourceLanguage.name}</span>
+              <span aria-hidden>→</span>
+              <span>{targetLanguage.name}</span>
+            </div>
+          )}
         </div>
         <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
           {deck.visibility === "public" ? (
-            <Globe className="mr-1 h-3 w-3" />
+            <Globe className="h-3 w-3" />
           ) : (
-            <Lock className="mr-1 h-3 w-3" />
+            <Lock className="h-3 w-3" />
           )}
           {deck.visibility}
         </Badge>
+        <span aria-hidden className="text-ink/20">|</span>
         <Button onClick={() => router.push(`/study?deckId=${deck.id}`)}>
           <Play className="mr-2 h-4 w-4" />
           Study
@@ -327,6 +352,11 @@ export default function DeckDetailPage() {
                       <FormControl>
                         <Input placeholder="Word or phrase" {...field} />
                       </FormControl>
+                      {sourceLanguage && (
+                        <p className="text-muted-foreground font-mono-tag text-[10px] uppercase tracking-widest">
+                          {sourceLanguage.name}
+                        </p>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -340,6 +370,11 @@ export default function DeckDetailPage() {
                       <FormControl>
                         <Input placeholder="Translation" {...field} />
                       </FormControl>
+                      {targetLanguage && (
+                        <p className="text-muted-foreground font-mono-tag text-[10px] uppercase tracking-widest">
+                          {targetLanguage.name}
+                        </p>
+                      )}
                       <FormMessage />
                     </FormItem>
                   )}
@@ -375,22 +410,39 @@ export default function DeckDetailPage() {
             <Card key={card.id}>
               <CardContent className="p-4">
                 {editingCard === card.id ? (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-2 gap-4">
-                      <Input
-                        defaultValue={card.front}
-                        id={`front-${card.id}`}
-                        placeholder="Front"
-                      />
-                      <Input
-                        defaultValue={card.back}
-                        id={`back-${card.id}`}
-                        placeholder="Back"
-                      />
+                  <div className="flex items-start gap-3">
+                    <div className="grid flex-1 grid-cols-2 gap-4">
+                      <div>
+                        <Input
+                          defaultValue={card.front}
+                          id={`front-${card.id}`}
+                          placeholder="Front"
+                          className="h-11 px-2.5 text-xl"
+                        />
+                        {sourceLanguage && (
+                          <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
+                            {sourceLanguage.name}
+                          </p>
+                        )}
+                      </div>
+                      <div>
+                        <Input
+                          defaultValue={card.back}
+                          id={`back-${card.id}`}
+                          placeholder="Back"
+                          className="h-11 px-2.5 text-xl"
+                        />
+                        {targetLanguage && (
+                          <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
+                            {targetLanguage.name}
+                          </p>
+                        )}
+                      </div>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex shrink-0 items-center gap-1 self-start pt-1.5">
                       <Button
-                        size="sm"
+                        variant="ghost"
+                        size="icon"
                         onClick={() => {
                           const front = (
                             document.getElementById(
@@ -407,33 +459,38 @@ export default function DeckDetailPage() {
                             cardData: { front, back },
                           })
                         }}
+                        aria-label="Save changes"
                       >
-                        <Save className="mr-2 h-4 w-4" />
-                        Save
+                        <Save className="h-4 w-4" />
                       </Button>
                       <Button
-                        size="sm"
                         variant="ghost"
+                        size="icon"
+                        className="text-destructive"
                         onClick={() => setEditingCard(null)}
+                        aria-label="Cancel editing"
                       >
-                        <X className="mr-2 h-4 w-4" />
-                        Cancel
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-center justify-between">
-                    <div className="grid grid-cols-2 gap-4 flex-1">
+                  <div className="flex items-start gap-3">
+                    <div className="grid flex-1 grid-cols-2 gap-4">
                       <div>
                         <p className="text-sm text-muted-foreground">Front</p>
-                        <p className="font-medium">{card.front}</p>
+                        <p className="font-display text-2xl font-medium tracking-tight text-ink">
+                          {card.front}
+                        </p>
                       </div>
                       <div>
                         <p className="text-sm text-muted-foreground">Back</p>
-                        <p className="font-medium">{card.back}</p>
+                        <p className="font-display text-2xl font-medium tracking-tight text-ink">
+                          {card.back}
+                        </p>
                       </div>
                     </div>
-                    <div className="flex items-center gap-1">
+                    <div className="flex shrink-0 items-center gap-1 self-start pt-1.5">
                       <Button
                         variant="ghost"
                         size="icon"

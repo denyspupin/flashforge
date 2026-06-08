@@ -182,12 +182,12 @@ export default function PublicDeckPage() {
         </div>
         <div className="flex items-center gap-2 shrink-0">
           <Badge variant="default">
-            <Globe className="mr-1 h-3 w-3" />
+            <Globe className="h-3 w-3" />
             Public
           </Badge>
           {deck.isCurated && (
-            <Badge variant="secondary">
-              <Sparkles className="mr-1 h-3 w-3" />
+            <Badge variant="highlight">
+              <Sparkles className="h-3 w-3" />
               Curated
             </Badge>
           )}

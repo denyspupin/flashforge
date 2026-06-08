@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState } from "react"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
-import { X } from "lucide-react"
+import { ArrowLeft, X } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
 import { useShallow } from "zustand/shallow"
 
@@ -102,6 +102,17 @@ export function StudyPlayer({
     router.push(`/decks/${deck.id}`)
   }, [phase, abandonMutation, router, deck.id])
 
+  const handleBack = useCallback(() => {
+    if (phase !== "done") {
+      abandonMutation.mutate()
+    }
+    if (typeof window !== "undefined" && window.history.length > 1) {
+      router.back()
+    } else {
+      router.push(`/decks/${deck.id}`)
+    }
+  }, [phase, abandonMutation, router, deck.id])
+
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (summary) return
@@ -179,7 +190,16 @@ export function StudyPlayer({
   return (
     <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
       <div className="flex items-center justify-between">
-        <div className="min-w-0 flex-1">
+        <div className="flex min-w-0 items-center gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={handleBack}
+            aria-label="Go back"
+            className="h-9 w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
           <h1 className="truncate font-display text-lg font-medium tracking-tight text-ink">
             {deck.title}
           </h1>

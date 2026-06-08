@@ -6,10 +6,12 @@ import {
   Copy,
   Globe,
   Lock,
+  Play,
   Sparkles,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/ui/button"
 import {
   Card,
   CardContent,
@@ -26,6 +28,9 @@ type DeckCardProps = {
   languageNames?: { source?: string; target?: string }
   footerLeft?: React.ReactNode
   actions?: React.ReactNode
+  showHoverStudy?: boolean
+  hideVisibilityBadge?: boolean
+  onStudy?: (deckId: string) => void
   className?: string
 }
 
@@ -35,6 +40,9 @@ export function DeckCard({
   languageNames,
   footerLeft,
   actions,
+  showHoverStudy = false,
+  hideVisibilityBadge = false,
+  onStudy,
   className,
 }: DeckCardProps) {
   const hasLanguagePair = languageNames?.source && languageNames?.target
@@ -44,11 +52,16 @@ export function DeckCard({
   return (
     <Card
       className={cn(
-        "group flex h-full flex-col gap-3 py-5 transition-shadow hover:shadow-md",
+        "group relative flex h-full flex-col gap-3 py-5 transition-shadow hover:shadow-md focus-within:shadow-md",
         className,
       )}
     >
-      <CardHeader className="px-5">
+      <Link
+        href={href}
+        aria-label={`Open ${deck.title}`}
+        className="absolute inset-0 z-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      />
+      <CardHeader className="relative z-10 px-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             <div className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
@@ -60,38 +73,52 @@ export function DeckCard({
                 <span className="opacity-0">placeholder</span>
               )}
             </div>
-            <Link
-              href={href}
-              className="mt-1 block focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring rounded"
-            >
-              <CardTitle className="line-clamp-1 text-lg">{deck.title}</CardTitle>
-              <CardDescription className="mt-1 line-clamp-2">
-                {deck.description || "No description"}
-              </CardDescription>
-            </Link>
+            <CardTitle className="mt-1 line-clamp-1 text-lg">
+              {deck.title}
+            </CardTitle>
+            <CardDescription className="mt-1 line-clamp-2">
+              {deck.description || "No description"}
+            </CardDescription>
           </div>
+          {showHoverStudy && onStudy && (
+            <Button
+              size="sm"
+              onClick={(e) => {
+                e.stopPropagation()
+                e.preventDefault()
+                onStudy(deck.id)
+              }}
+              aria-label={`Study ${deck.title}`}
+              className="relative z-30 -mt-1 -mr-1 h-8 gap-1.5 rounded-full bg-ink px-3 text-xs font-medium text-paper shadow-sm opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:bg-ink/90"
+            >
+              <Play className="h-3.5 w-3.5" />
+              Study
+            </Button>
+          )}
         </div>
       </CardHeader>
 
-      <CardContent className="mt-auto flex flex-1 flex-col gap-4 px-5">
+      <CardContent className="relative z-10 mt-auto flex flex-1 flex-col gap-4 px-5">
         <div className="flex flex-wrap items-center gap-1.5">
-          <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
-            {deck.visibility === "public" ? (
-              <Globe className="mr-1 h-3 w-3" />
-            ) : (
-              <Lock className="mr-1 h-3 w-3" />
-            )}
-            {deck.visibility === "public" ? "Public" : "Private"}
-          </Badge>
+          {!hideVisibilityBadge && (
+            <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
+              {deck.visibility === "public" ? (
+                <Globe className="h-3 w-3" />
+              ) : (
+                <Lock className="h-3 w-3" />
+              )}
+              {deck.visibility === "public" ? "Public" : "Private"}
+            </Badge>
+          )}
           {deck.isCurated && (
-            <Badge variant="secondary">
-              <Sparkles className="mr-1 h-3 w-3" />
+            <Badge variant="highlight">
+              <Sparkles className="h-3 w-3" />
               Curated
             </Badge>
           )}
           {showForkedBadge && (
             <Badge variant="outline">
-              <Copy className="mr-1 h-3 w-3" />
+              <Copy className="h-3 w-3" />
               Forked
             </Badge>
           )}
@@ -110,7 +137,11 @@ export function DeckCard({
               </span>
             )}
           </div>
-          {actions && <div className="flex shrink-0 items-center">{actions}</div>}
+          {actions && (
+            <div className="relative z-20 flex shrink-0 items-center">
+              {actions}
+            </div>
+          )}
         </div>
       </CardContent>
     </Card>
