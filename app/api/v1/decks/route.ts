@@ -42,7 +42,7 @@ export async function GET() {
       createdAt: decks.createdAt,
       updatedAt: decks.updatedAt,
       cardCount: sql<number>`(
-        SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = ${decks.id}
+        SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = decks.id
       )`,
     })
     .from(decks)
