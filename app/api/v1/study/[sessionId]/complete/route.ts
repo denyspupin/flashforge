@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
 import { studySessions, users, cards } from "@/lib/db/schema"
 import { eq, and, inArray, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
 import { XP_VALUES, STREAK_MULTIPLIERS } from "@/lib/constants"
 
@@ -63,28 +63,14 @@ export async function POST(
   { params }: { params: Promise<{ sessionId: string }> }
 ) {
   const { sessionId } = await params
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
     )
   }
-
-  const userRows = await db
-    .select()
-    .from(users)
-    .where(eq(users.clerkId, clerkId))
-
-  if (!userRows.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
-    )
-  }
-
-  const user = userRows[0]
 
   const sessionRows = await db
     .select()

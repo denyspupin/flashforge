@@ -1,9 +1,9 @@
 import { NextResponse } from "next/server"
-import { auth } from "@clerk/nextjs/server"
 import { db } from "@/lib/db/client"
-import { decks, users, deckTopics, topics, cards, notifications } from "@/lib/db/schema"
+import { decks, deckTopics, topics, cards } from "@/lib/db/schema"
 import { eq, and, inArray } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -22,28 +22,19 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
     )
   }
 
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
-    )
-  }
-
   const deck = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.creatorId, user[0].id)))
+    .where(and(eq(decks.id, id), eq(decks.creatorId, user.id)))
 
   if (!deck.length) {
     return NextResponse.json(
@@ -78,21 +69,12 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
-    )
-  }
-
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
     )
   }
 
@@ -109,7 +91,7 @@ export async function PATCH(
   const existing = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.creatorId, user[0].id)))
+    .where(and(eq(decks.id, id), eq(decks.creatorId, user.id)))
 
   if (!existing.length) {
     return NextResponse.json(
@@ -162,28 +144,19 @@ export async function DELETE(
   { params }: { params: Promise<{ id: string }> }
 ) {
   const { id } = await params
-  const { userId: clerkId } = await auth()
+  const user = await requireCurrentUser()
 
-  if (!clerkId) {
+  if (!user) {
     return NextResponse.json(
       errorResponse("Authentication required", "UNAUTHORIZED"),
       { status: 401 }
     )
   }
 
-  const user = await db.select().from(users).where(eq(users.clerkId, clerkId))
-
-  if (!user.length) {
-    return NextResponse.json(
-      errorResponse("User not found", "NOT_FOUND"),
-      { status: 404 }
-    )
-  }
-
   const existing = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.creatorId, user[0].id)))
+    .where(and(eq(decks.id, id), eq(decks.creatorId, user.id)))
 
   if (!existing.length) {
     return NextResponse.json(

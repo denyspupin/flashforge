@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { X } from "lucide-react"
 import { useMutation } from "@tanstack/react-query"
+import { useShallow } from "zustand/shallow"
 
 import { useStudyStore, selectCurrentCard, selectProgress, selectResults, type StudyCard } from "@/stores/study-store"
 import { CardFront, CardBack, FlipCard } from "@/components/card"
@@ -71,7 +72,7 @@ export function StudyPlayer({
   const cardsInPass1 = useStudyStore((s) => s.cards.length)
   const retryCount = useStudyStore((s) => s.retryCards.length)
   const current = useStudyStore(selectCurrentCard)
-  const { position, total } = useStudyStore(selectProgress)
+  const { position, total } = useStudyStore(useShallow(selectProgress))
 
   useEffect(() => {
     init(sessionId, cards)
