@@ -206,11 +206,11 @@ export function StudyPlayer({
         <AnimatePresence mode="wait" initial={false}>
           <motion.div
             key={`${phase}-${current.id}`}
-            initial={{ opacity: 0, y: 12, scale: 0.98 }}
-            animate={{ opacity: 1, y: 0, scale: 1 }}
-            exit={{ opacity: 0, y: -12, scale: 0.98 }}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="aspect-[5/6] w-full"
+            className="perspective-1000 aspect-[5/6] w-full"
           >
             <FlipCard
               flipped={flipped}
