@@ -99,7 +99,7 @@ export const decks = pgTable(
     foreignKey({
       columns: [table.forkedFromDeckId],
       foreignColumns: [table.id],
-    }),
+    }).onDelete("set null"),
   ]
 )
 
