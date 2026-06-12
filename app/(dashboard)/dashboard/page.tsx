@@ -56,7 +56,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">{greeting}</h1>
+        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">{greeting}</h1>
         <p className="text-muted-foreground mt-1">
           {deckCount > 0
             ? "Pick up where you left off."
@@ -64,7 +64,7 @@ export default async function DashboardPage() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <Card>
           <CardHeader className="pb-2">
             <CardDescription>Current Streak</CardDescription>
@@ -126,21 +126,23 @@ export default async function DashboardPage() {
           cardsCorrect={activeSession.cardsCorrect}
         />
       ) : deckCount === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-12 text-center">
+        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
           <BookOpen className="text-muted-foreground mb-4 h-12 w-12" />
           <h3 className="text-lg font-semibold">Ready to learn?</h3>
           <p className="text-muted-foreground mt-1 mb-4">
             Create your first deck or explore the community
           </p>
-          <div className="flex gap-3">
-            <Link href="/decks">
-              <Button>
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
+            <Link href="/decks" className="w-full sm:w-auto">
+              <Button className="w-full">
                 <Sparkles className="mr-2 h-4 w-4" />
                 Create Deck
               </Button>
             </Link>
-            <Link href="/explore">
-              <Button variant="outline">Explore Community</Button>
+            <Link href="/explore" className="w-full sm:w-auto">
+              <Button variant="outline" className="w-full">
+                Explore Community
+              </Button>
             </Link>
           </div>
         </Card>
@@ -159,7 +161,7 @@ export default async function DashboardPage() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
             {recentDecks.map((deck) => (
               <RecentDeckCard
                 key={deck.id}

@@ -71,7 +71,7 @@ export function StudySummary({
         initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mb-6 flex h-24 w-24 items-center justify-center rounded-full bg-ember/12"
+        className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-ember/12 sm:h-24 sm:w-24"
       >
         <div
           className="absolute inset-0 rounded-full"
@@ -83,18 +83,18 @@ export function StudySummary({
         />
         {isPerfect ? (
           <Sparkles
-            className="relative h-10 w-10 text-ember"
+            className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
             strokeWidth={1.75}
           />
         ) : (
           <Check
-            className="relative h-10 w-10 text-ember"
+            className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
             strokeWidth={2}
           />
         )}
       </motion.div>
 
-      <h1 className="font-display text-4xl font-medium leading-[0.95] tracking-tight text-ink sm:text-5xl">
+      <h1 className="font-display text-3xl font-medium leading-[0.95] tracking-tight text-ink sm:text-4xl sm:leading-[0.95] md:text-5xl">
         {isPerfect ? "Perfect run." : "Session complete."}
       </h1>
       <p className="mt-3 max-w-md text-pretty text-base text-ink/65">
@@ -103,8 +103,8 @@ export function StudySummary({
           : `You reviewed ${cardsReviewed} card${cardsReviewed === 1 ? "" : "s"} in “${deckTitle}”. ${accuracy}% accuracy — solid work.`}
       </p>
 
-      <div className="mt-10 grid w-full grid-cols-3 gap-3">
-        <div className="rounded-2xl border border-ink/8 bg-paper p-5">
+      <div className="mt-10 grid w-full grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="rounded-2xl border border-ink/8 bg-paper p-5 text-left sm:text-center">
           <div className="flex items-center gap-1.5 font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
             <Star className="h-3 w-3 text-honey" strokeWidth={2.25} />
             XP earned
@@ -118,7 +118,7 @@ export function StudySummary({
             </div>
           )}
         </div>
-        <div className="rounded-2xl border border-ink/8 bg-paper p-5">
+        <div className="rounded-2xl border border-ink/8 bg-paper p-5 text-left sm:text-center">
           <div className="flex items-center gap-1.5 font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
             <Flame
               className="h-3 w-3 text-ember"
@@ -134,7 +134,7 @@ export function StudySummary({
             </span>
           </div>
         </div>
-        <div className="rounded-2xl border border-ink/8 bg-paper p-5">
+        <div className="rounded-2xl border border-ink/8 bg-paper p-5 text-left sm:text-center">
           <div className="flex items-center gap-1.5 font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
             <Check className="h-3 w-3 text-forest" strokeWidth={2.5} />
             Accuracy

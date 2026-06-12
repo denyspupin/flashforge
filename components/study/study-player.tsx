@@ -188,7 +188,7 @@ export function StudyPlayer({
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 sm:gap-8">
       <div className="flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <Button
@@ -200,7 +200,7 @@ export function StudyPlayer({
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
-          <h1 className="truncate font-display text-lg font-medium tracking-tight text-ink">
+          <h1 className="truncate font-display text-base font-medium tracking-tight text-ink sm:text-lg">
             {deck.title}
           </h1>
         </div>
@@ -211,7 +211,7 @@ export function StudyPlayer({
           className="text-ink/60 hover:bg-ink/5 hover:text-ink"
         >
           <X className="mr-1.5 h-4 w-4" />
-          Exit
+          <span className="hidden sm:inline">Exit</span>
         </Button>
       </div>
 
@@ -230,7 +230,7 @@ export function StudyPlayer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="perspective-1000 aspect-[5/6] w-full"
+            className="perspective-1000 mx-auto aspect-[5/6] w-full max-w-[420px]"
           >
             <FlipCard
               flipped={flipped}
@@ -251,7 +251,7 @@ export function StudyPlayer({
         phase={phase}
       />
 
-      <div className="flex items-center justify-center gap-3 font-mono-tag text-[10px] uppercase tracking-widest text-ink/40">
+      <div className="hidden items-center justify-center gap-3 font-mono-tag text-[10px] uppercase tracking-widest text-ink/40 sm:flex">
         <span>Space to flip</span>
         <span className="h-1 w-1 rounded-full bg-ink/20" />
         <span>1 fail · 2 pass</span>

@@ -53,16 +53,18 @@ export function ContinueStudyingCard({
             <span>Pick up where you left off.</span>
           )}
         </div>
-        <div className="flex gap-2">
+        <div className="flex w-full gap-2 sm:w-auto">
           <Button
             variant="outline"
             size="sm"
+            className="flex-1 sm:flex-none"
             onClick={() => router.push(`/decks/${deckId}`)}
           >
             View deck
           </Button>
           <Button
             size="sm"
+            className="flex-1 sm:flex-none"
             onClick={() => router.push(`/study?deckId=${deckId}`)}
           >
             <Sparkles className="mr-1.5 h-3.5 w-3.5" />

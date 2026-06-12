@@ -102,10 +102,12 @@ export default function ExplorePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl p-6">
+    <main className="mx-auto w-full max-w-7xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <h1 className="text-3xl font-bold tracking-tight">Explore Community Decks</h1>
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+            Explore Community Decks
+          </h1>
           <p className="text-muted-foreground mt-1">
             Discover flashcard decks created by the community — fork any of them to study and make them your own.
           </p>
@@ -130,7 +132,7 @@ export default function ExplorePage() {
       )}
 
       {isLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3, 4, 5, 6].map((i) => (
             <DeckCardSkeleton key={i} />
           ))}
@@ -141,7 +143,7 @@ export default function ExplorePage() {
           description="Be the first to share a deck with the community"
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {decks.map((deck) => {
             const isMine = myId && deck.creatorId === myId
             const isForking = pendingForkId === deck.id
