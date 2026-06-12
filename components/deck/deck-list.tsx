@@ -180,15 +180,15 @@ export default function DeckList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <div>
-          <h1 className="text-3xl font-bold tracking-tight">My Decks</h1>
+      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+        <div className="min-w-0">
+          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">My Decks</h1>
           <p className="text-muted-foreground mt-1">
             Manage your flashcard collections
           </p>
         </div>
         <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={<Button />}>
+          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
             <Plus className="mr-2 h-4 w-4" />
             New Deck
           </DialogTrigger>
@@ -342,7 +342,7 @@ export default function DeckList() {
       </div>
 
       {decksLoading ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {[1, 2, 3].map((i) => (
             <DeckCardSkeleton key={i} />
           ))}
@@ -359,7 +359,7 @@ export default function DeckList() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {decks.map((deck) => {
             const sourceName = languagesById[deck.sourceLanguageId]?.name
             const targetName = languagesById[deck.targetLanguageId]?.name

@@ -2,6 +2,7 @@ import { auth } from "@clerk/nextjs/server"
 
 import { SiteHeader } from "@/components/landing/site-header"
 import { DashboardHeader } from "@/components/layout/dashboard-chrome"
+import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav"
 
 export default async function ExploreLayout({
   children,
@@ -14,7 +15,8 @@ export default async function ExploreLayout({
     return (
       <div className="min-h-screen flex flex-col">
         <DashboardHeader />
-        {children}
+        <div className="flex-1 pb-safe">{children}</div>
+        <MobileBottomNav />
       </div>
     )
   }

@@ -198,6 +198,10 @@
       0 1px 0 0 hsl(var(--ink) / 0.04);
   }
 
+  .pb-safe {
+    padding-bottom: max(1.5rem, calc(64px + env(safe-area-inset-bottom)));
+  }
+
   .ink-line {
     background: linear-gradient(
       to right,

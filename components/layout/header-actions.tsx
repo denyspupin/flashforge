@@ -45,7 +45,7 @@ export function HeaderActions({ className }: { className?: string }) {
           </Show>
         }
       >
-        <Link href="/login" className="hidden sm:block">
+        <Link href="/login" className="hidden sm:inline-flex">
           <Button
             variant="ghost"
             size="sm"

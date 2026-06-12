@@ -8,20 +8,20 @@ type FaceProps = {
 }
 
 const TERM_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
-  default: "text-[2.6rem] leading-[1.05]",
-  lg: "text-[3.4rem] leading-[1.02]",
+  default: "text-[2.6rem] leading-[1.05] sm:text-[2.6rem]",
+  lg: "text-[2.4rem] leading-[1.05] sm:text-[3.4rem] sm:leading-[1.02]",
 }
 
 const DEFINITION_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
   default: "text-[1.7rem] leading-[1.25]",
-  lg: "text-[2.1rem] leading-[1.2]",
+  lg: "text-[1.5rem] leading-[1.25] sm:text-[2.1rem] sm:leading-[1.2]",
 }
 
 export function CardFront({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-paper p-8 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)]",
+        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-paper p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)] sm:p-8",
         className,
       )}
     >
@@ -71,7 +71,7 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-ink p-8 text-paper shadow-[0_30px_80px_-30px_rgba(0,0,0,0.4)]",
+        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-ink p-6 text-paper shadow-[0_30px_80px_-30px_rgba(0,0,0,0.4)] sm:p-8",
         className,
       )}
     >

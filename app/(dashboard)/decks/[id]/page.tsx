@@ -230,99 +230,119 @@ export default function DeckDetailPage() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/decks")}>
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="flex-1">
-          {editingDeck ? (
-            <div className="space-y-2">
+      <div className="space-y-4">
+        <div className="flex items-center gap-2 sm:gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => router.push("/decks")}
+            className="shrink-0"
+            aria-label="Back to decks"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="min-w-0 flex-1">
+            {editingDeck ? (
               <Input
                 value={deckTitle}
                 onChange={(e) => setDeckTitle(e.target.value)}
                 placeholder="Deck title"
                 className="text-xl font-bold h-auto py-1"
               />
-              <Textarea
-                value={deckDescription}
-                onChange={(e) => setDeckDescription(e.target.value)}
-                placeholder="Description"
-                className="min-h-[60px]"
-              />
-              <div className="flex gap-2">
-                <Button
-                  size="sm"
-                  onClick={() =>
-                    updateDeckMutation.mutate({
-                      title: deckTitle,
-                      description: deckDescription,
-                    })
-                  }
-                >
-                  <Save className="mr-2 h-4 w-4" />
-                  Save
-                </Button>
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={() => {
-                    setEditingDeck(false)
-                    setDeckTitle(deck.title)
-                    setDeckDescription(deck.description || "")
-                  }}
-                >
-                  <X className="mr-2 h-4 w-4" />
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <div>
-              <div className="flex items-center gap-3">
-                <h1 className="text-3xl font-bold tracking-tight">
-                  {deck.title}
-                </h1>
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  onClick={() => {
-                    setEditingDeck(true)
-                    setDeckTitle(deck.title)
-                    setDeckDescription(deck.description || "")
-                  }}
-                >
-                  <Pencil className="h-4 w-4" />
-                </Button>
-              </div>
-              {deck.description && (
-                <p className="text-muted-foreground mt-1">{deck.description}</p>
-              )}
-            </div>
+            ) : (
+              <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+                {deck.title}
+              </h1>
+            )}
+          </div>
+          {!editingDeck && (
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => {
+                setEditingDeck(true)
+                setDeckTitle(deck.title)
+                setDeckDescription(deck.description || "")
+              }}
+              className="shrink-0"
+              aria-label="Edit deck"
+            >
+              <Pencil className="h-4 w-4" />
+            </Button>
           )}
+        </div>
+
+        {editingDeck ? (
+          <div className="space-y-2">
+            <Textarea
+              value={deckDescription}
+              onChange={(e) => setDeckDescription(e.target.value)}
+              placeholder="Description"
+              className="min-h-[60px]"
+            />
+            <div className="flex gap-2">
+              <Button
+                size="sm"
+                onClick={() =>
+                  updateDeckMutation.mutate({
+                    title: deckTitle,
+                    description: deckDescription,
+                  })
+                }
+              >
+                <Save className="mr-2 h-4 w-4" />
+                Save
+              </Button>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => {
+                  setEditingDeck(false)
+                  setDeckTitle(deck.title)
+                  setDeckDescription(deck.description || "")
+                }}
+              >
+                <X className="mr-2 h-4 w-4" />
+                Cancel
+              </Button>
+            </div>
+          </div>
+        ) : (
+          deck.description && (
+            <p className="text-muted-foreground">{deck.description}</p>
+          )
+        )}
+
+        <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {sourceLanguage && targetLanguage && (
-            <div className="text-muted-foreground mt-2 flex items-center gap-1.5 font-mono-tag text-[11px] uppercase tracking-widest">
+            <span className="text-muted-foreground inline-flex items-center gap-1.5 font-mono-tag text-[11px] uppercase tracking-widest">
               <span>{sourceLanguage.name}</span>
               <span aria-hidden>→</span>
               <span>{targetLanguage.name}</span>
-            </div>
+            </span>
           )}
+          <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
+            {deck.visibility === "public" ? (
+              <Globe className="h-3 w-3" />
+            ) : (
+              <Lock className="h-3 w-3" />
+            )}
+            {deck.visibility}
+          </Badge>
         </div>
-        <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
-          {deck.visibility === "public" ? (
-            <Globe className="h-3 w-3" />
-          ) : (
-            <Lock className="h-3 w-3" />
-          )}
-          {deck.visibility}
-        </Badge>
-        <span aria-hidden className="text-ink/20">|</span>
-        <Button onClick={() => router.push(`/study?deckId=${deck.id}`)}>
-          <Play className="mr-2 h-4 w-4" />
-          Study
-        </Button>
+
+        <div className="flex flex-col gap-2 sm:flex-row">
+          <Button
+            onClick={() => router.push(`/study?deckId=${deck.id}`)}
+            className="w-full sm:w-auto"
+          >
+            <Play className="mr-2 h-4 w-4" />
+            Study
+          </Button>
+        </div>
       </div>
 
-      <div className="flex items-center justify-between">
+      <div className="flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold">
           Cards ({deck.cards?.length || 0})
         </h2>
@@ -410,8 +430,8 @@ export default function DeckDetailPage() {
             <Card key={card.id}>
               <CardContent className="p-4">
                 {editingCard === card.id ? (
-                  <div className="flex items-start gap-3">
-                    <div className="grid flex-1 grid-cols-2 gap-4">
+                  <div className="space-y-3">
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <Input
                           defaultValue={card.front}
@@ -439,10 +459,10 @@ export default function DeckDetailPage() {
                         )}
                       </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1 self-start pt-1.5">
+                    <div className="flex items-center justify-end gap-1">
                       <Button
                         variant="ghost"
-                        size="icon"
+                        size="sm"
                         onClick={() => {
                           const front = (
                             document.getElementById(
@@ -459,24 +479,23 @@ export default function DeckDetailPage() {
                             cardData: { front, back },
                           })
                         }}
-                        aria-label="Save changes"
                       >
-                        <Save className="h-4 w-4" />
+                        <Save className="mr-1.5 h-3.5 w-3.5" />
+                        Save
                       </Button>
                       <Button
                         variant="ghost"
-                        size="icon"
-                        className="text-destructive"
+                        size="sm"
                         onClick={() => setEditingCard(null)}
-                        aria-label="Cancel editing"
                       >
-                        <X className="h-4 w-4" />
+                        <X className="mr-1.5 h-3.5 w-3.5" />
+                        Cancel
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div className="flex items-start gap-3">
-                    <div className="grid flex-1 grid-cols-2 gap-4">
+                  <div>
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
                       <div>
                         <p className="text-sm text-muted-foreground">Front</p>
                         <p className="font-display text-2xl font-medium tracking-tight text-ink">
@@ -490,11 +509,12 @@ export default function DeckDetailPage() {
                         </p>
                       </div>
                     </div>
-                    <div className="flex shrink-0 items-center gap-1 self-start pt-1.5">
+                    <div className="mt-3 flex items-center justify-end gap-1 border-t border-ink/8 pt-3">
                       <Button
                         variant="ghost"
                         size="icon"
                         onClick={() => setEditingCard(card.id)}
+                        aria-label="Edit card"
                       >
                         <Pencil className="h-4 w-4" />
                       </Button>
@@ -503,6 +523,7 @@ export default function DeckDetailPage() {
                         size="icon"
                         className="text-destructive"
                         onClick={() => deleteCardMutation.mutate(card.id)}
+                        aria-label="Delete card"
                       >
                         <Trash2 className="h-4 w-4" />
                       </Button>

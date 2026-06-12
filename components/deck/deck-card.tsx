@@ -48,6 +48,7 @@ export function DeckCard({
   const hasLanguagePair = languageNames?.source && languageNames?.target
   const showTopics = (deck.topics?.length ?? 0) > 0
   const showForkedBadge = Boolean(deck.forkedFromDeckId)
+  const studyVisible = showHoverStudy && onStudy
 
   return (
     <Card
@@ -80,16 +81,16 @@ export function DeckCard({
               {deck.description || "No description"}
             </CardDescription>
           </div>
-          {showHoverStudy && onStudy && (
+          {studyVisible && (
             <Button
               size="sm"
               onClick={(e) => {
                 e.stopPropagation()
                 e.preventDefault()
-                onStudy(deck.id)
+                onStudy!(deck.id)
               }}
               aria-label={`Study ${deck.title}`}
-              className="relative z-30 -mt-1 -mr-1 h-8 gap-1.5 rounded-full bg-ink px-3 text-xs font-medium text-paper shadow-sm opacity-0 transition-opacity group-hover:opacity-100 group-focus-within:opacity-100 focus-visible:opacity-100 hover:bg-ink/90"
+              className="relative z-30 -mt-1 -mr-1 h-8 gap-1.5 rounded-full bg-ink px-3 text-xs font-medium text-paper shadow-sm opacity-100 transition-opacity focus-visible:opacity-100 hover:bg-ink/90 max-sm:hidden group-hover:opacity-100 group-focus-within:opacity-100 md:opacity-0"
             >
               <Play className="h-3.5 w-3.5" />
               Study
@@ -137,11 +138,28 @@ export function DeckCard({
               </span>
             )}
           </div>
-          {actions && (
-            <div className="relative z-20 flex shrink-0 items-center">
-              {actions}
-            </div>
-          )}
+          <div className="flex shrink-0 items-center gap-1">
+            {studyVisible && (
+              <Button
+                size="sm"
+                onClick={(e) => {
+                  e.stopPropagation()
+                  e.preventDefault()
+                  onStudy!(deck.id)
+                }}
+                aria-label={`Study ${deck.title}`}
+                className="relative z-30 h-7 gap-1 rounded-full bg-ink px-2.5 text-[11px] font-medium text-paper sm:hidden hover:bg-ink/90"
+              >
+                <Play className="h-3 w-3" />
+                Study
+              </Button>
+            )}
+            {actions && (
+              <div className="relative z-20 flex shrink-0 items-center">
+                {actions}
+              </div>
+            )}
+          </div>
         </div>
       </CardContent>
     </Card>
@@ -177,7 +195,7 @@ export function DeckCardEmptyState({
   action?: React.ReactNode
 }) {
   return (
-    <Card className="flex flex-col items-center justify-center p-12 text-center">
+    <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
       <BookOpen className="text-muted-foreground mb-4 h-12 w-12" />
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="text-muted-foreground mt-1 mb-4">{description}</p>

@@ -144,7 +144,7 @@ export default function PublicDeckPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto w-full max-w-4xl p-6">
+      <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
         <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
         <div className="h-32 bg-muted animate-pulse rounded" />
       </main>
@@ -153,7 +153,7 @@ export default function PublicDeckPage() {
 
   if (!deck) {
     return (
-      <main className="mx-auto w-full max-w-4xl p-6">
+      <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
         <Card className="flex flex-col items-center justify-center p-12 text-center">
           <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
@@ -169,18 +169,26 @@ export default function PublicDeckPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl p-6">
-      <div className="flex items-center gap-4 mb-6">
-        <Button variant="ghost" size="icon" onClick={() => router.push("/explore")}>
+    <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
+      <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push("/explore")}
+          className="shrink-0"
+          aria-label="Back to explore"
+        >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <div className="flex-1 min-w-0">
-          <h1 className="text-3xl font-bold tracking-tight">{deck.title}</h1>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+            {deck.title}
+          </h1>
           {deck.description && (
             <p className="text-muted-foreground mt-1">{deck.description}</p>
           )}
         </div>
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex shrink-0 items-center gap-1.5">
           <Badge variant="default">
             <Globe className="h-3 w-3" />
             Public
@@ -213,10 +221,11 @@ export default function PublicDeckPage() {
         </div>
 
         {isSignedIn && (
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             {isOwner ? (
               <Button
                 variant="outline"
+                className="w-full sm:w-auto"
                 onClick={() => router.push(`/decks/${deck.id}`)}
               >
                 Edit in dashboard
@@ -227,7 +236,7 @@ export default function PublicDeckPage() {
                   variant="outline"
                   onClick={onFork}
                   disabled={pendingAction !== null}
-                  className="gap-1.5"
+                  className="w-full gap-1.5 sm:w-auto"
                 >
                   {pendingAction === "fork" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -239,7 +248,7 @@ export default function PublicDeckPage() {
                 <Button
                   onClick={onStudy}
                   disabled={pendingAction !== null}
-                  className="gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep"
+                  className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
                 >
                   {pendingAction === "study" ? (
                     <Loader2 className="h-4 w-4 animate-spin" />
@@ -286,7 +295,7 @@ export default function PublicDeckPage() {
           deck.cards?.map((card, index) => (
             <Card key={card.id}>
               <CardContent className="p-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground/80">
                       {index + 1}. Front
