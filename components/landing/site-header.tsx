@@ -17,17 +17,17 @@ const PUBLIC_NAV_ITEMS: NavItem[] = [
     icon: <Compass className="h-4 w-4" strokeWidth={1.75} />,
   },
   {
-    href: "#process",
+    href: "/#process",
     label: "How it works",
     icon: <Layers className="h-4 w-4" strokeWidth={1.75} />,
   },
   {
-    href: "#library",
+    href: "/#library",
     label: "Library",
     icon: <Library className="h-4 w-4" strokeWidth={1.75} />,
   },
   {
-    href: "#gamification",
+    href: "/#gamification",
     label: "Streaks & XP",
     icon: <Trophy className="h-4 w-4" strokeWidth={1.75} />,
   },
@@ -66,13 +66,13 @@ function PublicNav() {
         Explore
       </Link>
       <Link
-        href="#process"
+        href="/#process"
         className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
       >
         How it works
       </Link>
       <Link
-        href="#library"
+        href="/#library"
         className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
       >
         Library

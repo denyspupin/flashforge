@@ -19,8 +19,8 @@ export function LandingFooter() {
               title="Learn"
               links={[
                 { label: "Explore decks", href: "/explore" },
-                { label: "How it works", href: "#process" },
-                { label: "Streaks & XP", href: "#gamification" },
+                { label: "How it works", href: "/#process" },
+                { label: "Streaks & XP", href: "/#gamification" },
               ]}
             />
             <FooterCol
