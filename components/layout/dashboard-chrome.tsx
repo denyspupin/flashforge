@@ -1,4 +1,3 @@
-import { UserButton } from "@clerk/nextjs"
 import Link from "next/link"
 import {
   LayoutDashboard,
@@ -12,6 +11,7 @@ import {
 import { AppHeader } from "@/components/layout/app-header"
 import { MobileNav } from "@/components/layout/mobile-nav"
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav"
+import { UserMenu } from "@/components/layout/user-menu"
 import { Button } from "@/components/ui/button"
 import { Wordmark } from "./wordmark"
 
@@ -76,15 +76,7 @@ function DashboardNav() {
 }
 
 function DashboardActions() {
-  return (
-    <UserButton
-      appearance={{
-        elements: {
-          avatarBox: "h-8 w-8",
-        },
-      }}
-    />
-  )
+  return <UserMenu />
 }
 
 export function DashboardHeader() {
