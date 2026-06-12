@@ -1,5 +1,6 @@
 import { auth } from "@clerk/nextjs/server"
 
+import { LandingFooter } from "@/components/landing/landing-footer"
 import { SiteHeader } from "@/components/landing/site-header"
 import { DashboardHeader } from "@/components/layout/dashboard-chrome"
 import { MobileBottomNav } from "@/components/layout/mobile-bottom-nav"
@@ -24,7 +25,8 @@ export default async function ExploreLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      {children}
+      <main className="flex-1">{children}</main>
+      <LandingFooter />
     </div>
   )
 }

@@ -1,9 +1,10 @@
 "use client"
 
 import Link from "next/link"
-import { Show, UserButton } from "@clerk/nextjs"
+import { Show } from "@clerk/nextjs"
 import { LayoutDashboard, Plus } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import { UserMenu } from "@/components/layout/user-menu"
 import { cn } from "@/lib/utils"
 
 export function HeaderActions({ className }: { className?: string }) {
@@ -34,13 +35,7 @@ export function HeaderActions({ className }: { className?: string }) {
               </Button>
             </Link>
             <div className="ml-1">
-              <UserButton
-                appearance={{
-                  elements: {
-                    avatarBox: "h-8 w-8",
-                  },
-                }}
-              />
+              <UserMenu />
             </div>
           </Show>
         }
