@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { motion } from "framer-motion"
 
 import { StudyPlayer } from "@/components/study"
+import { queryKeys } from "@/hooks"
 
 type StudyCard = {
   id: string
@@ -51,12 +52,12 @@ export default function StudySessionPage() {
   const sessionId = params.sessionId as string
 
   const sessionQuery = useQuery({
-    queryKey: ["study", sessionId],
+    queryKey: queryKeys.studySession(sessionId),
     queryFn: () => fetchSession(sessionId),
   })
 
   const userQuery = useQuery({
-    queryKey: ["user", "me"],
+    queryKey: queryKeys.me(),
     queryFn: fetchUser,
   })
 

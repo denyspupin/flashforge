@@ -13,6 +13,7 @@ import {
   DeckCardEmptyState,
   DeckCardSkeleton,
 } from "@/components/deck/deck-card"
+import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
 
@@ -57,18 +58,18 @@ export default function ExplorePage() {
   const [forkError, setForkError] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ["community-decks", query],
+    queryKey: queryKeys.communityDecks(query),
     queryFn: () => fetchCommunityDecks(query || undefined),
   })
 
   const meQuery = useQuery({
-    queryKey: ["me"],
+    queryKey: queryKeys.me(),
     queryFn: fetchMe,
     enabled: isLoaded && isSignedIn,
   })
 
   const { data: languagesData } = useQuery({
-    queryKey: ["languages"],
+    queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
   })
 
@@ -80,8 +81,9 @@ export default function ExplorePage() {
   const forkMutation = useMutation({
     mutationFn: forkDeck,
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: ["community-decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       router.push(`/decks/${result.data.id}`)
     },
     onError: (error) => {

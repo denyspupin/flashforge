@@ -1,7 +1,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { useRouter } from "next/navigation"
+import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -25,6 +25,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { queryKeys } from "@/hooks"
 import type { Language } from "@/types"
 
 const profileSchema = z.object({
@@ -53,7 +54,7 @@ export function ProfileSettingsForm({
   initialNativeLanguageId,
   languages,
 }: ProfileSettingsFormProps) {
-  const router = useRouter()
+  const queryClient = useQueryClient()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [savedAt, setSavedAt] = useState<Date | null>(null)
 
@@ -116,7 +117,8 @@ export function ProfileSettingsForm({
       }
 
       setSavedAt(new Date())
-      router.refresh()
+      await queryClient.invalidateQueries({ queryKey: queryKeys.profile() })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me() })
     } catch (error) {
       console.error("[profile] update failed:", error)
       setSubmitError("Network error. Try again.")
