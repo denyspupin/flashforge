@@ -92,7 +92,7 @@ export async function SiteHeader() {
   const signedIn = Boolean(userId)
 
   const mobileItems = signedIn
-    ? [...DASHBOARD_NAV_ITEMS, ...PUBLIC_NAV_ITEMS]
+    ? [...DASHBOARD_NAV_ITEMS, ...PUBLIC_NAV_ITEMS.filter((item) => item.href !== "/explore")]
     : PUBLIC_NAV_ITEMS
 
   return (
