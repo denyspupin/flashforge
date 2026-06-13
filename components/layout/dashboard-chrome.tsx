@@ -82,6 +82,7 @@ function DashboardActions() {
 export function DashboardHeader() {
   return (
     <AppHeader
+      brandHref="/dashboard"
       brand={<Wordmark />}
       nav={<DashboardNav />}
       actions={<DashboardActions />}

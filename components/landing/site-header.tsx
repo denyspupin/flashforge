@@ -97,6 +97,7 @@ export async function SiteHeader() {
 
   return (
     <AppHeader
+      brandHref={signedIn ? "/dashboard" : "/"}
       nav={<PublicNav />}
       actions={<HeaderActions />}
       mobileNav={<MobileNav items={mobileItems} brand={BRAND} />}

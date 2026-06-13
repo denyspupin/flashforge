@@ -178,6 +178,11 @@ export default function ExplorePage() {
                     </span>
                   </span>
                 }
+                onStudy={
+                  isSignedIn
+                    ? undefined
+                    : (id) => router.push(`/explore/decks/${id}/study`)
+                }
                 actions={
                   isSignedIn ? (
                     <Button

@@ -7,14 +7,9 @@ type FaceProps = {
   size?: "default" | "lg"
 }
 
-const TERM_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
+const TEXT_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
   default: "text-[2.6rem] leading-[1.05] sm:text-[2.6rem]",
-  lg: "text-[2.4rem] leading-[1.05] sm:text-[3.4rem] sm:leading-[1.02]",
-}
-
-const DEFINITION_SIZE: Record<NonNullable<FaceProps["size"]>, string> = {
-  default: "text-[1.7rem] leading-[1.25]",
-  lg: "text-[1.5rem] leading-[1.25] sm:text-[2.1rem] sm:leading-[1.2]",
+  lg: "text-[2.2rem] leading-[1.1] sm:text-[3rem] sm:leading-[1.05]",
 }
 
 export function CardFront({ data, className, size = "default" }: FaceProps) {
@@ -57,7 +52,7 @@ export function CardFront({ data, className, size = "default" }: FaceProps) {
         <h3
           className={cn(
             "text-balance text-center font-display font-medium tracking-tight text-ink",
-            TERM_SIZE[size],
+            TEXT_SIZE[size],
           )}
           style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
         >
@@ -110,13 +105,13 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
         <div className="font-display text-3xl text-paper/20">&ldquo;</div>
       </div>
 
-      <div className="flex flex-1 items-center">
+      <div className="flex flex-1 items-center justify-center px-2">
         <p
           className={cn(
-            "text-pretty font-display font-normal tracking-tight text-paper",
-            DEFINITION_SIZE[size],
+            "text-balance text-center font-display font-medium tracking-tight text-paper",
+            TEXT_SIZE[size],
           )}
-          style={{ fontVariationSettings: "'opsz' 100, 'SOFT' 50" }}
+          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
         >
           {data.back}
         </p>

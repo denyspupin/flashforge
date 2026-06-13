@@ -8,7 +8,7 @@ type StudyProgressProps = {
   phase: "pass1" | "retry" | "done"
   position: number
   total: number
-  streak: number
+  streak?: number
 }
 
 export function StudyProgress({
@@ -48,14 +48,16 @@ export function StudyProgress({
             {String(position).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
         </div>
-        <div className="flex items-center gap-1.5 font-mono-tag text-ink/55">
-          <Flame
-            className="h-3.5 w-3.5 text-ember"
-            strokeWidth={2.25}
-            fill="currentColor"
-          />
-          {streak} day{streak === 1 ? "" : "s"}
-        </div>
+        {typeof streak === "number" && (
+          <div className="flex items-center gap-1.5 font-mono-tag text-ink/55">
+            <Flame
+              className="h-3.5 w-3.5 text-ember"
+              strokeWidth={2.25}
+              fill="currentColor"
+            />
+            {streak} day{streak === 1 ? "" : "s"}
+          </div>
+        )}
       </div>
       <div className="relative h-1 w-full overflow-hidden rounded-full bg-ink/8">
         <motion.div
