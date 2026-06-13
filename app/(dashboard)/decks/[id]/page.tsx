@@ -27,6 +27,7 @@ import {
 } from "@/components/ui/card"
 import {
   Dialog,
+  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -352,6 +353,7 @@ export default function DeckDetailPage() {
             Add Card
           </DialogTrigger>
           <DialogContent>
+            <DialogCloseButton />
             <DialogHeader>
               <DialogTitle>Add Card</DialogTitle>
               <DialogDescription>

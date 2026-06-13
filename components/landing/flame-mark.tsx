@@ -1,12 +1,6 @@
 import { cn } from "@/lib/utils"
 
-export function FlameMark({
-  className,
-  withSparks = true,
-}: {
-  className?: string
-  withSparks?: boolean
-}) {
+export function FlameMark({ className }: { className?: string }) {
   return (
     <svg
       viewBox="0 0 32 32"
@@ -34,13 +28,9 @@ export function FlameMark({
         d="M16 11c-.5 1.6-1.6 2.4-1.6 4 0 2.1 1.6 3.5 1.6 5.5 0-2 1.6-3.4 1.6-5.5 0-1.6-1.1-2.4-1.6-4Z"
         fill="url(#flame-inner)"
       />
-      {withSparks && (
-        <>
-          <circle cx="26" cy="9" r="0.8" fill="hsl(var(--ember))" />
-          <circle cx="6" cy="14" r="0.6" fill="hsl(var(--honey))" />
-          <circle cx="25" cy="20" r="0.5" fill="hsl(var(--ember-deep))" />
-        </>
-      )}
+      <circle cx="26" cy="9" r="0.8" fill="hsl(var(--ember))" />
+      <circle cx="6" cy="14" r="0.6" fill="hsl(var(--honey))" />
+      <circle cx="25" cy="20" r="0.5" fill="hsl(var(--ember-deep))" />
     </svg>
   )
 }

@@ -4,11 +4,9 @@ import { cn } from "@/lib/utils"
 export function Wordmark({
   className,
   textClassName,
-  italic = true,
 }: {
   className?: string
   textClassName?: string
-  italic?: boolean
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
@@ -20,13 +18,12 @@ export function Wordmark({
         )}
       >
         Flash
-        {italic ? (
-          <span className="font-display-soft italic" style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}>
-            forge
-          </span>
-        ) : (
-          "Forge"
-        )}
+        <span
+          className="font-display-soft italic"
+          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
+        >
+          forge
+        </span>
       </span>
     </span>
   )

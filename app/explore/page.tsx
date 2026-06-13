@@ -152,7 +152,13 @@ export default function ExplorePage() {
                 key={deck.id}
                 deck={deck}
                 href={`/explore/decks/${deck.id}`}
-                hideVisibilityBadge
+                badges={
+                  <>
+                    {deck.isCurated ? <DeckCard.CuratedBadge /> : null}
+                    {deck.forkedFromDeckId ? <DeckCard.ForkedBadge /> : null}
+                    <DeckCard.TopicBadges topics={deck.topics} />
+                  </>
+                }
                 languageNames={{
                   source: languagesById[deck.sourceLanguageId]?.name,
                   target: languagesById[deck.targetLanguageId]?.name,
