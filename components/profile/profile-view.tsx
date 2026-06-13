@@ -1,6 +1,6 @@
 "use client"
 
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import {
   Award,
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/card"
 import { AvatarEditor } from "@/components/profile/avatar-editor"
 import { ProfileSettingsForm } from "@/components/profile/profile-settings-form"
+import { ProfileSkeleton } from "@/components/profile/profile-skeleton"
 import { queryKeys } from "@/hooks"
 import type { ProfileData } from "@/lib/queries/profile"
 import type { ApiResponse } from "@/lib/api/response"
@@ -65,13 +66,18 @@ function isStreakFreshToday(streakUpdatedAt: string | null): boolean {
 }
 
 export function ProfileView() {
-  const { data } = useSuspenseQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.profile(),
     queryFn: fetchProfile,
   })
 
   const { user } = useUser()
   const clerkImageUrl = user?.imageUrl ?? null
+
+  if (isLoading) return <ProfileSkeleton />
+  if (error) throw error
+  if (!data) return <ProfileSkeleton />
+
   const { user: dbUser, nativeLanguage, languages, stats } = data
 
   const displayName =

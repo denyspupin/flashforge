@@ -1,6 +1,6 @@
 "use client"
 
-import { useSuspenseQuery } from "@tanstack/react-query"
+import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { BookOpen, Flame, Sparkles, Star } from "lucide-react"
 
@@ -13,6 +13,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { ContinueStudyingCard } from "@/components/dashboard/continue-studying-card"
+import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
 import { queryKeys } from "@/hooks"
 import type { DashboardData } from "@/lib/queries/dashboard"
@@ -52,10 +53,14 @@ function greetingFor(): string {
 }
 
 export function DashboardView() {
-  const { data } = useSuspenseQuery({
+  const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.dashboard(),
     queryFn: fetchDashboard,
   })
+
+  if (isLoading) return <DashboardSkeleton />
+  if (error) throw error
+  if (!data) return <DashboardSkeleton />
 
   const { user, deckCount, activeSession, recentDecks, languagesById } = data
 
