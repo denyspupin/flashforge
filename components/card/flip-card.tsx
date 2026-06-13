@@ -50,7 +50,7 @@ export function FlipCard({
           onClick={onFlip}
           aria-label={ariaLabel ?? (flipped ? "Show term" : "Reveal meaning")}
           aria-pressed={flipped}
-          className="block h-full w-full cursor-pointer text-left [transform-style:preserve-3d]"
+          className="block h-full w-full text-left [transform-style:preserve-3d]"
         >
           {card}
         </button>
