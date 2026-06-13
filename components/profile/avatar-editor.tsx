@@ -5,6 +5,7 @@ import { Pencil } from "lucide-react"
 
 import {
   Dialog,
+  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -78,6 +79,7 @@ export function AvatarEditor({
         </span>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
+        <DialogCloseButton />
         <DialogHeader>
           <DialogTitle>Change your avatar</DialogTitle>
           <DialogDescription>

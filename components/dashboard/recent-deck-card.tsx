@@ -2,15 +2,10 @@
 
 import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { MoreHorizontal, Pencil, Trash2, Globe, Lock, Play } from "lucide-react"
+import { Play } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import { DeckCard } from "@/components/deck/deck-card"
 import type { Deck, Language } from "@/types"
 
@@ -83,63 +78,17 @@ export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
             <Play className="h-3.5 w-3.5" />
             Study
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger
-              render={
-                <Button
-                  variant="ghost"
-                  size="icon"
-                  className="h-8 w-8 text-ink/60 hover:text-ink"
-                  onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                  aria-label="Deck actions"
-                />
-              }
-            >
-              <MoreHorizontal className="h-4 w-4" />
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem
-                onClick={(e) => {
-                  e.stopPropagation()
-                  router.push(`/decks/${deck.id}`)
-                }}
-              >
-                <Pencil className="mr-2 h-4 w-4" />
-                Edit
-              </DropdownMenuItem>
-              {deck.visibility === "private" ? (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    publishMutation.mutate(deck.id)
-                  }}
-                >
-                  <Globe className="mr-2 h-4 w-4" />
-                  Publish
-                </DropdownMenuItem>
-              ) : (
-                <DropdownMenuItem
-                  onClick={(e) => {
-                    e.stopPropagation()
-                    unpublishMutation.mutate(deck.id)
-                  }}
-                >
-                  <Lock className="mr-2 h-4 w-4" />
-                  Make Private
-                </DropdownMenuItem>
-              )}
-              <DropdownMenuItem
-                className="text-destructive"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  deleteMutation.mutate(deck.id)
-                }}
-              >
-                <Trash2 className="mr-2 h-4 w-4" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu>
+          <DeckActionsMenu
+            deck={deck}
+            onEdit={() => router.push(`/decks/${deck.id}`)}
+            onTogglePublish={() =>
+              deck.visibility === "private"
+                ? publishMutation.mutate(deck.id)
+                : unpublishMutation.mutate(deck.id)
+            }
+            onDelete={() => deleteMutation.mutate(deck.id)}
+            triggerClassName="text-ink/60 hover:text-ink"
+          />
         </div>
       }
     />

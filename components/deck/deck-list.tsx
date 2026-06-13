@@ -6,11 +6,12 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Plus, MoreHorizontal, Pencil, Trash2, Globe, Lock } from "lucide-react"
+import { Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
+  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
@@ -34,12 +35,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -193,6 +189,7 @@ export default function DeckList() {
             New Deck
           </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
+            <DialogCloseButton />
             <DialogHeader>
               <DialogTitle>Create New Deck</DialogTitle>
               <DialogDescription>
@@ -372,53 +369,19 @@ export default function DeckList() {
                   source: sourceName,
                   target: targetName,
                 }}
-                showHoverStudy
                 onStudy={(deckId) => router.push(`/study?deckId=${deckId}`)}
                 actions={
-                  <DropdownMenu>
-                    <DropdownMenuTrigger
-                      render={
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          className="h-8 w-8 opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
-                          onClick={(e: React.MouseEvent) => e.stopPropagation()}
-                        />
-                      }
-                    >
-                      <MoreHorizontal className="h-4 w-4" />
-                    </DropdownMenuTrigger>
-                    <DropdownMenuContent align="end">
-                      <DropdownMenuItem
-                        onClick={() => router.push(`/decks/${deck.id}`)}
-                      >
-                        <Pencil className="mr-2 h-4 w-4" />
-                        Edit
-                      </DropdownMenuItem>
-                      {deck.visibility === "private" ? (
-                        <DropdownMenuItem
-                          onClick={() => publishMutation.mutate(deck.id)}
-                        >
-                          <Globe className="mr-2 h-4 w-4" />
-                          Publish
-                        </DropdownMenuItem>
-                      ) : (
-                        <DropdownMenuItem
-                          onClick={() => unpublishMutation.mutate(deck.id)}
-                        >
-                          <Lock className="mr-2 h-4 w-4" />
-                          Make Private
-                        </DropdownMenuItem>
-                      )}
-                      <DropdownMenuItem
-                        className="text-destructive"
-                        onClick={() => deleteMutation.mutate(deck.id)}
-                      >
-                        <Trash2 className="mr-2 h-4 w-4" />
-                        Delete
-                      </DropdownMenuItem>
-                    </DropdownMenuContent>
-                  </DropdownMenu>
+                  <DeckActionsMenu
+                    deck={deck}
+                    onEdit={() => router.push(`/decks/${deck.id}`)}
+                    onTogglePublish={() =>
+                      deck.visibility === "private"
+                        ? publishMutation.mutate(deck.id)
+                        : unpublishMutation.mutate(deck.id)
+                    }
+                    onDelete={() => deleteMutation.mutate(deck.id)}
+                    triggerClassName="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
+                  />
                 }
               />
             )

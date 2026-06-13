@@ -9,6 +9,7 @@ import {
   Play,
   Sparkles,
 } from "lucide-react"
+import type { ReactNode } from "react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -26,29 +27,26 @@ type DeckCardProps = {
   deck: Deck
   href: string
   languageNames?: { source?: string; target?: string }
-  footerLeft?: React.ReactNode
-  actions?: React.ReactNode
-  showHoverStudy?: boolean
-  hideVisibilityBadge?: boolean
+  footerLeft?: ReactNode
+  actions?: ReactNode
+  badges?: ReactNode
   onStudy?: (deckId: string) => void
   className?: string
 }
 
-export function DeckCard({
+function DeckCard({
   deck,
   href,
   languageNames,
   footerLeft,
   actions,
-  showHoverStudy = false,
-  hideVisibilityBadge = false,
+  badges,
   onStudy,
   className,
 }: DeckCardProps) {
   const hasLanguagePair = languageNames?.source && languageNames?.target
-  const showTopics = (deck.topics?.length ?? 0) > 0
-  const showForkedBadge = Boolean(deck.forkedFromDeckId)
-  const studyVisible = showHoverStudy && onStudy
+  const hasStudyAction = Boolean(onStudy)
+  const renderedBadges = badges ?? <DefaultDeckBadges deck={deck} />
 
   return (
     <Card
@@ -81,7 +79,7 @@ export function DeckCard({
               {deck.description || "No description"}
             </CardDescription>
           </div>
-          {studyVisible && (
+          {hasStudyAction && (
             <Button
               size="sm"
               onClick={(e) => {
@@ -100,35 +98,7 @@ export function DeckCard({
       </CardHeader>
 
       <CardContent className="relative z-10 mt-auto flex flex-1 flex-col gap-4 px-5">
-        <div className="flex flex-wrap items-center gap-1.5">
-          {!hideVisibilityBadge && (
-            <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
-              {deck.visibility === "public" ? (
-                <Globe className="h-3 w-3" />
-              ) : (
-                <Lock className="h-3 w-3" />
-              )}
-              {deck.visibility === "public" ? "Public" : "Private"}
-            </Badge>
-          )}
-          {deck.isCurated && (
-            <Badge variant="highlight">
-              <Sparkles className="h-3 w-3" />
-              Curated
-            </Badge>
-          )}
-          {showForkedBadge && (
-            <Badge variant="outline">
-              <Copy className="h-3 w-3" />
-              Forked
-            </Badge>
-          )}
-          {deck.topics?.slice(0, 2).map((topic) => (
-            <Badge key={topic.id} variant="outline" className="font-normal">
-              {topic.name}
-            </Badge>
-          ))}
-        </div>
+        <div className="flex flex-wrap items-center gap-1.5">{renderedBadges}</div>
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
           <div className="text-xs text-muted-foreground">
@@ -139,7 +109,7 @@ export function DeckCard({
             )}
           </div>
           <div className="flex shrink-0 items-center gap-1">
-            {studyVisible && (
+            {hasStudyAction && (
               <Button
                 size="sm"
                 onClick={(e) => {
@@ -166,7 +136,7 @@ export function DeckCard({
   )
 }
 
-export function DeckCardSkeleton() {
+function DeckCardSkeleton() {
   return (
     <Card className="animate-pulse">
       <CardHeader className="px-5">
@@ -185,14 +155,14 @@ export function DeckCardSkeleton() {
   )
 }
 
-export function DeckCardEmptyState({
+function DeckCardEmptyState({
   title,
   description,
   action,
 }: {
   title: string
   description: string
-  action?: React.ReactNode
+  action?: ReactNode
 }) {
   return (
     <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
@@ -203,3 +173,81 @@ export function DeckCardEmptyState({
     </Card>
   )
 }
+
+function VisibilityBadge({ visibility }: { visibility: Deck["visibility"] }) {
+  return (
+    <Badge variant={visibility === "public" ? "default" : "secondary"}>
+      {visibility === "public" ? (
+        <Globe className="h-3 w-3" />
+      ) : (
+        <Lock className="h-3 w-3" />
+      )}
+      {visibility === "public" ? "Public" : "Private"}
+    </Badge>
+  )
+}
+
+function CuratedBadge() {
+  return (
+    <Badge variant="highlight">
+      <Sparkles className="h-3 w-3" />
+      Curated
+    </Badge>
+  )
+}
+
+function ForkedBadge() {
+  return (
+    <Badge variant="outline">
+      <Copy className="h-3 w-3" />
+      Forked
+    </Badge>
+  )
+}
+
+function TopicBadges({ topics }: { topics?: Deck["topics"] }) {
+  return (
+    <>
+      {topics?.slice(0, 2).map((topic) => (
+        <Badge key={topic.id} variant="outline" className="font-normal">
+          {topic.name}
+        </Badge>
+      ))}
+    </>
+  )
+}
+
+function DefaultDeckBadges({ deck }: { deck: Deck }) {
+  return (
+    <>
+      <VisibilityBadge visibility={deck.visibility} />
+      {deck.isCurated ? <CuratedBadge /> : null}
+      {deck.forkedFromDeckId ? <ForkedBadge /> : null}
+      <TopicBadges topics={deck.topics} />
+    </>
+  )
+}
+
+type DeckCardComponent = typeof DeckCard & {
+  Skeleton: typeof DeckCardSkeleton
+  EmptyState: typeof DeckCardEmptyState
+  VisibilityBadge: typeof VisibilityBadge
+  CuratedBadge: typeof CuratedBadge
+  ForkedBadge: typeof ForkedBadge
+  TopicBadges: typeof TopicBadges
+  Badges: typeof DefaultDeckBadges
+}
+
+const DeckCardCompound: DeckCardComponent = Object.assign(DeckCard, {
+  Skeleton: DeckCardSkeleton,
+  EmptyState: DeckCardEmptyState,
+  VisibilityBadge,
+  CuratedBadge,
+  ForkedBadge,
+  TopicBadges,
+  Badges: DefaultDeckBadges,
+})
+
+export { DeckCardCompound as DeckCard }
+export { DeckCardSkeleton, DeckCardEmptyState }
+export { VisibilityBadge, CuratedBadge, ForkedBadge, TopicBadges, DefaultDeckBadges }
