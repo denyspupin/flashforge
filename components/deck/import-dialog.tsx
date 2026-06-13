@@ -154,7 +154,7 @@ export function ImportDialog({
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[520px]">
+      <DialogContent className="flex max-h-[calc(100vh-2rem)] flex-col sm:max-w-[520px]">
         <DialogCloseButton />
         <DialogHeader>
           <DialogTitle>Import Deck</DialogTitle>
@@ -164,7 +164,7 @@ export function ImportDialog({
           </DialogDescription>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 -mr-1">
           <div>
             <label
               htmlFor="import-file"
