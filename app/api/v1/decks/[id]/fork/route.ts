@@ -1,27 +1,12 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
 import { decks, deckTopics, cards, notifications } from "@/lib/db/schema"
-import { eq, and, like } from "drizzle-orm"
+import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { uniqueSlug } from "@/lib/slug"
 
 export const dynamic = "force-dynamic"
-
-async function uniqueForkSlug(base: string) {
-  const root = `${base}-copy`
-  const existing = await db
-    .select({ slug: decks.slug })
-    .from(decks)
-    .where(like(decks.slug, `${root}%`))
-
-  if (!existing.some((row) => row.slug === root)) return root
-
-  let suffix = 2
-  while (existing.some((row) => row.slug === `${root}-${suffix}`)) {
-    suffix += 1
-  }
-  return `${root}-${suffix}`
-}
 
 export async function POST(
   request: Request,
@@ -56,7 +41,7 @@ export async function POST(
     )
   }
 
-  const newSlug = await uniqueForkSlug(originalDeck[0].slug)
+  const newSlug = await uniqueSlug(originalDeck[0].slug)
 
   const [newDeck] = await db
     .insert(decks)

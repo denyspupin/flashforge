@@ -45,3 +45,10 @@ export const PAGINATION = {
 export const STUDY_SESSION = {
   ABANDON_THRESHOLD_HOURS: 24,
 } as const
+
+export const DECK_EXPORT = {
+  FORMAT: "flashforge.deck" as const,
+  FORMAT_VERSION: "1.0" as const,
+  GENERATOR: "flashforge" as const,
+  MAX_IMPORT_CARDS: 1000,
+} as const
