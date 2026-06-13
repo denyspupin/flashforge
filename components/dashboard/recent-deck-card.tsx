@@ -7,7 +7,8 @@ import { Play } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import { DeckCard } from "@/components/deck/deck-card"
-import type { Deck, Language } from "@/types"
+import { queryKeys } from "@/hooks"
+import type { Deck } from "@/types"
 
 type RecentDeckCardProps = {
   deck: Deck
@@ -36,24 +37,24 @@ export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
   const publishMutation = useMutation({
     mutationFn: publishDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
-      router.refresh()
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
     },
   })
 
   const unpublishMutation = useMutation({
     mutationFn: unpublishDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
-      router.refresh()
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
     },
   })
 
   const deleteMutation = useMutation({
     mutationFn: deleteDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
-      router.refresh()
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
     },
   })
 

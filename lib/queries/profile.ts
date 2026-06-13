@@ -23,6 +23,7 @@ export type ProfileData = {
     createdAt: string
     xp: number
     streak: number
+    streakUpdatedAt: string | null
   }
   clerkImageUrl: string | null
   nativeLanguage: Language | null
@@ -99,6 +100,9 @@ export async function loadProfileData(): Promise<ProfileData | null> {
       createdAt: user.createdAt.toISOString(),
       xp: user.xp,
       streak: user.streak,
+      streakUpdatedAt: user.streakUpdatedAt
+        ? user.streakUpdatedAt.toISOString()
+        : null,
     },
     clerkImageUrl,
     nativeLanguage,

@@ -41,6 +41,7 @@ import {
   DeckCardEmptyState,
   DeckCardSkeleton,
 } from "@/components/deck/deck-card"
+import { queryKeys } from "@/hooks"
 import type { Deck, Language } from "@/types/deck"
 
 const createDeckSchema = z.object({
@@ -100,19 +101,20 @@ export default function DeckList() {
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
-    queryKey: ["decks"],
+    queryKey: queryKeys.decks(),
     queryFn: fetchDecks,
   })
 
   const { data: languagesData } = useQuery({
-    queryKey: ["languages"],
+    queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
   })
 
   const createMutation = useMutation({
     mutationFn: createDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       setOpen(false)
       form.reset()
       setSubmitError(null)
@@ -126,21 +128,24 @@ export default function DeckList() {
   const deleteMutation = useMutation({
     mutationFn: deleteDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
     },
   })
 
   const publishMutation = useMutation({
     mutationFn: publishDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
     },
   })
 
   const unpublishMutation = useMutation({
     mutationFn: unpublishDeck,
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
     },
   })
 

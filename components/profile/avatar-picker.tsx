@@ -1,12 +1,12 @@
 "use client"
 
 import { useState } from "react"
-import { useRouter } from "next/navigation"
 import { useQueryClient } from "@tanstack/react-query"
 import { Check, Link2, RefreshCw, RotateCcw } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
 
 const DICEBEAR_STYLES = [
@@ -71,7 +71,6 @@ export function AvatarPicker({
   currentAvatarUrl,
   defaultAvatarUrl,
 }: AvatarPickerProps) {
-  const router = useRouter()
   const queryClient = useQueryClient()
   const [options, setOptions] = useState<AvatarOption[]>(() => buildOptions())
   const [selected, setSelected] = useState<string | null>(currentAvatarUrl)
@@ -107,8 +106,8 @@ export function AvatarPicker({
         return
       }
 
-      queryClient.invalidateQueries({ queryKey: ["users", "me"] })
-      router.refresh()
+      await queryClient.invalidateQueries({ queryKey: queryKeys.me() })
+      await queryClient.invalidateQueries({ queryKey: queryKeys.profile() })
     } catch (e) {
       console.error("[avatar] save failed:", e)
       setError("Network error. Try again.")

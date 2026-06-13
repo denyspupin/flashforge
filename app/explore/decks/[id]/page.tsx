@@ -18,6 +18,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
+import { queryKeys } from "@/hooks"
 
 interface PublicCard {
   id: string
@@ -90,12 +91,12 @@ export default function PublicDeckPage() {
   const [pendingAction, setPendingAction] = useState<"fork" | "study" | null>(null)
 
   const { data, isLoading } = useQuery({
-    queryKey: ["public-deck", deckId],
+    queryKey: queryKeys.publicDeck(deckId),
     queryFn: () => fetchPublicDeck(deckId),
   })
 
   const meQuery = useQuery({
-    queryKey: ["me"],
+    queryKey: queryKeys.me(),
     queryFn: fetchMe,
     enabled: isLoaded && isSignedIn,
   })
@@ -107,8 +108,9 @@ export default function PublicDeckPage() {
   const forkMutation = useMutation({
     mutationFn: () => forkDeck(deckId),
     onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: ["community-decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       router.push(`/decks/${result.data.id}`)
     },
     onError: (error) => {

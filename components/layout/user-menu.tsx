@@ -12,6 +12,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
 
 type UserMenuProps = {
@@ -61,7 +62,7 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
   const { signOut, openUserProfile } = useClerk()
 
   const { data: meData } = useQuery({
-    queryKey: ["users", "me"],
+    queryKey: queryKeys.me(),
     queryFn: fetchMe,
     enabled: isSignedIn,
     staleTime: 60_000,

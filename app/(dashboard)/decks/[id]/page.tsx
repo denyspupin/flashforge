@@ -45,6 +45,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import { queryKeys } from "@/hooks"
 
 interface Card {
   id: string
@@ -150,12 +151,12 @@ export default function DeckDetailPage() {
   const [deckDescription, setDeckDescription] = useState("")
 
   const { data, isLoading } = useQuery({
-    queryKey: ["deck", deckId],
+    queryKey: queryKeys.deck(deckId),
     queryFn: () => fetchDeck(deckId),
   })
 
   const { data: languagesData } = useQuery({
-    queryKey: ["languages"],
+    queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
   })
 
@@ -170,7 +171,7 @@ export default function DeckDetailPage() {
   const addCardMutation = useMutation({
     mutationFn: (cardData: CardInput) => addCard(deckId, cardData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck", deckId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
       setOpen(false)
       cardForm.reset()
     },
@@ -185,7 +186,7 @@ export default function DeckDetailPage() {
       cardData: Partial<CardInput>
     }) => updateCard(deckId, cardId, cardData),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck", deckId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
       setEditingCard(null)
     },
   })
@@ -193,7 +194,7 @@ export default function DeckDetailPage() {
   const deleteCardMutation = useMutation({
     mutationFn: (cardId: string) => deleteCard(deckId, cardId),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck", deckId] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
     },
   })
 
@@ -201,8 +202,9 @@ export default function DeckDetailPage() {
     mutationFn: (data: { title?: string; description?: string }) =>
       updateDeck(deckId, data),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["deck", deckId] })
-      queryClient.invalidateQueries({ queryKey: ["decks"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       setEditingDeck(false)
     },
   })
