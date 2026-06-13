@@ -1,7 +1,15 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { ChevronDown, Copy, FileUp, Sparkles, Upload, X } from "lucide-react"
+import {
+  ChevronDown,
+  ClipboardPaste,
+  Copy,
+  FileUp,
+  Sparkles,
+  Upload,
+  X,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -21,6 +29,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
+import { Textarea } from "@/components/ui/textarea"
 import { useDeckImport } from "@/hooks/use-deck-import"
 import { DECK_GENERATION_PROMPT } from "@/lib/ai-prompt"
 import { importPayloadSchema, type ImportPayload } from "@/lib/export-schema"
@@ -68,8 +77,10 @@ export function ImportDialog({
   userDecks,
   languages,
 }: ImportDialogProps) {
+  const [source, setSource] = useState<"file" | "paste">("file")
   const [parsed, setParsed] = useState<ImportPayload | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
+  const [pastedText, setPastedText] = useState("")
   const [parseError, setParseError] = useState<string | null>(null)
   const [mode, setMode] = useState<ImportMode>("new")
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null)
@@ -77,6 +88,30 @@ export function ImportDialog({
   const [copied, setCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const importMutation = useDeckImport()
+
+  const tryParse = (text: string, readErrorMessage: string) => {
+    if (!text.trim()) {
+      setParseError(null)
+      setParsed(null)
+      return
+    }
+    try {
+      const json = JSON.parse(text)
+      const result = importPayloadSchema.safeParse(json)
+      if (!result.success) {
+        setParseError(formatZodError(result.error))
+        setParsed(null)
+      } else {
+        setParseError(null)
+        setParsed(result.data)
+      }
+    } catch (err) {
+      setParseError(
+        err instanceof SyntaxError ? "Not valid JSON." : readErrorMessage
+      )
+      setParsed(null)
+    }
+  }
 
   const onPickFile = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -86,27 +121,49 @@ export function ImportDialog({
     setFileName(file.name)
     try {
       const text = await file.text()
-      const json = JSON.parse(text)
-      const result = importPayloadSchema.safeParse(json)
-      if (!result.success) {
-        setParseError(formatZodError(result.error))
-        return
-      }
-      setParsed(result.data)
-    } catch (err) {
-      setParseError(
-        err instanceof SyntaxError
-          ? "File is not valid JSON."
-          : "Could not read the file."
-      )
+      tryParse(text, "Could not read the file.")
+    } catch {
+      setParseError("Could not read the file.")
     }
   }
 
-  const reset = () => {
+  const onPasteText = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    const text = e.target.value
+    setPastedText(text)
+    tryParse(text, "Could not parse the text.")
+  }
+
+  const onPasteFromClipboard = async () => {
+    try {
+      const text = await navigator.clipboard.readText()
+      setPastedText(text)
+      tryParse(text, "Could not read the clipboard content.")
+    } catch {
+      setParseError("Could not read the clipboard. Try pasting manually.")
+    }
+  }
+
+  const onSourceChange = (next: "file" | "paste") => {
+    if (next === source) return
+    setSource(next)
+    setParsed(null)
+    setParseError(null)
+    setFileName(null)
+    setPastedText("")
+    if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const resetFile = () => {
     setParsed(null)
     setFileName(null)
     setParseError(null)
     if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const resetPaste = () => {
+    setParsed(null)
+    setPastedText("")
+    setParseError(null)
   }
 
   const copyPrompt = async () => {
@@ -165,40 +222,114 @@ export function ImportDialog({
         </DialogHeader>
 
         <div className="min-h-0 flex-1 space-y-4 overflow-y-auto pr-1 -mr-1">
-          <div>
-            <label
-              htmlFor="import-file"
-              className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-input bg-muted/30 px-4 py-6 text-sm transition-colors hover:bg-muted/50"
+          <div
+            className="inline-flex rounded-lg border bg-muted/30 p-0.5"
+            role="tablist"
+            aria-label="Import source"
+          >
+            <button
+              type="button"
+              role="tab"
+              aria-selected={source === "file"}
+              onClick={() => onSourceChange("file")}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-sm transition-colors",
+                source === "file"
+                  ? "bg-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
             >
-              <Upload className="h-4 w-4 text-muted-foreground" />
-              <span className="text-muted-foreground">
-                {fileName ?? "Choose a .json file to import"}
-              </span>
-            </label>
-            <input
-              id="import-file"
-              ref={fileInputRef}
-              type="file"
-              accept="application/json,.json"
-              onChange={onPickFile}
-              className="sr-only"
-            />
-            {fileName && (
+              <Upload className="h-3.5 w-3.5" />
+              File
+            </button>
+            <button
+              type="button"
+              role="tab"
+              aria-selected={source === "paste"}
+              onClick={() => onSourceChange("paste")}
+              className={cn(
+                "inline-flex items-center gap-1.5 rounded-md px-3 py-1 text-sm transition-colors",
+                source === "paste"
+                  ? "bg-background shadow-sm"
+                  : "text-muted-foreground hover:text-foreground"
+              )}
+            >
+              <ClipboardPaste className="h-3.5 w-3.5" />
+              Paste
+            </button>
+          </div>
+
+          {source === "file" ? (
+            <div>
+              <label
+                htmlFor="import-file"
+                className="flex cursor-pointer items-center justify-center gap-2 rounded-lg border border-dashed border-input bg-muted/30 px-4 py-6 text-sm transition-colors hover:bg-muted/50"
+              >
+                <Upload className="h-4 w-4 text-muted-foreground" />
+                <span className="text-muted-foreground">
+                  {fileName ?? "Choose a .json file to import"}
+                </span>
+              </label>
+              <input
+                id="import-file"
+                ref={fileInputRef}
+                type="file"
+                accept="application/json,.json"
+                onChange={onPickFile}
+                className="sr-only"
+              />
+              {fileName && (
+                <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
+                  <span className="truncate">{fileName}</span>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetFile}
+                    className="h-6 px-2"
+                  >
+                    <X className="mr-1 h-3 w-3" />
+                    Clear
+                  </Button>
+                </div>
+              )}
+            </div>
+          ) : (
+            <div>
+              <Textarea
+                value={pastedText}
+                onChange={onPasteText}
+                placeholder="Paste your FlashForge export JSON here…"
+                spellCheck={false}
+                rows={8}
+                className="max-h-64 min-h-32 resize-y bg-muted/30 font-mono text-xs leading-relaxed"
+              />
               <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-                <span className="truncate">{fileName}</span>
                 <Button
                   type="button"
                   variant="ghost"
                   size="sm"
-                  onClick={reset}
+                  onClick={onPasteFromClipboard}
                   className="h-6 px-2"
                 >
-                  <X className="mr-1 h-3 w-3" />
-                  Clear
+                  <ClipboardPaste className="mr-1 h-3 w-3" />
+                  Paste from clipboard
                 </Button>
+                {pastedText && (
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="sm"
+                    onClick={resetPaste}
+                    className="h-6 px-2"
+                  >
+                    <X className="mr-1 h-3 w-3" />
+                    Clear
+                  </Button>
+                )}
               </div>
-            )}
-          </div>
+            </div>
+          )}
 
           {!parsed && (
             <div className="rounded-lg border bg-muted/30">
