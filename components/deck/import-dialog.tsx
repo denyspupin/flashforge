@@ -1,7 +1,7 @@
 "use client"
 
 import { useRef, useState } from "react"
-import { FileUp, Upload, X } from "lucide-react"
+import { ChevronDown, Copy, FileUp, Sparkles, Upload, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -22,8 +22,10 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { useDeckImport } from "@/hooks/use-deck-import"
+import { DECK_GENERATION_PROMPT } from "@/lib/ai-prompt"
 import { importPayloadSchema, type ImportPayload } from "@/lib/export-schema"
 import { DECK_EXPORT } from "@/lib/constants"
+import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
 
 type ImportMode = "new" | "existing"
@@ -71,6 +73,8 @@ export function ImportDialog({
   const [parseError, setParseError] = useState<string | null>(null)
   const [mode, setMode] = useState<ImportMode>("new")
   const [selectedDeckId, setSelectedDeckId] = useState<string | null>(null)
+  const [promptOpen, setPromptOpen] = useState(false)
+  const [copied, setCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const importMutation = useDeckImport()
 
@@ -103,6 +107,16 @@ export function ImportDialog({
     setFileName(null)
     setParseError(null)
     if (fileInputRef.current) fileInputRef.current.value = ""
+  }
+
+  const copyPrompt = async () => {
+    try {
+      await navigator.clipboard.writeText(DECK_GENERATION_PROMPT)
+      setCopied(true)
+      setTimeout(() => setCopied(false), 1500)
+    } catch {
+      setCopied(false)
+    }
   }
 
   const canSubmit =
@@ -185,6 +199,48 @@ export function ImportDialog({
               </div>
             )}
           </div>
+
+          {!parsed && (
+            <div className="rounded-lg border bg-muted/30">
+              <button
+                type="button"
+                onClick={() => setPromptOpen((v) => !v)}
+                aria-expanded={promptOpen}
+                className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium"
+              >
+                <span className="flex items-center gap-2">
+                  <Sparkles className="h-4 w-4 text-muted-foreground" />
+                  Don&rsquo;t have an export file?
+                </span>
+                <ChevronDown
+                  className={cn(
+                    "h-4 w-4 text-muted-foreground transition-transform",
+                    promptOpen && "rotate-180"
+                  )}
+                />
+              </button>
+              {promptOpen && (
+                <div className="space-y-2 border-t px-3 py-3">
+                  <p className="text-xs text-muted-foreground">
+                    Copy this prompt and paste it into any AI chat. Ask it to
+                    generate a deck and save the response as a .json file.
+                  </p>
+                  <pre className="max-h-64 overflow-auto rounded-md border bg-background p-3 font-mono text-[11px] leading-relaxed">
+                    {DECK_GENERATION_PROMPT}
+                  </pre>
+                  <Button
+                    type="button"
+                    variant="outline"
+                    size="sm"
+                    onClick={copyPrompt}
+                  >
+                    <Copy className="mr-2 h-3 w-3" />
+                    {copied ? "Copied!" : "Copy prompt"}
+                  </Button>
+                </div>
+              )}
+            </div>
+          )}
 
           {parseError && (
             <div
