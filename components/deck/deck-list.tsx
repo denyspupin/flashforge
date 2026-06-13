@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Plus } from "lucide-react"
+import { FileUp, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -41,6 +41,7 @@ import {
   DeckCardEmptyState,
   DeckCardSkeleton,
 } from "@/components/deck/deck-card"
+import { ImportDialog } from "@/components/deck/import-dialog"
 import { queryKeys } from "@/hooks"
 import type { Deck, Language } from "@/types/deck"
 
@@ -98,6 +99,7 @@ export default function DeckList() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const [open, setOpen] = useState(false)
+  const [importOpen, setImportOpen] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
@@ -181,18 +183,28 @@ export default function DeckList() {
 
   return (
     <div className="space-y-6">
-      <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-        <div className="min-w-0">
-          <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">My Decks</h1>
-          <p className="text-muted-foreground mt-1">
-            Manage your flashcard collections
-          </p>
-        </div>
-        <Dialog open={open} onOpenChange={setOpen}>
-          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Deck
-          </DialogTrigger>
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">My Decks</h1>
+            <p className="text-muted-foreground mt-1">
+              Manage your flashcard collections
+            </p>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row">
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full sm:w-auto"
+              onClick={() => setImportOpen(true)}
+            >
+              <FileUp className="mr-2 h-4 w-4" />
+              Import
+            </Button>
+            <Dialog open={open} onOpenChange={setOpen}>
+              <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
+                <Plus className="mr-2 h-4 w-4" />
+                New Deck
+              </DialogTrigger>
           <DialogContent className="sm:max-w-[500px]">
             <DialogCloseButton />
             <DialogHeader>
@@ -341,7 +353,16 @@ export default function DeckList() {
             </Form>
           </DialogContent>
         </Dialog>
-      </div>
+          </div>
+        </div>
+
+      <ImportDialog
+        key={importOpen ? "open" : "closed"}
+        open={importOpen}
+        onOpenChange={setImportOpen}
+        userDecks={decks}
+        languages={languages}
+      />
 
       {decksLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">

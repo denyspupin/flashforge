@@ -1,7 +1,14 @@
 "use client"
 
 import type { MouseEvent } from "react"
-import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import {
+  Download,
+  Globe,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -32,6 +39,17 @@ export function DeckActionsMenu({
     e.stopPropagation()
     e.preventDefault()
     fn()
+  }
+
+  const handleExport = () => {
+    const url = `/api/v1/decks/${deck.id}/export`
+    const a = document.createElement("a")
+    a.href = url
+    a.download = ""
+    a.rel = "noopener"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
   }
 
   const isPrivate = deck.visibility === "private"
@@ -68,6 +86,10 @@ export function DeckActionsMenu({
               Make Private
             </>
           )}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={stop(handleExport)}>
+          <Download className="mr-2 h-4 w-4" />
+          Export
         </DropdownMenuItem>
         <DropdownMenuItem
           className="text-destructive"
