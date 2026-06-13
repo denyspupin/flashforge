@@ -11,6 +11,8 @@ const SAMPLE_CARDS = [
     back: "the feeling that one has lived through the present moment before",
     source: "French",
     target: "English",
+    sourceFlag: "🇫🇷",
+    targetFlag: "🇬🇧",
     topic: "Concepts",
   },
   {
@@ -18,6 +20,8 @@ const SAMPLE_CARDS = [
     back: "a state of warmth, friendliness, and belonging",
     source: "German",
     target: "English",
+    sourceFlag: "🇩🇪",
+    targetFlag: "🇬🇧",
     topic: "Feelings",
   },
   {
@@ -25,6 +29,8 @@ const SAMPLE_CARDS = [
     back: "a deep, melancholic longing for something or someone absent",
     source: "Portuguese",
     target: "English",
+    sourceFlag: "🇧🇷",
+    targetFlag: "🇬🇧",
     topic: "Feelings",
   },
   {
@@ -32,6 +38,8 @@ const SAMPLE_CARDS = [
     back: "a quality of coziness and comfortable conviviality",
     source: "Danish",
     target: "English",
+    sourceFlag: "🇩🇰",
+    targetFlag: "🇬🇧",
     topic: "Lifestyle",
   },
 ] as const

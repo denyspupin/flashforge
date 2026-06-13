@@ -3,6 +3,7 @@ import { db } from "@/lib/db/client"
 import { decks, cards, deckTopics, topics, users, languages } from "@/lib/db/schema"
 import { eq, and, inArray } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { enrichLanguage } from "@/lib/languages/flags"
 
 export const dynamic = "force-dynamic"
 
@@ -60,8 +61,8 @@ export async function GET(
       topics: topicRelations,
       creatorId: creatorRows[0]?.id ?? deck.creatorId,
       creatorName: creatorRows[0]?.name ?? "Unknown",
-      sourceLanguage: sourceLanguage ?? null,
-      targetLanguage: targetLanguage ?? null,
+      sourceLanguage: sourceLanguage ? enrichLanguage(sourceLanguage) : null,
+      targetLanguage: targetLanguage ? enrichLanguage(targetLanguage) : null,
       cardCount: deckCards.length,
     })
   )

@@ -26,7 +26,12 @@ import type { Deck } from "@/types/deck"
 type DeckCardProps = {
   deck: Deck
   href: string
-  languageNames?: { source?: string; target?: string }
+  languageNames?: {
+    source?: string
+    target?: string
+    sourceFlag?: string
+    targetFlag?: string
+  }
   footerLeft?: ReactNode
   actions?: ReactNode
   badges?: ReactNode
@@ -55,49 +60,51 @@ function DeckCard({
         className,
       )}
     >
-      <Link
-        href={href}
-        aria-label={`Open ${deck.title}`}
-        className="absolute inset-0 z-0 rounded-[inherit] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-      />
-      <CardHeader className="relative z-10 px-5">
+      <CardHeader className="px-5">
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
-            <div className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
-              {hasLanguagePair ? (
-                <>
-                  {languageNames!.source} → {languageNames!.target}
-                </>
-              ) : (
-                <span className="opacity-0">placeholder</span>
-              )}
-            </div>
+            {hasLanguagePair ? (
+              <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70">
+                {languageNames!.sourceFlag && (
+                  <span className="text-base leading-none" aria-hidden>
+                    {languageNames!.sourceFlag}
+                  </span>
+                )}
+                <span>{languageNames!.source}</span>
+                <span className="text-ink/30">→</span>
+                {languageNames!.targetFlag && (
+                  <span className="text-base leading-none" aria-hidden>
+                    {languageNames!.targetFlag}
+                  </span>
+                )}
+                <span>{languageNames!.target}</span>
+              </div>
+            ) : (
+              <div className="font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70 opacity-0">
+                placeholder
+              </div>
+            )}
             <CardTitle className="mt-1 line-clamp-1 text-lg">
-              {deck.title}
+              <Link
+                href={href}
+                className="rounded-sm outline-none transition-colors hover:text-ink/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+              >
+                {deck.title}
+              </Link>
             </CardTitle>
             <CardDescription className="mt-1 line-clamp-2">
               {deck.description || "No description"}
             </CardDescription>
           </div>
-          {hasStudyAction && (
-            <Button
-              size="sm"
-              onClick={(e) => {
-                e.stopPropagation()
-                e.preventDefault()
-                onStudy!(deck.id)
-              }}
-              aria-label={`Study ${deck.title}`}
-              className="relative z-30 -mt-1 -mr-1 h-8 gap-1.5 rounded-full bg-ink px-3 text-xs font-medium text-paper shadow-sm opacity-100 transition-opacity focus-visible:opacity-100 hover:bg-ink/90 max-sm:hidden group-hover:opacity-100 group-focus-within:opacity-100 md:opacity-0"
-            >
-              <Play className="h-3.5 w-3.5" />
-              Study
-            </Button>
+          {actions && (
+            <div className="-mt-1 -mr-1 flex shrink-0 items-center scale-90 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-within:scale-100 focus-within:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100">
+              {actions}
+            </div>
           )}
         </div>
       </CardHeader>
 
-      <CardContent className="relative z-10 mt-auto flex flex-1 flex-col gap-4 px-5">
+      <CardContent className="mt-auto flex flex-1 flex-col gap-4 px-5">
         <div className="flex flex-wrap items-center gap-1.5">{renderedBadges}</div>
 
         <div className="mt-auto flex items-center justify-between gap-3 pt-2">
@@ -108,28 +115,17 @@ function DeckCard({
               </span>
             )}
           </div>
-          <div className="flex shrink-0 items-center gap-1">
-            {hasStudyAction && (
-              <Button
-                size="sm"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  e.preventDefault()
-                  onStudy!(deck.id)
-                }}
-                aria-label={`Study ${deck.title}`}
-                className="relative z-30 h-7 gap-1 rounded-full bg-ink px-2.5 text-[11px] font-medium text-paper sm:hidden hover:bg-ink/90"
-              >
-                <Play className="h-3 w-3" />
-                Study
-              </Button>
-            )}
-            {actions && (
-              <div className="relative z-20 flex shrink-0 items-center">
-                {actions}
-              </div>
-            )}
-          </div>
+          {hasStudyAction && (
+            <Button
+              size="icon"
+              onClick={() => onStudy!(deck.id)}
+              aria-label={`Study ${deck.title}`}
+              title="Study"
+              className="h-8 w-8 rounded-full bg-ink text-paper scale-90 opacity-0 shadow-sm transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-ink/90 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-visible:scale-100 focus-visible:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100"
+            >
+              <Play className="h-4 w-4" />
+            </Button>
+          )}
         </div>
       </CardContent>
     </Card>
@@ -138,7 +134,7 @@ function DeckCard({
 
 function DeckCardSkeleton() {
   return (
-    <Card className="animate-pulse">
+    <Card className="animate-pulse py-5">
       <CardHeader className="px-5">
         <div className="h-3 w-20 rounded bg-muted" />
         <div className="mt-3 h-5 w-3/4 rounded bg-muted" />

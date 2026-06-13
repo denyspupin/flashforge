@@ -11,6 +11,7 @@ import {
   topics,
 } from "@/lib/db/schema"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { enrichLanguages } from "@/lib/languages/flags"
 import type { Deck, Language, StudySession } from "@/types"
 
 export type DashboardActiveSession = Pick<
@@ -106,7 +107,7 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
     : []
 
   const languagesById: Record<string, Language> = Object.fromEntries(
-    languageRows.map((l) => [l.id, l]),
+    enrichLanguages(languageRows).map((l) => [l.id, l]),
   )
 
   const recentDeckIds = recentDeckRows.map((d) => d.id)

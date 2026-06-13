@@ -156,7 +156,7 @@ export default function PublicDeckPage() {
   if (!deck) {
     return (
       <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
-        <Card className="flex flex-col items-center justify-center p-12 text-center">
+          <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
           <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
           <p className="text-muted-foreground mt-1">
@@ -286,7 +286,7 @@ export default function PublicDeckPage() {
 
       <div className="space-y-3">
         {deck.cards?.length === 0 ? (
-          <Card className="flex flex-col items-center justify-center p-12 text-center">
+        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold">No cards in this deck</h3>
             <p className="text-muted-foreground mt-1">

@@ -4,6 +4,7 @@ import { studySessions, decks, cards, languages } from "@/lib/db/schema"
 import { eq, and, asc } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { getLanguageFlag } from "@/lib/languages/flags"
 
 export const dynamic = "force-dynamic"
 
@@ -69,6 +70,8 @@ export async function GET(
         ...deckRows[0],
         sourceLanguage: sourceLang[0]?.name ?? "",
         targetLanguage: targetLang[0]?.name ?? "",
+        sourceLanguageFlag: getLanguageFlag(sourceLang[0]?.code),
+        targetLanguageFlag: getLanguageFlag(targetLang[0]?.code),
       },
       cards: deckCards,
     })
