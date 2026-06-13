@@ -24,6 +24,8 @@ type SessionData = {
     title: string
     sourceLanguage: string
     targetLanguage: string
+    sourceLanguageFlag?: string
+    targetLanguageFlag?: string
   }
   cards: StudyCard[]
 }

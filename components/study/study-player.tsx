@@ -19,6 +19,8 @@ type DeckInfo = {
   title: string
   sourceLanguage: string
   targetLanguage: string
+  sourceLanguageFlag?: string
+  targetLanguageFlag?: string
 }
 
 type CompleteResponse = {
@@ -185,10 +187,12 @@ export function StudyPlayer({
     back: current.back,
     source: deck.sourceLanguage,
     target: deck.targetLanguage,
+    sourceFlag: deck.sourceLanguageFlag,
+    targetFlag: deck.targetLanguageFlag,
   }
 
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 sm:gap-8">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 sm:gap-8 lg:max-w-3xl">
       <div className="flex items-center justify-between">
         <div className="flex min-w-0 items-center gap-2">
           <Button
@@ -230,7 +234,7 @@ export function StudyPlayer({
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -12 }}
             transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-            className="perspective-1000 mx-auto aspect-[5/6] w-full max-w-[420px]"
+            className="perspective-1000 mx-auto aspect-[5/6] w-full max-w-[420px] sm:max-w-[480px] lg:max-w-[560px]"
           >
             <FlipCard
               flipped={flipped}

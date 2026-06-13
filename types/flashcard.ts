@@ -3,5 +3,7 @@ export type FlashcardContent = {
   back: string
   source?: string
   target?: string
+  sourceFlag?: string
+  targetFlag?: string
   topic?: string
 }

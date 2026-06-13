@@ -164,6 +164,8 @@ export default function ExplorePage() {
                 languageNames={{
                   source: languagesById[deck.sourceLanguageId]?.name,
                   target: languagesById[deck.targetLanguageId]?.name,
+                  sourceFlag: languagesById[deck.sourceLanguageId]?.flag,
+                  targetFlag: languagesById[deck.targetLanguageId]?.flag,
                 }}
                 footerLeft={
                   <span>

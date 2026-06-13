@@ -191,6 +191,8 @@ export function DashboardView() {
                 languageNames={{
                   source: languagesById[deck.sourceLanguageId]?.name,
                   target: languagesById[deck.targetLanguageId]?.name,
+                  sourceFlag: languagesById[deck.sourceLanguageId]?.flag,
+                  targetFlag: languagesById[deck.targetLanguageId]?.flag,
                 }}
               />
             ))}

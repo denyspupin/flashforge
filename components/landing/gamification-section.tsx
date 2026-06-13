@@ -122,7 +122,7 @@ export function GamificationSection() {
             </div>
 
             <Reveal delay={0.5}>
-              <div className="mt-8 rounded-2xl border border-ink/10 bg-paper/70 p-6">
+              <div className="mt-8 rounded-2xl border border-ink/10 bg-paper/70 p-6 sm:p-8">
                 <div className="flex items-start gap-4">
                   <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember-deep/15">
                     <Flame className="h-5 w-5 text-ember-deep" />

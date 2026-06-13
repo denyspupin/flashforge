@@ -2,9 +2,7 @@
 
 import { useRouter } from "next/navigation"
 import { useMutation, useQueryClient } from "@tanstack/react-query"
-import { Play } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import { DeckCard } from "@/components/deck/deck-card"
 import { queryKeys } from "@/hooks"
@@ -12,7 +10,12 @@ import type { Deck } from "@/types"
 
 type RecentDeckCardProps = {
   deck: Deck
-  languageNames: { source?: string; target?: string }
+  languageNames: {
+    source?: string
+    target?: string
+    sourceFlag?: string
+    targetFlag?: string
+  }
 }
 
 async function publishDeck(id: string): Promise<void> {
@@ -68,29 +71,19 @@ export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
           {deck.cardCount} {deck.cardCount === 1 ? "card" : "cards"}
         </span>
       }
+      onStudy={() => router.push(`/study?deckId=${deck.id}`)}
       actions={
-        <div className="flex items-center gap-1">
-          <Button
-            size="sm"
-            className="h-8 gap-1.5 rounded-full bg-ink px-3 text-xs font-medium text-paper hover:bg-ink/90"
-            onClick={() => router.push(`/study?deckId=${deck.id}`)}
-            aria-label={`Study ${deck.title}`}
-          >
-            <Play className="h-3.5 w-3.5" />
-            Study
-          </Button>
-          <DeckActionsMenu
-            deck={deck}
-            onEdit={() => router.push(`/decks/${deck.id}`)}
-            onTogglePublish={() =>
-              deck.visibility === "private"
-                ? publishMutation.mutate(deck.id)
-                : unpublishMutation.mutate(deck.id)
-            }
-            onDelete={() => deleteMutation.mutate(deck.id)}
-            triggerClassName="text-ink/60 hover:text-ink"
-          />
-        </div>
+        <DeckActionsMenu
+          deck={deck}
+          onEdit={() => router.push(`/decks/${deck.id}`)}
+          onTogglePublish={() =>
+            deck.visibility === "private"
+              ? publishMutation.mutate(deck.id)
+              : unpublishMutation.mutate(deck.id)
+          }
+          onDelete={() => deleteMutation.mutate(deck.id)}
+          triggerClassName="text-ink/60 hover:text-ink"
+        />
       }
     />
   )

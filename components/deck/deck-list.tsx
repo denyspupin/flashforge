@@ -276,7 +276,15 @@ export default function DeckList() {
                           <SelectContent>
                             {languages.map((lang) => (
                               <SelectItem key={lang.id} value={lang.id}>
-                                {lang.name}
+                                {lang.flag && (
+                                  <span
+                                    className="text-base leading-none"
+                                    aria-hidden
+                                  >
+                                    {lang.flag}
+                                  </span>
+                                )}
+                                <span>{lang.name}</span>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -304,7 +312,15 @@ export default function DeckList() {
                           <SelectContent>
                             {languages.map((lang) => (
                               <SelectItem key={lang.id} value={lang.id}>
-                                {lang.name}
+                                {lang.flag && (
+                                  <span
+                                    className="text-base leading-none"
+                                    aria-hidden
+                                  >
+                                    {lang.flag}
+                                  </span>
+                                )}
+                                <span>{lang.name}</span>
                               </SelectItem>
                             ))}
                           </SelectContent>
@@ -386,6 +402,8 @@ export default function DeckList() {
           {decks.map((deck) => {
             const sourceName = languagesById[deck.sourceLanguageId]?.name
             const targetName = languagesById[deck.targetLanguageId]?.name
+            const sourceFlag = languagesById[deck.sourceLanguageId]?.flag
+            const targetFlag = languagesById[deck.targetLanguageId]?.flag
             return (
               <DeckCard
                 key={deck.id}
@@ -394,6 +412,8 @@ export default function DeckList() {
                 languageNames={{
                   source: sourceName,
                   target: targetName,
+                  sourceFlag,
+                  targetFlag,
                 }}
                 onStudy={(deckId) => router.push(`/study?deckId=${deckId}`)}
                 actions={
@@ -406,7 +426,6 @@ export default function DeckList() {
                         : unpublishMutation.mutate(deck.id)
                     }
                     onDelete={() => deleteMutation.mutate(deck.id)}
-                    triggerClassName="opacity-0 transition-opacity group-hover:opacity-100 focus-visible:opacity-100"
                   />
                 }
               />

@@ -21,15 +21,27 @@ export function CardFront({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-paper p-6 shadow-[0_30px_80px_-30px_rgba(0,0,0,0.25)] sm:p-8",
+        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-card p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3),0_2px_4px_-1px_rgba(0,0,0,0.1)] sm:p-8",
         className,
       )}
     >
       <div className="flex items-start justify-between">
         <div>
           {data.source && data.target && (
-            <div className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
-              {data.source} → {data.target}
+            <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70">
+              {data.sourceFlag && (
+                <span className="text-base leading-none" aria-hidden>
+                  {data.sourceFlag}
+                </span>
+              )}
+              <span>{data.source}</span>
+              <span className="text-ink/30">→</span>
+              {data.targetFlag && (
+                <span className="text-base leading-none" aria-hidden>
+                  {data.targetFlag}
+                </span>
+              )}
+              <span>{data.target}</span>
             </div>
           )}
           {data.topic && (
@@ -78,8 +90,15 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
       <div className="flex items-start justify-between">
         <div>
           {data.target && (
-            <div className="font-mono-tag text-[10px] uppercase tracking-widest text-paper/55">
-              Definition · {data.target}
+            <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-paper/70">
+              {data.targetFlag && (
+                <span className="text-base leading-none" aria-hidden>
+                  {data.targetFlag}
+                </span>
+              )}
+              <span>{data.target}</span>
+              <span className="text-paper/40">·</span>
+              <span>Definition</span>
             </div>
           )}
           {data.topic && (
@@ -103,12 +122,15 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
         </p>
       </div>
 
-      <div className="flex items-center justify-between border-t border-paper/10 pt-4 text-xs text-paper/55">
-        {data.source && (
-          <span className="font-mono-tag uppercase tracking-wider">
-            {data.source}
-          </span>
-        )}
+      <div className="flex items-center justify-between border-t border-paper/10 pt-4 text-sm text-paper/55">
+        <div className="flex items-center gap-1.5 font-mono-tag uppercase tracking-wider">
+          {data.sourceFlag && (
+            <span className="text-base leading-none" aria-hidden>
+              {data.sourceFlag}
+            </span>
+          )}
+          {data.source && <span>{data.source}</span>}
+        </div>
         <span
           className="font-display-soft italic"
           style={{ fontVariationSettings: "'opsz' 30, 'SOFT' 100" }}

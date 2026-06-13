@@ -1,6 +1,5 @@
 "use client"
 
-import type { MouseEvent } from "react"
 import {
   Download,
   Globe,
@@ -35,12 +34,6 @@ export function DeckActionsMenu({
   onDelete,
   triggerClassName,
 }: DeckActionsMenuProps) {
-  const stop = (fn: () => void) => (e: MouseEvent) => {
-    e.stopPropagation()
-    e.preventDefault()
-    fn()
-  }
-
   const handleExport = () => {
     const url = `/api/v1/decks/${deck.id}/export`
     const a = document.createElement("a")
@@ -63,18 +56,17 @@ export function DeckActionsMenu({
             size="icon"
             aria-label="Deck actions"
             className={cn("h-8 w-8", triggerClassName)}
-            onClick={stop(() => {})}
           />
         }
       >
         <MoreHorizontal className="h-4 w-4" />
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
-        <DropdownMenuItem onClick={stop(onEdit)}>
+        <DropdownMenuItem onClick={onEdit}>
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={stop(onTogglePublish)}>
+        <DropdownMenuItem onClick={onTogglePublish}>
           {isPrivate ? (
             <>
               <Globe className="mr-2 h-4 w-4" />
@@ -87,14 +79,11 @@ export function DeckActionsMenu({
             </>
           )}
         </DropdownMenuItem>
-        <DropdownMenuItem onClick={stop(handleExport)}>
+        <DropdownMenuItem onClick={handleExport}>
           <Download className="mr-2 h-4 w-4" />
           Export
         </DropdownMenuItem>
-        <DropdownMenuItem
-          className="text-destructive"
-          onClick={stop(onDelete)}
-        >
+        <DropdownMenuItem className="text-destructive" onClick={onDelete}>
           <Trash2 className="mr-2 h-4 w-4" />
           Delete
         </DropdownMenuItem>

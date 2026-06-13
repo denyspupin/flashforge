@@ -10,6 +10,7 @@ import {
   userAchievements,
 } from "@/lib/db/schema"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { enrichLanguages } from "@/lib/languages/flags"
 import type { Language } from "@/types"
 
 export type ProfileData = {
@@ -47,8 +48,9 @@ export async function loadProfileData(): Promise<ProfileData | null> {
   const email = await resolvePrimaryEmail()
 
   const allLanguages = await db.select().from(languages)
+  const enrichedLanguages = enrichLanguages(allLanguages)
   const languagesById: Record<string, Language> = Object.fromEntries(
-    allLanguages.map((l) => [l.id, l]),
+    enrichedLanguages.map((l) => [l.id, l]),
   )
   const nativeLanguage = user.nativeLanguageId
     ? languagesById[user.nativeLanguageId] ?? null
@@ -106,7 +108,7 @@ export async function loadProfileData(): Promise<ProfileData | null> {
     },
     clerkImageUrl,
     nativeLanguage,
-    languages: allLanguages,
+    languages: enrichedLanguages,
     stats: {
       deckCount: deckCountRow?.count ?? 0,
       cardCount: cardCountRow?.count ?? 0,

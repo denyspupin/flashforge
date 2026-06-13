@@ -418,7 +418,7 @@ export default function DeckDetailPage() {
 
       <div className="space-y-3">
         {deck.cards?.length === 0 ? (
-          <Card className="flex flex-col items-center justify-center p-12 text-center">
+          <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <Plus className="h-12 w-12 text-muted-foreground mb-4" />
             <h3 className="text-lg font-semibold">No cards yet</h3>
             <p className="text-muted-foreground mt-1 mb-4">
