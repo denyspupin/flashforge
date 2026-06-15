@@ -1,11 +1,13 @@
 "use client"
 
 import { useRef, useState } from "react"
+import { useQuery } from "@tanstack/react-query"
 import {
   ChevronDown,
   ClipboardPaste,
   Copy,
   FileUp,
+  Loader2,
   Sparkles,
   Upload,
   X,
@@ -33,8 +35,11 @@ import { Textarea } from "@/components/ui/textarea"
 import { useDeckImport } from "@/hooks/use-deck-import"
 import { DECK_GENERATION_PROMPT } from "@/lib/ai-prompt"
 import { importPayloadSchema, type ImportPayload } from "@/lib/export-schema"
-import { DECK_EXPORT } from "@/lib/constants"
+import { DECK_EXPORT, PROMPT_TEMPLATES } from "@/lib/constants"
 import { cn } from "@/lib/utils"
+import type { ApiResponse } from "@/lib/api/response"
+import type { AdminPrompt } from "@/lib/queries/admin-prompts"
+import { queryKeys } from "@/hooks"
 import type { Deck, Language } from "@/types/deck"
 
 type ImportMode = "new" | "existing"
@@ -71,6 +76,15 @@ function languageName(
   )
 }
 
+async function fetchActivePrompt(slug: string): Promise<AdminPrompt | null> {
+  const res = await fetch(
+    `/api/v1/prompts/active?slug=${encodeURIComponent(slug)}`,
+  )
+  if (!res.ok) return null
+  const body: ApiResponse<AdminPrompt> = await res.json()
+  return body.data
+}
+
 export function ImportDialog({
   open,
   onOpenChange,
@@ -88,6 +102,20 @@ export function ImportDialog({
   const [copied, setCopied] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
   const importMutation = useDeckImport()
+
+  const activePromptQuery = useQuery({
+    queryKey: queryKeys.activePrompt(PROMPT_TEMPLATES.DECK_GENERATION_SLUG),
+    queryFn: () =>
+      fetchActivePrompt(PROMPT_TEMPLATES.DECK_GENERATION_SLUG),
+    staleTime: 60_000,
+  })
+
+  const promptBody =
+    activePromptQuery.data?.body ?? DECK_GENERATION_PROMPT
+  const promptVersion = activePromptQuery.data?.version ?? null
+  const promptSource: "remote" | "fallback" = activePromptQuery.data
+    ? "remote"
+    : "fallback"
 
   const tryParse = (text: string, readErrorMessage: string) => {
     if (!text.trim()) {
@@ -168,7 +196,7 @@ export function ImportDialog({
 
   const copyPrompt = async () => {
     try {
-      await navigator.clipboard.writeText(DECK_GENERATION_PROMPT)
+      await navigator.clipboard.writeText(promptBody)
       setCopied(true)
       setTimeout(() => setCopied(false), 1500)
     } catch {
@@ -352,18 +380,40 @@ export function ImportDialog({
               </button>
               {promptOpen && (
                 <div className="space-y-2 border-t px-3 py-3">
-                  <p className="text-xs text-muted-foreground">
-                    Copy this prompt and paste it into any AI chat. Ask it to
-                    generate a deck and save the response as a .json file.
-                  </p>
-                  <pre className="max-h-64 overflow-auto rounded-md border bg-background p-3 font-mono text-[11px] leading-relaxed">
-                    {DECK_GENERATION_PROMPT}
-                  </pre>
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="text-xs text-muted-foreground">
+                      Copy this prompt and paste it into any AI chat. Ask it
+                      to generate a deck and save the response as a .json
+                      file.
+                    </p>
+                    {promptVersion !== null ? (
+                      <span className="text-muted-foreground rounded-md bg-ink/5 px-1.5 py-0.5 font-mono text-[10px]">
+                        v{promptVersion}
+                      </span>
+                    ) : null}
+                  </div>
+                  {activePromptQuery.isLoading ? (
+                    <div className="text-muted-foreground flex items-center gap-2 rounded-md border bg-background p-3 text-xs">
+                      <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                      Loading latest prompt…
+                    </div>
+                  ) : (
+                    <pre className="max-h-64 overflow-auto rounded-md border bg-background p-3 font-mono text-[11px] leading-relaxed">
+                      {promptBody}
+                    </pre>
+                  )}
+                  {promptSource === "fallback" ? (
+                    <p className="text-muted-foreground text-[10px]">
+                      Showing the built-in default. Admins can change this
+                      under Admin → Prompts.
+                    </p>
+                  ) : null}
                   <Button
                     type="button"
                     variant="outline"
                     size="sm"
                     onClick={copyPrompt}
+                    disabled={activePromptQuery.isLoading}
                   >
                     <Copy className="mr-2 h-3 w-3" />
                     {copied ? "Copied!" : "Copy prompt"}

@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm"
 import {
   pgTable,
   uuid,
@@ -209,3 +210,34 @@ export const notifications = pgTable("notifications", {
     .defaultNow()
     .notNull(),
 })
+
+export const promptTemplates = pgTable(
+  "prompt_templates",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    slug: varchar("slug", { length: 64 }).notNull(),
+    version: integer("version").notNull(),
+    body: text("body").notNull(),
+    description: varchar("description", { length: 256 }),
+    changelog: text("changelog"),
+    isActive: boolean("is_active").default(false).notNull(),
+    createdById: uuid("created_by_id").references(() => users.id, {
+      onDelete: "set null",
+    }),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    uniqueIndex("prompt_templates_slug_version_idx")
+      .on(table.slug, table.version)
+      .where(sql`${table.deletedAt} IS NULL`),
+    uniqueIndex("prompt_templates_active_slug_idx")
+      .on(table.slug)
+      .where(sql`${table.isActive} = true AND ${table.deletedAt} IS NULL`),
+  ]
+)

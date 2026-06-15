@@ -52,3 +52,9 @@ export const DECK_EXPORT = {
   GENERATOR: "flashforge" as const,
   MAX_IMPORT_CARDS: 1000,
 } as const
+
+export const PROMPT_TEMPLATES = {
+  DECK_GENERATION_SLUG: "deck-generation",
+  MAX_BODY_LENGTH: 50_000,
+  MAX_DESCRIPTION_LENGTH: 256,
+} as const

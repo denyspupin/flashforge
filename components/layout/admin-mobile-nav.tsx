@@ -6,6 +6,7 @@ import {
   Tag,
   Globe,
   Shield,
+  MessageSquareQuote,
   type LucideIcon,
 } from "lucide-react"
 
@@ -28,6 +29,11 @@ const NAV_ITEMS: AdminNavItem[] = [
   },
   { href: "/admin/users", label: "Users", icon: Shield },
   { href: "/admin/decks", label: "Decks", icon: Library },
+  {
+    href: "/admin/prompts",
+    label: "Prompts",
+    icon: MessageSquareQuote,
+  },
   { href: "/admin/topics", label: "Topics", icon: Tag },
   { href: "/admin/languages", label: "Languages", icon: Globe },
 ]
