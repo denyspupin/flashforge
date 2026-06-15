@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Pencil } from "lucide-react"
 
 import {
@@ -64,9 +65,12 @@ export function AvatarEditor({
         }
       >
         {avatarUrl ? (
-          <img
+          <Image
             src={avatarUrl}
             alt={alt}
+            width={80}
+            height={80}
+            unoptimized
             className="h-full w-full object-cover"
           />
         ) : (

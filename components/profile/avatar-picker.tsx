@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { useQueryClient } from "@tanstack/react-query"
 import { Check, Link2, RefreshCw, RotateCcw } from "lucide-react"
 
@@ -155,11 +156,12 @@ export function AvatarPicker({
                 isSelected && "ring-2 ring-ember",
               )}
             >
-              <img
+              <Image
                 src={option.url}
                 alt=""
-                className="h-full w-full object-cover"
-                loading="lazy"
+                fill
+                unoptimized
+                className="object-cover"
               />
               {isSelected ? (
                 <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-ember text-paper shadow-sm">
