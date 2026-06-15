@@ -1,4 +1,4 @@
-import { and, desc, eq, sql } from "drizzle-orm"
+import { and, desc, eq, isNull, sql } from "drizzle-orm"
 import { currentUser } from "@clerk/nextjs/server"
 
 import { db } from "@/lib/db/client"
@@ -20,7 +20,7 @@ export type ProfileData = {
     email: string | null
     avatarUrl: string | null
     nativeLanguageId: string | null
-    isCurator: boolean
+    role: "user" | "curator" | "admin"
     createdAt: string
     xp: number
     streak: number
@@ -47,7 +47,10 @@ export async function loadProfileData(): Promise<ProfileData | null> {
   const displayName = await resolveDisplayName(user.name, user.avatarUrl)
   const email = await resolvePrimaryEmail()
 
-  const allLanguages = await db.select().from(languages)
+  const allLanguages = await db
+    .select()
+    .from(languages)
+    .where(isNull(languages.deletedAt))
   const enrichedLanguages = enrichLanguages(allLanguages)
   const languagesById: Record<string, Language> = Object.fromEntries(
     enrichedLanguages.map((l) => [l.id, l]),
@@ -98,7 +101,7 @@ export async function loadProfileData(): Promise<ProfileData | null> {
       email,
       avatarUrl: user.avatarUrl,
       nativeLanguageId: user.nativeLanguageId,
-      isCurator: user.isCurator,
+      role: user.role,
       createdAt: user.createdAt.toISOString(),
       xp: user.xp,
       streak: user.streak,

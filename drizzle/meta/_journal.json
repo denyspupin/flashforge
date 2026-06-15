@@ -5,8 +5,22 @@
     {
       "idx": 0,
       "version": "7",
-      "when": 1780913449926,
+      "when": 1730000000000,
       "tag": "0000_small_polaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1781554148859,
+      "tag": "0001_add_role_and_soft_delete",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1781554175484,
+      "tag": "0002_drop_is_curator",
       "breakpoints": true
     }
   ]

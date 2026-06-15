@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
-import { Bell, LogOut, Settings, User as UserIcon } from "lucide-react"
+import { Bell, LogOut, Settings, Shield, User as UserIcon } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -24,6 +24,7 @@ type MeResponse = {
   id: string
   name: string | null
   avatarUrl: string | null
+  role: "user" | "curator" | "admin"
 }
 
 async function fetchMe(): Promise<{ data: MeResponse }> {
@@ -153,6 +154,15 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
           <Bell className="h-4 w-4" />
           Notifications
         </DropdownMenuItem>
+
+        {meData?.data?.role === "admin" ? (
+          <>
+            <DropdownMenuItem onClick={() => router.push("/admin")}>
+              <Shield className="h-4 w-4" />
+              Admin
+            </DropdownMenuItem>
+          </>
+        ) : null}
 
         <DropdownMenuSeparator />
 
