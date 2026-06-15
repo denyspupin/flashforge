@@ -36,63 +36,162 @@ const initial = {
   startedAt: null,
 }
 
-export const useStudyStore = create<StudyState>((set, get) => ({
-  ...initial,
+const STORAGE_PREFIX = "study:v1:"
 
-  init: (sessionId, cards) =>
-    set({
-      ...initial,
-      sessionId,
-      cards,
-      results: Object.fromEntries(cards.map((c) => [c.id, false])),
-      startedAt: Date.now(),
-    }),
+type PersistedState = {
+  sessionId: string
+  cards: StudyCard[]
+  retryCards: StudyCard[]
+  index: number
+  phase: StudyPhase
+  flipped: boolean
+  results: Record<string, boolean>
+  startedAt: number
+}
 
-  reset: () => set({ ...initial }),
+function loadPersisted(sessionId: string): PersistedState | null {
+  if (typeof window === "undefined") return null
+  try {
+    const raw = localStorage.getItem(STORAGE_PREFIX + sessionId)
+    if (!raw) return null
+    const parsed = JSON.parse(raw) as PersistedState
+    if (parsed.sessionId !== sessionId) return null
+    return parsed
+  } catch {
+    return null
+  }
+}
 
-  flip: () => set({ flipped: !get().flipped }),
+function savePersisted(state: PersistedState) {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.setItem(
+      STORAGE_PREFIX + state.sessionId,
+      JSON.stringify(state),
+    )
+  } catch {
+    // ignore quota / disabled
+  }
+}
 
-  answer: (correct) => {
-    const state = get()
-    const activeQueue = state.phase === "retry" ? state.retryCards : state.cards
-    const current = activeQueue[state.index]
-    if (!current) return
+function clearPersisted(sessionId: string) {
+  if (typeof window === "undefined") return
+  try {
+    localStorage.removeItem(STORAGE_PREFIX + sessionId)
+  } catch {
+    // ignore
+  }
+}
 
-    const nextResults = { ...state.results, [current.id]: correct }
-    const isLast = state.index === activeQueue.length - 1
+function persistCurrent(get: () => StudyState) {
+  const state = get()
+  if (!state.sessionId) return
+  if (state.phase === "done") {
+    clearPersisted(state.sessionId)
+    return
+  }
+  savePersisted({
+    sessionId: state.sessionId,
+    cards: state.cards,
+    retryCards: state.retryCards,
+    index: state.index,
+    phase: state.phase,
+    flipped: state.flipped,
+    results: state.results,
+    startedAt: state.startedAt ?? Date.now(),
+  })
+}
 
-    if (state.phase === "pass1") {
-      if (isLast) {
-        const failedInPass1 = activeQueue.filter(
-          (c) => nextResults[c.id] === false
+export const useStudyStore = create<StudyState>((set, get) => {
+  const apply = (partial: Partial<StudyState>) => {
+    set(partial)
+    persistCurrent(get)
+  }
+
+  return {
+    ...initial,
+
+    init: (sessionId, cards) => {
+      const saved = loadPersisted(sessionId)
+      const freshResults: Record<string, boolean> = Object.fromEntries(
+        cards.map((c) => [c.id, false]),
+      )
+      if (saved && saved.cards.length === cards.length) {
+        const validRetry = saved.retryCards.filter((rc) =>
+          cards.some((c) => c.id === rc.id),
         )
-        if (failedInPass1.length === 0) {
-          set({ results: nextResults, phase: "done", flipped: false })
+        apply({
+          sessionId,
+          cards,
+          retryCards: validRetry,
+          index: Math.min(saved.index, Math.max(cards.length - 1, 0)),
+          phase: saved.phase,
+          flipped: saved.flipped,
+          results: { ...freshResults, ...saved.results },
+          startedAt: saved.startedAt,
+        })
+      } else {
+        apply({
+          ...initial,
+          sessionId,
+          cards,
+          results: freshResults,
+          startedAt: Date.now(),
+        })
+      }
+    },
+
+    reset: () => {
+      const sid = get().sessionId
+      apply({ ...initial, sessionId: null })
+      if (sid) clearPersisted(sid)
+    },
+
+    flip: () => apply({ flipped: !get().flipped }),
+
+    answer: (correct) => {
+      const state = get()
+      const activeQueue =
+        state.phase === "retry" ? state.retryCards : state.cards
+      const current = activeQueue[state.index]
+      if (!current) return
+
+      const nextResults = { ...state.results, [current.id]: correct }
+      const isLast = state.index === activeQueue.length - 1
+
+      if (state.phase === "pass1") {
+        if (isLast) {
+          const failedInPass1 = activeQueue.filter(
+            (c) => nextResults[c.id] === false
+          )
+          if (failedInPass1.length === 0) {
+            apply({ results: nextResults, phase: "done", flipped: false })
+          } else {
+            apply({
+              results: nextResults,
+              phase: "retry",
+              retryCards: failedInPass1,
+              index: 0,
+              flipped: false,
+            })
+          }
         } else {
-          set({
+          apply({
             results: nextResults,
-            phase: "retry",
-            retryCards: failedInPass1,
-            index: 0,
+            index: state.index + 1,
             flipped: false,
           })
         }
       } else {
-        set({
+        apply({
           results: nextResults,
-          index: state.index + 1,
+          phase: "done",
           flipped: false,
         })
       }
-    } else {
-      set({
-        results: nextResults,
-        phase: "done",
-        flipped: false,
-      })
-    }
-  },
-}))
+    },
+  }
+})
 
 export function selectCurrentCard(state: StudyState): StudyCard | null {
   if (state.phase === "done") return null

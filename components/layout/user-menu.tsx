@@ -3,7 +3,7 @@
 import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
-import { LogOut, Settings, User as UserIcon } from "lucide-react"
+import { Bell, LogOut, Settings, User as UserIcon } from "lucide-react"
 
 import {
   DropdownMenu,
@@ -146,6 +146,13 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
             ) : null}
           </div>
         </div>
+
+        <DropdownMenuSeparator />
+
+        <DropdownMenuItem onClick={() => router.push("/notifications")}>
+          <Bell className="h-4 w-4" />
+          Notifications
+        </DropdownMenuItem>
 
         <DropdownMenuSeparator />
 

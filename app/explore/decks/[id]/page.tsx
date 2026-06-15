@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
 import { useState } from "react"
 import { useUser } from "@clerk/nextjs"
@@ -146,7 +147,7 @@ export default function PublicDeckPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
+      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
         <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
         <div className="h-32 bg-muted animate-pulse rounded" />
       </main>
@@ -155,7 +156,7 @@ export default function PublicDeckPage() {
 
   if (!deck) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
+      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
           <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
           <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
@@ -171,7 +172,7 @@ export default function PublicDeckPage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
+    <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
       <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
         <Button
           variant="ghost"
@@ -222,7 +223,7 @@ export default function PublicDeckPage() {
           )}
         </div>
 
-        {isSignedIn && (
+        {isSignedIn ? (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             {isOwner ? (
               <Button
@@ -235,15 +236,15 @@ export default function PublicDeckPage() {
             ) : (
               <>
                 <Button
-                  variant="outline"
+                  variant="ghost"
                   onClick={onFork}
                   disabled={pendingAction !== null}
-                  className="w-full gap-1.5 sm:w-auto"
+                  className="w-full sm:w-auto"
                 >
                   {pendingAction === "fork" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
                   ) : (
-                    <Copy className="h-4 w-4" />
+                    <Copy className="mr-1.5 h-4 w-4" />
                   )}
                   {pendingAction === "fork" ? "Forking…" : "Fork to my decks"}
                 </Button>
@@ -261,6 +262,31 @@ export default function PublicDeckPage() {
                 </Button>
               </>
             )}
+          </div>
+        ) : (
+          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+            <Link
+              href={`/explore/decks/${deck.id}/study`}
+              className="w-full sm:w-auto"
+            >
+              <Button className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto">
+                <Play className="h-4 w-4" />
+                Study as guest
+              </Button>
+            </Link>
+            <Link
+              href={`/login?redirect_url=${encodeURIComponent(
+                `/explore/decks/${deck.id}/study`,
+              )}`}
+              className="w-full sm:w-auto"
+            >
+              <Button
+                variant="outline"
+                className="w-full gap-1.5 sm:w-auto"
+              >
+                Sign in to save progress
+              </Button>
+            </Link>
           </div>
         )}
       </div>

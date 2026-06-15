@@ -91,7 +91,7 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
     .from(decks)
     .where(eq(decks.creatorId, user.id))
     .orderBy(desc(decks.updatedAt))
-    .limit(3)
+    .limit(6)
 
   const languageIds = Array.from(
     new Set(

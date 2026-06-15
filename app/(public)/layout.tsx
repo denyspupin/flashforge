@@ -1,10 +1,18 @@
+import { redirect } from "next/navigation"
+import { auth } from "@clerk/nextjs/server"
+
 import { SiteHeader } from "@/components/landing/site-header"
 
-export default function PublicLayout({
+export default async function PublicLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const { userId } = await auth()
+  if (userId) {
+    redirect("/dashboard")
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />

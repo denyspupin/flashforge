@@ -1,18 +1,22 @@
 "use client"
 
-import { useCallback, useEffect, useState } from "react"
+import { useCallback, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
 import { AnimatePresence, motion } from "framer-motion"
 import { ArrowLeft, X } from "lucide-react"
-import { useMutation } from "@tanstack/react-query"
 import { useShallow } from "zustand/shallow"
 
-import { useStudyStore, selectCurrentCard, selectProgress, selectResults, type StudyCard } from "@/stores/study-store"
+import {
+  useStudyStore,
+  selectCurrentCard,
+  selectProgress,
+  type StudyCard,
+} from "@/stores/study-store"
 import { CardFront, CardBack, FlipCard } from "@/components/card"
 import { Button } from "@/components/ui/button"
 import { StudyProgress } from "./study-progress"
 import { StudyControls } from "./study-controls"
-import { StudySummary } from "./study-summary"
+import { GuestStudySummary } from "./guest-study-summary"
 
 type DeckInfo = {
   id: string
@@ -23,42 +27,13 @@ type DeckInfo = {
   targetLanguageFlag?: string
 }
 
-type CompleteResponse = {
-  session: { id: string; cardsReviewed: number; cardsCorrect: number; failedCardIds: string[] }
-  xpAwarded: number
-  multiplier: number
-  newStreak: number
-  totalXp: number
-}
-
-type StudyPlayerProps = {
-  sessionId: string
+type GuestStudyPlayerProps = {
   deck: DeckInfo
   cards: StudyCard[]
-  initialStreak: number
 }
 
-async function postComplete(
-  sessionId: string,
-  results: { cardId: string; correct: boolean }[]
-): Promise<{ data: CompleteResponse }> {
-  const res = await fetch(`/api/v1/study/${sessionId}/complete`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ results }),
-  })
-  if (!res.ok) throw new Error("Failed to complete session")
-  return res.json()
-}
-
-export function StudyPlayer({
-  sessionId,
-  deck,
-  cards,
-  initialStreak,
-}: StudyPlayerProps) {
+export function GuestStudyPlayer({ deck, cards }: GuestStudyPlayerProps) {
   const router = useRouter()
-  const [summary, setSummary] = useState<CompleteResponse | null>(null)
 
   const init = useStudyStore((s) => s.init)
   const reset = useStudyStore((s) => s.reset)
@@ -67,36 +42,39 @@ export function StudyPlayer({
   const phase = useStudyStore((s) => s.phase)
   const flipped = useStudyStore((s) => s.flipped)
   const index = useStudyStore((s) => s.index)
+  const results = useStudyStore((s) => s.results)
   const cardsInPass1 = useStudyStore((s) => s.cards.length)
   const retryCount = useStudyStore((s) => s.retryCards.length)
   const current = useStudyStore(selectCurrentCard)
   const { position, total } = useStudyStore(useShallow(selectProgress))
 
   useEffect(() => {
-    init(sessionId, cards)
-  }, [sessionId, cards, init])
+    init(deck.id, cards)
+  }, [deck.id, cards, init])
 
-  const completeMutation = useMutation({
-    mutationFn: () =>
-      postComplete(sessionId, selectResults(useStudyStore.getState())),
-    onSuccess: (res) => setSummary(res.data),
-  })
-
-  useEffect(() => {
-    if (phase === "done" && !summary && !completeMutation.isPending) {
-      completeMutation.mutate()
+  const summary = useMemo(() => {
+    if (phase !== "done") return null
+    const entries = Object.entries(results)
+    const failedCardIds = entries
+      .filter(([, correct]) => correct === false)
+      .map(([id]) => id)
+    const cardsCorrect = entries.filter(([, correct]) => correct).length
+    return {
+      cardsReviewed: entries.length,
+      cardsCorrect,
+      failedCardIds,
     }
-  }, [phase, summary, completeMutation])
+  }, [phase, results])
 
   const handleExit = useCallback(() => {
-    router.push(`/decks/${deck.id}`)
+    router.push(`/explore/decks/${deck.id}`)
   }, [router, deck.id])
 
   const handleBack = useCallback(() => {
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back()
     } else {
-      router.push(`/decks/${deck.id}`)
+      router.push(`/explore/decks/${deck.id}`)
     }
   }, [router, deck.id])
 
@@ -120,8 +98,11 @@ export function StudyPlayer({
 
   function handleRetry() {
     reset()
-    init(sessionId, cards)
-    setSummary(null)
+    init(deck.id, cards)
+  }
+
+  function handleStudyAnother() {
+    router.push("/explore")
   }
 
   if (cards.length === 0) {
@@ -131,10 +112,10 @@ export function StudyPlayer({
           Nothing to study yet
         </h1>
         <p className="mt-2 text-ink/65">
-          “{deck.title}” doesn’t have any cards. Add a few, then come back.
+          “{deck.title}” doesn’t have any cards yet.
         </p>
         <Button
-          onClick={() => router.push(`/decks/${deck.id}`)}
+          onClick={() => router.push(`/explore/decks/${deck.id}`)}
           className="mt-6 h-11 rounded-full bg-ink px-6 text-paper"
         >
           Back to deck
@@ -145,15 +126,14 @@ export function StudyPlayer({
 
   if (summary) {
     return (
-      <StudySummary
-        cardsReviewed={summary.session.cardsReviewed}
-        cardsCorrect={summary.session.cardsCorrect}
-        failedCardIds={summary.session.failedCardIds}
-        xpAwarded={summary.xpAwarded}
-        multiplier={summary.multiplier}
-        newStreak={summary.newStreak}
+      <GuestStudySummary
+        deckId={deck.id}
         deckTitle={deck.title}
+        cardsReviewed={summary.cardsReviewed}
+        cardsCorrect={summary.cardsCorrect}
+        failedCardIds={summary.failedCardIds}
         onRetry={handleRetry}
+        onStudyAnother={handleStudyAnother}
       />
     )
   }
@@ -185,7 +165,7 @@ export function StudyPlayer({
             size="icon"
             onClick={handleBack}
             aria-label="Go back"
-            className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
+            className="h-9 w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -204,12 +184,7 @@ export function StudyPlayer({
         </Button>
       </div>
 
-      <StudyProgress
-        phase={phase}
-        position={position}
-        total={total}
-        streak={initialStreak}
-      />
+      <StudyProgress phase={phase} position={position} total={total} />
 
       <div className="relative">
         <AnimatePresence mode="wait" initial={false}>
