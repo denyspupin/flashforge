@@ -1,12 +1,21 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
-import { Bell, Compass, Layers, Library, LayoutDashboard, Trophy } from "lucide-react"
+import {
+  Bell,
+  Compass,
+  Layers,
+  Library,
+  LayoutDashboard,
+  Trophy,
+} from "lucide-react"
 
 import { auth } from "@clerk/nextjs/server"
 
 import { AppHeader } from "@/components/layout/app-header"
 import { HeaderActions } from "@/components/layout/header-actions"
 import { MobileNav } from "@/components/layout/mobile-nav"
+import { MobileUserFooter } from "@/components/layout/mobile-user-footer"
+import { MobileAuthFooter } from "@/components/landing/mobile-auth-footer"
 
 type NavItem = { href: string; label: string; icon: ReactNode }
 
@@ -100,7 +109,13 @@ export async function SiteHeader() {
       brandHref={signedIn ? "/dashboard" : "/"}
       nav={<PublicNav />}
       actions={<HeaderActions />}
-      mobileNav={<MobileNav items={mobileItems} brand={BRAND} />}
+      mobileNav={
+        <MobileNav
+          items={mobileItems}
+          brand={BRAND}
+          footer={signedIn ? <MobileUserFooter /> : <MobileAuthFooter />}
+        />
+      }
     />
   )
 }

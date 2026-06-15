@@ -104,7 +104,7 @@ export default function ExplorePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 pb-safe pt-4 sm:px-6 sm:pt-6">
+    <main className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">

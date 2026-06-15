@@ -34,7 +34,7 @@ export function HeaderActions({ className }: { className?: string }) {
                 New deck
               </Button>
             </Link>
-            <div className="ml-1">
+            <div className="ml-1 hidden sm:block">
               <UserMenu />
             </div>
           </Show>
@@ -49,7 +49,7 @@ export function HeaderActions({ className }: { className?: string }) {
             Sign in
           </Button>
         </Link>
-        <Link href="/register">
+        <Link href="/register" className="hidden sm:inline-flex">
           <Button
             size="sm"
             className="h-9 rounded-full bg-ink px-4 text-paper hover:bg-ink/85"
