@@ -6,6 +6,7 @@ import {
   Globe,
   Shield,
   ArrowLeft,
+  MessageSquareQuote,
 } from "lucide-react"
 
 import { AdminMobileNav } from "@/components/layout/admin-mobile-nav"
@@ -18,6 +19,7 @@ const NAV_ITEMS = [
   { href: "/admin", label: "Overview", icon: LayoutDashboard },
   { href: "/admin/users", label: "Users", icon: Shield },
   { href: "/admin/decks", label: "Decks", icon: Library },
+  { href: "/admin/prompts", label: "Prompts", icon: MessageSquareQuote },
   { href: "/admin/topics", label: "Topics", icon: Tag },
   { href: "/admin/languages", label: "Languages", icon: Globe },
 ]

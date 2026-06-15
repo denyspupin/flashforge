@@ -11,6 +11,7 @@ export const queryKeys = {
   studySession: (id: string) => ["study", id] as const,
   studyHistory: () => ["study", "history"] as const,
   notifications: () => ["notifications"] as const,
+  activePrompt: (slug: string) => ["prompts", "active", slug] as const,
   admin: {
     stats: () => ["admin", "stats"] as const,
     users: (filters?: AdminUserFilters) =>
@@ -23,8 +24,16 @@ export const queryKeys = {
     topic: (id: string) => ["admin", "topics", id] as const,
     languages: () => ["admin", "languages"] as const,
     language: (id: string) => ["admin", "languages", id] as const,
+    prompts: (filters?: AdminPromptFilters) =>
+      ["admin", "prompts", filters ?? {}] as const,
+    prompt: (id: string) => ["admin", "prompts", id] as const,
   },
 } as const
+
+export type AdminPromptFilters = {
+  slug?: string
+  includeDeleted?: boolean
+}
 
 export type AdminUserFilters = {
   q?: string

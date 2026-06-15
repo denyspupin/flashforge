@@ -1,3 +1,11 @@
+/**
+ * Default deck-generation prompt body used as:
+ *  - a fallback in `ImportDialog` when the active DB prompt cannot be loaded
+ *  - the initial v1 body in `scripts/seed-prompts.ts`
+ *
+ * The runtime prompt is served from the `prompt_templates` table and is
+ * managed by admins at /admin/prompts.
+ */
 export const DECK_GENERATION_PROMPT = `You are an expert language teacher creating a flashcard deck for the FlashForge app.
 Your output must be a single JSON object I can save as a .json file and import into FlashForge.
 

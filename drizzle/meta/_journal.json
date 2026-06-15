@@ -22,6 +22,13 @@
       "when": 1781554175484,
       "tag": "0002_drop_is_curator",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1781560390471,
+      "tag": "0003_flowery_elektra",
+      "breakpoints": true
     }
   ]
 }
