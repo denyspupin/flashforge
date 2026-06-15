@@ -14,7 +14,6 @@ import {
   DeckCardSkeleton,
 } from "@/components/deck/deck-card"
 import { queryKeys } from "@/hooks"
-import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
 
 async function fetchCommunityDecks(query?: string): Promise<{ data: Deck[] }> {
@@ -49,12 +48,29 @@ async function forkDeck(id: string): Promise<{ data: { id: string } }> {
   return res.json()
 }
 
+async function startStudy(
+  deckId: string,
+): Promise<{ data: { session: { id: string } } }> {
+  const res = await fetch("/api/v1/study", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ deck_id: deckId }),
+  })
+  if (!res.ok) {
+    const body = await res.json().catch(() => null)
+    const message = body?.error?.message ?? "Couldn’t start a study session"
+    throw new Error(message)
+  }
+  return res.json()
+}
+
 export default function ExplorePage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const { isSignedIn, isLoaded } = useUser()
   const [query, setQuery] = useState("")
   const [pendingForkId, setPendingForkId] = useState<string | null>(null)
+  const [pendingStudyId, setPendingStudyId] = useState<string | null>(null)
   const [forkError, setForkError] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
@@ -94,6 +110,21 @@ export default function ExplorePage() {
     },
   })
 
+  const studyMutation = useMutation({
+    mutationFn: startStudy,
+    onSuccess: (result) => {
+      router.push(`/study/${result.data.session.id}`)
+    },
+    onError: (error) => {
+      setForkError(
+        error instanceof Error ? error.message : "Couldn’t start a study session",
+      )
+    },
+    onSettled: () => {
+      setPendingStudyId(null)
+    },
+  })
+
   const decks = data?.data || []
 
   const onFork = (deck: Deck) => {
@@ -103,8 +134,15 @@ export default function ExplorePage() {
     forkMutation.mutate(deck.id)
   }
 
+  const onStudy = (deck: Deck) => {
+    if (!isSignedIn) return
+    setForkError(null)
+    setPendingStudyId(deck.id)
+    studyMutation.mutate(deck.id)
+  }
+
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 pt-4 sm:px-6 sm:pt-6">
+    <main className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
       <div className="mb-8 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -180,18 +218,15 @@ export default function ExplorePage() {
                 }
                 onStudy={
                   isSignedIn
-                    ? undefined
+                    ? () => onStudy(deck)
                     : (id) => router.push(`/explore/decks/${id}/study`)
                 }
                 actions={
                   isSignedIn ? (
                     <Button
                       size="sm"
-                      variant={isMine ? "outline" : "default"}
-                      className={cn(
-                        "h-8 gap-1.5 px-3 text-xs",
-                        !isMine && "bg-ember text-primary-foreground hover:bg-ember-deep",
-                      )}
+                      variant="ghost"
+                      className="h-8 px-3 text-xs"
                       disabled={isForking}
                       onClick={(e) => {
                         e.stopPropagation()
@@ -203,11 +238,11 @@ export default function ExplorePage() {
                       }}
                     >
                       {isForking ? (
-                        <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                        <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                       ) : isMine ? (
-                        <Globe className="h-3.5 w-3.5" />
+                        <Globe className="mr-1.5 h-3.5 w-3.5" />
                       ) : (
-                        <Copy className="h-3.5 w-3.5" />
+                        <Copy className="mr-1.5 h-3.5 w-3.5" />
                       )}
                       {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
                     </Button>
