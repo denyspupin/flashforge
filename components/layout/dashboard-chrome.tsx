@@ -2,7 +2,6 @@ import Link from "next/link"
 import {
   LayoutDashboard,
   Library,
-  Bell,
   Compass,
   Plus,
   Sparkles,
@@ -30,11 +29,6 @@ const NAV_ITEMS = [
     href: "/explore",
     label: "Explore",
     icon: <Compass className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    icon: <Bell className="h-4 w-4" strokeWidth={1.75} />,
   },
 ]
 
