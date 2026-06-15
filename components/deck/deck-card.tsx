@@ -121,7 +121,7 @@ function DeckCard({
               onClick={() => onStudy!(deck.id)}
               aria-label={`Study ${deck.title}`}
               title="Study"
-              className="h-8 w-8 rounded-full bg-ink text-paper scale-90 opacity-0 shadow-sm transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-ink/90 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-visible:scale-100 focus-visible:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100"
+              className="h-11 w-11 sm:h-8 sm:w-8 rounded-full bg-ink text-paper scale-90 opacity-0 shadow-sm transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-ink/90 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-visible:scale-100 focus-visible:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100"
             >
               <Play className="h-4 w-4" />
             </Button>

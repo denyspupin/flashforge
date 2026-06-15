@@ -55,7 +55,7 @@ export function DeckActionsMenu({
             variant="ghost"
             size="icon"
             aria-label="Deck actions"
-            className={cn("h-8 w-8", triggerClassName)}
+            className={cn("h-11 w-11 sm:h-8 sm:w-8", triggerClassName)}
           />
         }
       >

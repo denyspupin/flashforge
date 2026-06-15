@@ -185,7 +185,7 @@ export function StudyPlayer({
             size="icon"
             onClick={handleBack}
             aria-label="Go back"
-            className="h-9 w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
+            className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
