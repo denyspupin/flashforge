@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { createContext, useContext, useState, type ReactNode } from "react"
+import { createContext, use, useState, type ReactNode } from "react"
 import { Menu, X } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -32,7 +32,7 @@ type MobileNavContextValue = {
 const MobileNavContext = createContext<MobileNavContextValue | null>(null)
 
 export function useMobileNav(): MobileNavContextValue {
-  const ctx = useContext(MobileNavContext)
+  const ctx = use(MobileNavContext)
   return ctx ?? { close: () => {} }
 }
 

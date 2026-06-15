@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, ShieldOff, UserX } from "lucide-react"
@@ -234,10 +235,13 @@ export function AdminUsersView() {
                           className="flex items-center gap-2.5"
                         >
                           {user.avatarUrl ? (
-                            <img
+                            <Image
                               src={user.avatarUrl}
                               alt=""
                               aria-hidden
+                              width={28}
+                              height={28}
+                              unoptimized
                               className="h-7 w-7 rounded-full object-cover"
                             />
                           ) : (

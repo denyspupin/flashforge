@@ -1,6 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
 import { Bell, LogOut, Settings, Shield, User as UserIcon } from "lucide-react"
@@ -109,10 +110,13 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
         </span>
         <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt=""
               aria-hidden
+              width={32}
+              height={32}
+              unoptimized
               className="h-full w-full object-cover"
             />
           ) : (
@@ -125,10 +129,13 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         <div className="flex items-center gap-3 px-2.5 py-2.5">
           {avatarUrl ? (
-            <img
+            <Image
               src={avatarUrl}
               alt=""
               aria-hidden
+              width={36}
+              height={36}
+              unoptimized
               className="h-9 w-9 shrink-0 rounded-full object-cover"
             />
           ) : (

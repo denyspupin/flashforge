@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import Link from "next/link"
+import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
@@ -164,10 +165,13 @@ export function AdminUserDetailView({
       <Card>
         <CardHeader className="flex flex-row items-start gap-4 space-y-0">
           {data.avatarUrl ? (
-            <img
+            <Image
               src={data.avatarUrl}
               alt=""
               aria-hidden
+              width={64}
+              height={64}
+              unoptimized
               className="h-16 w-16 rounded-full object-cover"
             />
           ) : (
