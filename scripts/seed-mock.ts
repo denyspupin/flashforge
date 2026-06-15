@@ -37,7 +37,7 @@ const MOCK_USERS: Array<{
   nativeLang: LangCode
   xp: number
   streak: number
-  isCurator: boolean
+  role: "user" | "curator" | "admin"
   daysAgoStreakUpdate: number
 }> = [
   {
@@ -46,7 +46,7 @@ const MOCK_USERS: Array<{
     nativeLang: "en",
     xp: 1200,
     streak: 5,
-    isCurator: true,
+    role: "curator",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -55,7 +55,7 @@ const MOCK_USERS: Array<{
     nativeLang: "es",
     xp: 3400,
     streak: 12,
-    isCurator: true,
+    role: "curator",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -64,7 +64,7 @@ const MOCK_USERS: Array<{
     nativeLang: "de",
     xp: 2800,
     streak: 8,
-    isCurator: true,
+    role: "curator",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -73,7 +73,7 @@ const MOCK_USERS: Array<{
     nativeLang: "fr",
     xp: 1900,
     streak: 4,
-    isCurator: true,
+    role: "curator",
     daysAgoStreakUpdate: 1,
   },
   {
@@ -82,7 +82,7 @@ const MOCK_USERS: Array<{
     nativeLang: "ja",
     xp: 1500,
     streak: 2,
-    isCurator: false,
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -91,7 +91,7 @@ const MOCK_USERS: Array<{
     nativeLang: "pt",
     xp: 950,
     streak: 6,
-    isCurator: false,
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -100,7 +100,7 @@ const MOCK_USERS: Array<{
     nativeLang: "ru",
     xp: 700,
     streak: 0,
-    isCurator: false,
+    role: "user",
     daysAgoStreakUpdate: 14,
   },
   {
@@ -109,7 +109,7 @@ const MOCK_USERS: Array<{
     nativeLang: "en",
     xp: 250,
     streak: 1,
-    isCurator: false,
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
 ]
@@ -1193,7 +1193,7 @@ async function seedUsers(envClerkId: string | null) {
       xp: u.xp,
       streak: u.streak,
       streakUpdatedAt: daysAgo(u.daysAgoStreakUpdate),
-      isCurator: u.isCurator,
+      role: u.role,
     }
 
     const [row] = await db
@@ -1208,7 +1208,7 @@ async function seedUsers(envClerkId: string | null) {
           xp: baseValues.xp,
           streak: baseValues.streak,
           streakUpdatedAt: baseValues.streakUpdatedAt,
-          isCurator: baseValues.isCurator,
+          role: baseValues.role,
           updatedAt: new Date(),
         },
       })

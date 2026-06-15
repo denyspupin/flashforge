@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
 import { decks, deckTopics, topics, cards } from "@/lib/db/schema"
-import { eq, and, inArray } from "drizzle-orm"
+import { eq, and, inArray, isNull } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
@@ -52,7 +52,10 @@ export async function GET(
 
   const topicIds = topicRelations.map((t) => t.topicId)
   const deckTopicList = topicIds.length
-    ? await db.select().from(topics).where(inArray(topics.id, topicIds))
+    ? await db
+        .select()
+        .from(topics)
+        .where(and(inArray(topics.id, topicIds), isNull(topics.deletedAt)))
     : []
 
   return NextResponse.json(

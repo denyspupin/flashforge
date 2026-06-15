@@ -9,7 +9,7 @@ import {
 
 import { AppHeader } from "@/components/layout/app-header"
 import { MobileNav } from "@/components/layout/mobile-nav"
-import { MobileUserFooter } from "@/components/layout/mobile-user-footer"
+import { MobileUserFooterWithAdmin } from "@/components/layout/mobile-user-footer-with-admin"
 import { UserMenu } from "@/components/layout/user-menu"
 import { Button } from "@/components/ui/button"
 import { Wordmark } from "./wordmark"
@@ -73,7 +73,7 @@ export function DashboardHeader() {
               Flash<span className="font-display-soft italic text-ember">forge</span>
             </span>
           }
-          footer={<MobileUserFooter />}
+          footer={<MobileUserFooterWithAdmin />}
         />
       }
     />

@@ -1,4 +1,4 @@
-import { and, desc, eq, inArray, sql } from "drizzle-orm"
+import { and, desc, eq, inArray, isNull, sql } from "drizzle-orm"
 import { currentUser } from "@clerk/nextjs/server"
 
 import { db } from "@/lib/db/client"
@@ -103,7 +103,12 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
     ? await db
         .select()
         .from(languages)
-        .where(inArray(languages.id, languageIds))
+        .where(
+          and(
+            inArray(languages.id, languageIds),
+            isNull(languages.deletedAt),
+          ),
+        )
     : []
 
   const languagesById: Record<string, Language> = Object.fromEntries(
@@ -124,7 +129,10 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
 
   const topicIdSet = Array.from(new Set(topicIdsForDecks.map((t) => t.topicId)))
   const topicRows = topicIdSet.length
-    ? await db.select().from(topics).where(inArray(topics.id, topicIdSet))
+    ? await db
+        .select()
+        .from(topics)
+        .where(and(inArray(topics.id, topicIdSet), isNull(topics.deletedAt)))
     : []
   const topicsById = Object.fromEntries(topicRows.map((t) => [t.id, t]))
 

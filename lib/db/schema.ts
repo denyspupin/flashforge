@@ -22,6 +22,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "fork_received",
   "achievement_unlocked",
 ])
+export const roleEnum = pgEnum("role", ["user", "curator", "admin"])
 
 export const users = pgTable(
   "users",
@@ -34,7 +35,9 @@ export const users = pgTable(
     xp: integer("xp").default(0).notNull(),
     streak: integer("streak").default(0).notNull(),
     streakUpdatedAt: timestamp("streak_updated_at", { withTimezone: true }),
-    isCurator: boolean("is_curator").default(false).notNull(),
+    role: roleEnum("role").default("user").notNull(),
+    isBanned: boolean("is_banned").default(false).notNull(),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -49,6 +52,7 @@ export const languages = pgTable("languages", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   code: varchar("code", { length: 16 }).notNull().unique(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -61,6 +65,7 @@ export const topics = pgTable("topics", {
   id: uuid("id").defaultRandom().primaryKey(),
   name: varchar("name", { length: 256 }).notNull(),
   slug: varchar("slug", { length: 256 }).notNull().unique(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),
@@ -88,6 +93,7 @@ export const decks = pgTable(
       .notNull(),
     isCurated: boolean("is_curated").default(false).notNull(),
     forkedFromDeckId: uuid("forked_from_deck_id"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
       .notNull(),
@@ -125,6 +131,7 @@ export const cards = pgTable("cards", {
   timesReviewed: integer("times_reviewed").default(0).notNull(),
   timesCorrect: integer("times_correct").default(0).notNull(),
   lastReviewedAt: timestamp("last_reviewed_at", { withTimezone: true }),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

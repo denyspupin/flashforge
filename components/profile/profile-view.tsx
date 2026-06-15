@@ -103,7 +103,12 @@ export function ProfileView() {
               {displayName}
             </h1>
             <div className="flex flex-wrap items-center gap-2 pt-1">
-              {dbUser.isCurator ? (
+              {dbUser.role === "admin" ? (
+                <Badge variant="highlight">
+                  <Sparkles className="h-3 w-3" />
+                  Admin
+                </Badge>
+              ) : dbUser.role === "curator" ? (
                 <Badge variant="highlight">
                   <Sparkles className="h-3 w-3" />
                   Curator
