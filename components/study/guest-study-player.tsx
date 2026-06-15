@@ -50,8 +50,7 @@ export function GuestStudyPlayer({ deck, cards }: GuestStudyPlayerProps) {
 
   useEffect(() => {
     init(deck.id, cards)
-    return () => reset()
-  }, [deck.id, cards, init, reset])
+  }, [deck.id, cards, init])
 
   const summary = useMemo(() => {
     if (phase !== "done") return null

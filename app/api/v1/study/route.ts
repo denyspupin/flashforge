@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
 import { studySessions, decks, cards } from "@/lib/db/schema"
-import { eq, and, asc } from "drizzle-orm"
+import { eq, and, asc, desc } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
@@ -64,6 +64,8 @@ export async function POST(request: Request) {
         eq(studySessions.status, "active")
       )
     )
+    .orderBy(desc(studySessions.startedAt))
+    .limit(1)
 
   let session = existing[0]
 

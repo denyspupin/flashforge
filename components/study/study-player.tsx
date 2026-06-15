@@ -51,10 +51,6 @@ async function postComplete(
   return res.json()
 }
 
-async function postAbandon(sessionId: string): Promise<void> {
-  await fetch(`/api/v1/study/${sessionId}/abandon`, { method: "POST" })
-}
-
 export function StudyPlayer({
   sessionId,
   deck,
@@ -78,8 +74,7 @@ export function StudyPlayer({
 
   useEffect(() => {
     init(sessionId, cards)
-    return () => reset()
-  }, [sessionId, cards, init, reset])
+  }, [sessionId, cards, init])
 
   const completeMutation = useMutation({
     mutationFn: () =>
@@ -93,27 +88,17 @@ export function StudyPlayer({
     }
   }, [phase, summary, completeMutation])
 
-  const abandonMutation = useMutation({
-    mutationFn: () => postAbandon(sessionId),
-  })
-
   const handleExit = useCallback(() => {
-    if (phase !== "done") {
-      abandonMutation.mutate()
-    }
     router.push(`/decks/${deck.id}`)
-  }, [phase, abandonMutation, router, deck.id])
+  }, [router, deck.id])
 
   const handleBack = useCallback(() => {
-    if (phase !== "done") {
-      abandonMutation.mutate()
-    }
     if (typeof window !== "undefined" && window.history.length > 1) {
       router.back()
     } else {
       router.push(`/decks/${deck.id}`)
     }
-  }, [phase, abandonMutation, router, deck.id])
+  }, [router, deck.id])
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
