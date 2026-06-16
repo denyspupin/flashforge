@@ -24,6 +24,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "achievement_unlocked",
 ])
 export const roleEnum = pgEnum("role", ["user", "curator", "admin"])
+export const themeEnum = pgEnum("theme", ["light", "dark", "system"])
 
 export const users = pgTable(
   "users",
@@ -37,6 +38,7 @@ export const users = pgTable(
     streak: integer("streak").default(0).notNull(),
     streakUpdatedAt: timestamp("streak_updated_at", { withTimezone: true }),
     role: roleEnum("role").default("user").notNull(),
+    theme: themeEnum("theme").default("system").notNull(),
     isBanned: boolean("is_banned").default(false).notNull(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })

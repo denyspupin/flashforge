@@ -6,6 +6,7 @@ export type {
 } from "./query-keys"
 export { useDeckImport } from "./use-deck-import"
 export type { ImportDeckResult } from "./use-deck-import"
+export { useTheme } from "./use-theme"
 export { fetchStudyHistory } from "@/lib/queries/study-history"
 export type {
   HistoryResult,

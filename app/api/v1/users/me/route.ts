@@ -6,12 +6,15 @@ import { db } from "@/lib/db/client"
 import { users, languages } from "@/lib/db/schema"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { THEME_OPTIONS } from "@/lib/constants"
+import { THEME_COOKIE, THEME_COOKIE_MAX_AGE } from "@/lib/theme"
 
 export const dynamic = "force-dynamic"
 
 const updateProfileSchema = z.object({
   name: z.string().trim().min(1).max(256).nullable().optional(),
   nativeLanguageId: z.string().uuid().nullable().optional(),
+  theme: z.enum(THEME_OPTIONS).optional(),
   avatarUrl: z
     .string()
     .trim()
@@ -83,6 +86,9 @@ export async function PATCH(request: Request) {
   if (parsed.data.nativeLanguageId !== undefined) {
     updateData.nativeLanguageId = parsed.data.nativeLanguageId
   }
+  if (parsed.data.theme !== undefined) {
+    updateData.theme = parsed.data.theme
+  }
   if (parsed.data.avatarUrl !== undefined) {
     if (parsed.data.avatarUrl === null) {
       const clerkUser = await currentUser()
@@ -98,5 +104,18 @@ export async function PATCH(request: Request) {
     .where(eq(users.id, user.id))
     .returning()
 
-  return NextResponse.json(successResponse(updated))
+  const response = NextResponse.json(successResponse(updated))
+
+  if (parsed.data.theme !== undefined) {
+    response.cookies.set({
+      name: THEME_COOKIE,
+      value: parsed.data.theme,
+      maxAge: THEME_COOKIE_MAX_AGE,
+      path: "/",
+      sameSite: "lax",
+      httpOnly: false,
+    })
+  }
+
+  return response
 }

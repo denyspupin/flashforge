@@ -12,6 +12,7 @@ import {
 import { AdminMobileNav } from "@/components/layout/admin-mobile-nav"
 import { AppHeader } from "@/components/layout/app-header"
 import { UserMenu } from "@/components/layout/user-menu"
+import { ThemeQuickToggle } from "@/components/theme/theme-quick-toggle"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
@@ -71,7 +72,8 @@ function AdminActions() {
           Back to app
         </Button>
       </Link>
-      <div className="hidden sm:block">
+      <div className="hidden items-center gap-1 sm:flex">
+        <ThemeQuickToggle />
         <UserMenu />
       </div>
     </div>
