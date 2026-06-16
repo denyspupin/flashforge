@@ -167,8 +167,8 @@ export function ProfileView() {
               Account details
             </CardTitle>
             <CardDescription>
-              Information tied to your account. Name and language can be updated
-              below.
+              Information tied to your account. Name, language, and appearance
+              can be updated below.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -184,6 +184,16 @@ export function ProfileView() {
                   nativeLanguage
                     ? `${nativeLanguage.name} (${nativeLanguage.code})`
                     : "Not set"
+                }
+              />
+              <DetailRow
+                label="Appearance"
+                value={
+                  dbUser.theme === "system"
+                    ? "Match system"
+                    : dbUser.theme === "dark"
+                      ? "Dark"
+                      : "Light"
                 }
               />
               <DetailRow
@@ -231,13 +241,14 @@ export function ProfileView() {
           <CardHeader>
             <CardTitle>Settings</CardTitle>
             <CardDescription>
-              Choose your display name and native language.
+              Choose your display name, native language, and appearance.
             </CardDescription>
           </CardHeader>
           <CardContent>
             <ProfileSettingsForm
               initialName={dbUser.name}
               initialNativeLanguageId={dbUser.nativeLanguageId}
+              initialTheme={dbUser.theme}
               languages={languages}
             />
           </CardContent>

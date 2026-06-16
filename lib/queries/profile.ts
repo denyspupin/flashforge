@@ -21,6 +21,7 @@ export type ProfileData = {
     avatarUrl: string | null
     nativeLanguageId: string | null
     role: "user" | "curator" | "admin"
+    theme: "light" | "dark" | "system"
     createdAt: string
     xp: number
     streak: number
@@ -102,6 +103,7 @@ export async function loadProfileData(): Promise<ProfileData | null> {
       avatarUrl: user.avatarUrl,
       nativeLanguageId: user.nativeLanguageId,
       role: user.role,
+      theme: user.theme,
       createdAt: user.createdAt.toISOString(),
       xp: user.xp,
       streak: user.streak,

@@ -2,8 +2,10 @@ import type { Metadata } from "next"
 import { Geist } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 import Providers from "@/components/providers"
+import { ThemeInitScript } from "@/components/theme/theme-init-script"
 import { clerkAppearance } from "@/lib/clerk/appearance"
 import { fontSerif, fontMono } from "@/lib/fonts"
+import { readThemeCookie } from "@/lib/theme/server"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -17,11 +19,12 @@ export const metadata: Metadata = {
 
 export const dynamic = "force-dynamic"
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: {
   children: React.ReactNode
 }) {
+  const initialTheme = await readThemeCookie()
   return (
     <ClerkProvider
       appearance={clerkAppearance}
@@ -35,9 +38,13 @@ export default function RootLayout({
           fontSerif.variable,
           fontMono.variable,
         )}
+        suppressHydrationWarning
       >
+        <head>
+          <ThemeInitScript initialTheme={initialTheme} />
+        </head>
         <body className="grain antialiased">
-          <Providers>{children}</Providers>
+          <Providers initialTheme={initialTheme}>{children}</Providers>
         </body>
       </html>
     </ClerkProvider>

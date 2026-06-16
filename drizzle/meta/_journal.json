@@ -36,6 +36,13 @@
       "when": 1781700000000,
       "tag": "0004_study_session_xp_awarded",
       "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1781631805059,
+      "tag": "0005_add_user_theme",
+      "breakpoints": true
     }
   ]
 }

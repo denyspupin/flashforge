@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Check, Languages, Loader2, Save } from "lucide-react"
+import { Check, Languages, Loader2, Moon, Save, Sun } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -25,13 +25,19 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { queryKeys } from "@/hooks"
+import { queryKeys, useTheme } from "@/hooks"
+import { THEME_OPTIONS, type Theme } from "@/lib/constants"
 import { formatRelative } from "@/lib/format/date"
+import {
+  THEME_DESCRIPTIONS,
+  THEME_LABELS,
+} from "@/lib/theme"
 import type { Language } from "@/types"
 
 const profileSchema = z.object({
   name: z.string().trim().max(256).optional().or(z.literal("")),
   nativeLanguageId: z.string().optional(),
+  theme: z.enum(THEME_OPTIONS),
 })
 
 type ProfileFormValues = z.infer<typeof profileSchema>
@@ -39,31 +45,40 @@ type ProfileFormValues = z.infer<typeof profileSchema>
 type UpdateProfileInput = {
   name?: string | null
   nativeLanguageId?: string | null
+  theme?: Theme
 }
 
 type ProfileSettingsFormProps = {
   initialName: string | null
   initialNativeLanguageId: string | null
+  initialTheme: Theme
   languages: Language[]
 }
 
 const languageItems = (languages: Language[]) =>
   Object.fromEntries(languages.map((l) => [l.id, l.name]))
 
+const themeItems = Object.fromEntries(
+  THEME_OPTIONS.map((t) => [t, THEME_LABELS[t]])
+) as Record<Theme, string>
+
 export function ProfileSettingsForm({
   initialName,
   initialNativeLanguageId,
+  initialTheme,
   languages,
 }: ProfileSettingsFormProps) {
   const queryClient = useQueryClient()
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [savedAt, setSavedAt] = useState<Date | null>(null)
+  const { setPreference } = useTheme()
 
   const form = useForm<ProfileFormValues>({
     resolver: zodResolver(profileSchema),
     defaultValues: {
       name: initialName ?? "",
       nativeLanguageId: initialNativeLanguageId ?? "",
+      theme: initialTheme,
     },
   })
 
@@ -71,8 +86,9 @@ export function ProfileSettingsForm({
     form.reset({
       name: initialName ?? "",
       nativeLanguageId: initialNativeLanguageId ?? "",
+      theme: initialTheme,
     })
-  }, [form, initialName, initialNativeLanguageId])
+  }, [form, initialName, initialNativeLanguageId, initialTheme])
 
   const onSubmit = async (values: ProfileFormValues) => {
     setSubmitError(null)
@@ -90,6 +106,11 @@ export function ProfileSettingsForm({
     const nextLanguage = values.nativeLanguageId || null
     if (nextLanguage !== initialNativeLanguageId) {
       payload.nativeLanguageId = nextLanguage
+    }
+
+    if (values.theme !== initialTheme) {
+      payload.theme = values.theme
+      setPreference(values.theme)
     }
 
     if (Object.keys(payload).length === 0) {
@@ -211,6 +232,52 @@ export function ProfileSettingsForm({
           )}
         />
 
+        <FormField
+          control={form.control}
+          name="theme"
+          render={({ field }) => (
+            <FormItem>
+              <FormLabel className="flex items-center gap-1.5">
+                <Sun className="h-3.5 w-3.5" />
+                Appearance
+              </FormLabel>
+              <Select
+                items={themeItems}
+                value={field.value}
+                onValueChange={(v) =>
+                  field.onChange((v ?? "system") as Theme)
+                }
+              >
+                <FormControl>
+                  <SelectTrigger className="w-full sm:w-72">
+                    <SelectValue />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  {THEME_OPTIONS.map((option) => (
+                    <SelectItem key={option} value={option}>
+                      <span className="flex items-center gap-2">
+                        {option === "dark" ? (
+                          <Moon className="h-3.5 w-3.5" />
+                        ) : option === "light" ? (
+                          <Sun className="h-3.5 w-3.5" />
+                        ) : (
+                          <ThemeSystemIcon className="h-3.5 w-3.5" />
+                        )}
+                        <span>{THEME_LABELS[option]}</span>
+                      </span>
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              <FormDescription>
+                {THEME_DESCRIPTIONS[field.value]}
+              </FormDescription>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+
         <div className="flex flex-col-reverse items-stretch gap-3 border-t border-ink/8 pt-4 sm:flex-row sm:items-center sm:justify-between">
           <SaveStatus savedAt={savedAt} />
           <Button
@@ -253,5 +320,23 @@ function SaveStatus({ savedAt }: { savedAt: Date | null }) {
       <Check className="h-3.5 w-3.5" />
       Saved {formatRelative(savedAt)}
     </p>
+  )
+}
+
+function ThemeSystemIcon({ className }: { className?: string }) {
+  return (
+    <svg
+      className={className}
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.75"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden
+    >
+      <rect x="3" y="4" width="18" height="12" rx="2" />
+      <path d="M8 20h8M12 16v4" />
+    </svg>
   )
 }

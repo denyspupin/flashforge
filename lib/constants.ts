@@ -58,3 +58,7 @@ export const PROMPT_TEMPLATES = {
   MAX_BODY_LENGTH: 50_000,
   MAX_DESCRIPTION_LENGTH: 256,
 } as const
+
+export const THEME_OPTIONS = ["light", "dark", "system"] as const
+export type Theme = (typeof THEME_OPTIONS)[number]
+export const DEFAULT_THEME: Theme = "system"
