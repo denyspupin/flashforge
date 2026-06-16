@@ -226,7 +226,7 @@ export default function ExplorePage() {
                     <Button
                       size="sm"
                       variant="ghost"
-                      className="h-8 px-3 text-xs"
+                      className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
                       disabled={isForking}
                       onClick={(e) => {
                         e.stopPropagation()

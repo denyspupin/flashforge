@@ -314,7 +314,7 @@ export function ImportDialog({
                     variant="ghost"
                     size="sm"
                     onClick={resetFile}
-                    className="h-6 px-2"
+                    className="h-6 sm:h-6 px-2 sm:px-2"
                   >
                     <X className="mr-1 h-3 w-3" />
                     Clear
@@ -338,7 +338,7 @@ export function ImportDialog({
                   variant="ghost"
                   size="sm"
                   onClick={onPasteFromClipboard}
-                  className="h-6 px-2"
+                  className="h-6 sm:h-6 px-2 sm:px-2"
                 >
                   <ClipboardPaste className="mr-1 h-3 w-3" />
                   Paste from clipboard
@@ -349,7 +349,7 @@ export function ImportDialog({
                     variant="ghost"
                     size="sm"
                     onClick={resetPaste}
-                    className="h-6 px-2"
+                    className="h-6 sm:h-6 px-2 sm:px-2"
                   >
                     <X className="mr-1 h-3 w-3" />
                     Clear

@@ -162,7 +162,7 @@ export function StudySummary({
         <Link href="/decks">
           <Button
             size="lg"
-            className="h-12 rounded-full bg-ink px-6 text-[15px] text-paper hover:bg-ink/90"
+            className="h-12 sm:h-12 rounded-full bg-ink px-6 sm:px-6 text-[15px] text-paper hover:bg-ink/90"
           >
             Back to decks
             <ArrowRight className="ml-1.5 h-4 w-4" />
@@ -173,7 +173,7 @@ export function StudySummary({
             size="lg"
             variant="ghost"
             onClick={onRetry}
-            className="h-12 rounded-full px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
+            className="h-12 sm:h-12 rounded-full px-5 sm:px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
           >
             Study again
           </Button>
@@ -182,7 +182,7 @@ export function StudySummary({
           <Button
             size="lg"
             variant="ghost"
-            className="h-12 rounded-full px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
+            className="h-12 sm:h-12 rounded-full px-5 sm:px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
           >
             Dashboard
           </Button>

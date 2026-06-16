@@ -18,7 +18,7 @@ export function HeaderActions({ className }: { className?: string }) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 px-3 text-ink/80 hover:text-ink"
+                className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
               >
                 <LayoutDashboard className="mr-1.5 h-4 w-4" />
                 Dashboard
@@ -28,7 +28,7 @@ export function HeaderActions({ className }: { className?: string }) {
               <Button
                 variant="ghost"
                 size="sm"
-                className="h-9 px-3 text-ink/80 hover:text-ink"
+                className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
               >
                 <Plus className="mr-1.5 h-4 w-4" />
                 New deck
@@ -44,7 +44,7 @@ export function HeaderActions({ className }: { className?: string }) {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 px-3 text-ink/80 hover:text-ink"
+            className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
           >
             Sign in
           </Button>
@@ -52,7 +52,7 @@ export function HeaderActions({ className }: { className?: string }) {
         <Link href="/register" className="hidden sm:inline-flex">
           <Button
             size="sm"
-            className="h-9 rounded-full bg-ink px-4 text-paper hover:bg-ink/85"
+            className="h-9 sm:h-9 rounded-full bg-ink px-4 sm:px-4 text-paper hover:bg-ink/85"
           >
             Start forging
           </Button>

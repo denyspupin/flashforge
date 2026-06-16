@@ -66,7 +66,7 @@ function AdminActions() {
   return (
     <div className="flex items-center gap-2">
       <Link href="/dashboard" className="hidden sm:block">
-        <Button variant="ghost" size="sm" className="h-9 px-3 text-ink/70">
+        <Button variant="ghost" size="sm" className="h-9 sm:h-9 px-3 sm:px-3 text-ink/70">
           <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
           Back to app
         </Button>

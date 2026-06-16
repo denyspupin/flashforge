@@ -55,7 +55,7 @@ export function MobileNav({
       <Button
         variant="ghost"
         size="icon"
-        className="h-9 w-9 text-ink/70 hover:bg-ink/5 hover:text-ink md:hidden"
+        className="h-9 w-9 sm:h-9 sm:w-9 text-ink/70 hover:bg-ink/5 hover:text-ink md:hidden"
         onClick={() => setOpen(true)}
         aria-label="Open menu"
       >
@@ -68,7 +68,7 @@ export function MobileNav({
             <Button
               variant="ghost"
               size="icon"
-              className="h-9 w-9 text-ink/70 hover:bg-ink/5 hover:text-ink"
+              className="h-9 w-9 sm:h-9 sm:w-9 text-ink/70 hover:bg-ink/5 hover:text-ink"
               onClick={close}
               aria-label="Close menu"
             >

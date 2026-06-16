@@ -39,7 +39,7 @@ function DashboardNav() {
           <Button
             variant="ghost"
             size="sm"
-            className="h-9 px-3 text-ink/80 hover:text-ink"
+            className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
           >
             {item.label}
           </Button>

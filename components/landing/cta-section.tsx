@@ -30,7 +30,7 @@ export function CtaSection() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="group h-14 rounded-full bg-ink px-8 text-[15px] text-paper shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] transition-all hover:scale-[1.02] hover:bg-ink/90"
+                  className="group h-14 sm:h-14 rounded-full bg-ink px-8 sm:px-8 text-[15px] text-paper shadow-[0_20px_50px_-15px_rgba(0,0,0,0.5)] transition-all hover:scale-[1.02] hover:bg-ink/90"
                 >
                   Create a free account
                   <ArrowUpRight className="ml-1.5 h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -40,7 +40,7 @@ export function CtaSection() {
                 <Button
                   size="lg"
                   variant="ghost"
-                  className="h-14 rounded-full px-6 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
+                  className="h-14 sm:h-14 rounded-full px-6 sm:px-6 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
                 >
                   Browse the library first →
                 </Button>

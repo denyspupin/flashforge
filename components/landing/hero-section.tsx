@@ -53,7 +53,7 @@ export function HeroSection() {
               <Link href="/register">
                 <Button
                   size="lg"
-                  className="group h-12 rounded-full bg-ink px-6 text-[15px] text-paper shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] transition-all hover:bg-ink/90"
+                  className="group h-12 sm:h-12 rounded-full bg-ink px-6 sm:px-6 text-[15px] text-paper shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] transition-all hover:bg-ink/90"
                 >
                   Start your first deck
                   <ArrowUpRight className="ml-1.5 h-4 w-4 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
@@ -63,7 +63,7 @@ export function HeroSection() {
                 <Button
                   size="lg"
                   variant="ghost"
-                  className="h-12 rounded-full px-5 text-[15px] text-ink/80 hover:bg-ink/5 hover:text-ink"
+                  className="h-12 sm:h-12 rounded-full px-5 sm:px-5 text-[15px] text-ink/80 hover:bg-ink/5 hover:text-ink"
                 >
                   <Compass className="mr-2 h-4 w-4 text-ember" />
                   Browse community decks

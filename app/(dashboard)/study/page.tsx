@@ -90,7 +90,7 @@ export default function StudyIndexPage() {
       </p>
       <div className="mt-6 flex gap-3">
         <Link href="/decks">
-          <Button className="h-11 rounded-full bg-ink px-6 text-paper hover:bg-ink/90">
+          <Button className="h-11 sm:h-11 rounded-full bg-ink px-6 sm:px-6 text-paper hover:bg-ink/90">
             Go to my decks
           </Button>
         </Link>
