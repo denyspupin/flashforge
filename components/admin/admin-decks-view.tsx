@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Eye, EyeOff, Library, Search, Sparkles, Trash2 } from "lucide-react"
+import { Award, Eye, EyeOff, Library, Search, Trash2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -225,7 +225,7 @@ export function AdminDecksView() {
                             <span className="text-ink/90 flex items-center gap-1.5 truncate font-medium">
                               {deck.title}
                               {deck.isCurated ? (
-                                <Sparkles
+                                <Award
                                   className="text-ember h-3.5 w-3.5 shrink-0"
                                   strokeWidth={1.75}
                                 />

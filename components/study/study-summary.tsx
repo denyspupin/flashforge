@@ -7,8 +7,8 @@ import {
   ArrowRight,
   Check,
   Flame,
-  Sparkles,
   Star,
+  Trophy,
   X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -82,7 +82,7 @@ export function StudySummary({
           }}
         />
         {isPerfect ? (
-          <Sparkles
+          <Trophy
             className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
             strokeWidth={1.75}
           />

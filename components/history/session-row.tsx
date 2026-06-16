@@ -4,9 +4,9 @@ import { useRouter } from "next/navigation"
 import {
   Check,
   ChevronRight,
-  Sparkles,
   Target,
   X as XIcon,
+  Zap,
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -132,7 +132,7 @@ export function SessionRow({
             ) : null}
             {session.xpAwarded > 0 ? (
               <span className="bg-ember/10 text-ember ring-ember/25 inline-flex h-6 items-center gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest ring-1 ring-inset">
-                <Sparkles className="h-3 w-3" />
+                <Zap className="h-3 w-3" />
                 +{session.xpAwarded} XP
               </span>
             ) : null}

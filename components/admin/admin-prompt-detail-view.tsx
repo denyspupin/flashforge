@@ -6,12 +6,13 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowLeft,
+  Check,
   Loader2,
   Pencil,
   Power,
   RotateCcw,
-  Sparkles,
   Trash2,
+  Wand2,
 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -197,7 +198,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
         <CardHeader className="space-y-2">
           <div className="flex items-start gap-3">
             <span className="bg-ink/5 text-ink/70 flex h-10 w-10 items-center justify-center rounded-lg">
-              <Sparkles className="h-5 w-5" strokeWidth={1.75} />
+              <Wand2 className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 flex-1">
               <CardTitle className="text-xl">
@@ -214,7 +215,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
           <div className="flex flex-wrap items-center gap-2">
             {data.isActive ? (
               <Badge variant="default">
-                <Sparkles className="h-3 w-3" />
+                <Check className="h-3 w-3" />
                 Active
               </Badge>
             ) : (

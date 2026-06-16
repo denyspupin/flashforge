@@ -9,7 +9,7 @@ import {
   ShoppingBag,
   Home,
   PawPrint,
-  Sparkles,
+  PlusCircle,
 } from "lucide-react"
 import { Reveal } from "./reveal"
 import { cn } from "@/lib/utils"
@@ -30,7 +30,7 @@ const TOPICS: Topic[] = [
   { name: "Shopping", slug: "shopping", decks: 78, icon: ShoppingBag, accent: "ember" },
   { name: "Household", slug: "household", decks: 54, icon: Home, accent: "forest" },
   { name: "Animals", slug: "animals", decks: 41, icon: PawPrint, accent: "honey" },
-  { name: "+ 12 more", slug: "more", decks: 0, icon: Sparkles, accent: "rust" },
+  { name: "+ 12 more", slug: "more", decks: 0, icon: PlusCircle, accent: "rust" },
 ]
 
 const ACCENT_BG: Record<Topic["accent"], string> = {

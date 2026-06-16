@@ -1,7 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
-import { Flame, Sparkles } from "lucide-react"
+import { Flame, Play } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -67,7 +67,7 @@ export function ContinueStudyingCard({
             className="flex-1 sm:flex-none"
             onClick={() => router.push(`/study?deckId=${deckId}`)}
           >
-            <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+            <Play className="mr-1.5 h-3.5 w-3.5" />
             Resume
           </Button>
         </div>

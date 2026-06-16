@@ -6,12 +6,12 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowLeft,
+  Award,
   Eye,
   EyeOff,
   Library,
   Loader2,
   RotateCcw,
-  Sparkles,
   Trash2,
 } from "lucide-react"
 
@@ -169,7 +169,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
           <div className="flex flex-wrap items-center gap-2">
             {data.isCurated ? (
               <Badge variant="highlight">
-                <Sparkles className="h-3 w-3" />
+                <Award className="h-3 w-3" />
                 Curated
               </Badge>
             ) : null}
@@ -254,7 +254,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
                 {updatePending ? (
                   <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
                 ) : data.isCurated ? (
-                  <Sparkles className="mr-1.5 h-3.5 w-3.5" />
+                  <Award className="mr-1.5 h-3.5 w-3.5" />
                 ) : null}
                 {data.isCurated ? "Remove from curated" : "Mark as curated"}
               </Button>

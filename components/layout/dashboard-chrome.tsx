@@ -4,7 +4,6 @@ import {
   Library,
   Compass,
   Plus,
-  Sparkles,
 } from "lucide-react"
 
 import { AppHeader } from "@/components/layout/app-header"

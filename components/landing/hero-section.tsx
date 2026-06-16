@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { motion, useReducedMotion } from "framer-motion"
-import { ArrowUpRight, Sparkles } from "lucide-react"
+import { ArrowUpRight, Compass } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Reveal } from "./reveal"
 import { FlashcardPreview } from "./flashcard-preview"
@@ -65,7 +65,7 @@ export function HeroSection() {
                   variant="ghost"
                   className="h-12 rounded-full px-5 text-[15px] text-ink/80 hover:bg-ink/5 hover:text-ink"
                 >
-                  <Sparkles className="mr-2 h-4 w-4 text-ember" />
+                  <Compass className="mr-2 h-4 w-4 text-ember" />
                   Browse community decks
                 </Button>
               </Link>

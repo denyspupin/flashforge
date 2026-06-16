@@ -2,7 +2,7 @@
 
 import { useEffect, useRef } from "react"
 import { motion, useInView, useMotionValue, useReducedMotion, useTransform, animate } from "framer-motion"
-import { Flame, Sparkles, Target, Zap } from "lucide-react"
+import { Flame, Target, Trophy, Zap } from "lucide-react"
 import { Reveal } from "./reveal"
 import { cn } from "@/lib/utils"
 
@@ -87,7 +87,7 @@ export function GamificationSection() {
                   highlight
                 />
                 <XPCounterCard
-                  icon={Sparkles}
+                  icon={Trophy}
                   label="Deck complete"
                   base={50}
                   count={1}

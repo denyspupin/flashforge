@@ -2,11 +2,12 @@
 
 import { useQuery } from "@tanstack/react-query"
 import {
+  Award,
   BookOpen,
   Flame,
   Library,
-  Sparkles,
   Tag,
+  UserPlus,
   Users,
   type LucideIcon,
 } from "lucide-react"
@@ -101,7 +102,7 @@ export function AdminOverviewView() {
           <StatTile
             label="New (7d)"
             value={data.users.newLast7d.toLocaleString()}
-            icon={Sparkles}
+            icon={UserPlus}
             hint={`${data.users.newLast30d.toLocaleString()} in last 30d`}
           />
           <StatTile
@@ -131,7 +132,7 @@ export function AdminOverviewView() {
           <StatTile
             label="Curated"
             value={data.content.curatedDecks.toLocaleString()}
-            icon={Sparkles}
+            icon={Award}
           />
           <StatTile
             label="Cards"

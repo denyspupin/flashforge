@@ -11,7 +11,6 @@ import {
   Plus,
   Power,
   RotateCcw,
-  Sparkles,
   Trash2,
 } from "lucide-react"
 
@@ -138,7 +137,7 @@ function PromptRow({
           </span>
           {prompt.isActive ? (
             <Badge variant="default">
-              <Sparkles className="h-3 w-3" />
+              <Check className="h-3 w-3" />
               Active
             </Badge>
           ) : null}

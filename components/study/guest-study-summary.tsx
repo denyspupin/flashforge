@@ -6,8 +6,8 @@ import { motion } from "framer-motion"
 import {
   ArrowLeft,
   Check,
-  Sparkles,
   Star,
+  Trophy,
   X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -85,7 +85,7 @@ export function GuestStudySummary({
           }}
         />
         {isPerfect ? (
-          <Sparkles
+          <Trophy
             className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
             strokeWidth={1.75}
           />

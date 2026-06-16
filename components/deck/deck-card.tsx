@@ -2,12 +2,12 @@
 
 import Link from "next/link"
 import {
+  Award,
   BookOpen,
   Copy,
   Globe,
   Lock,
   Play,
-  Sparkles,
 } from "lucide-react"
 import type { ReactNode } from "react"
 
@@ -186,7 +186,7 @@ function VisibilityBadge({ visibility }: { visibility: Deck["visibility"] }) {
 function CuratedBadge() {
   return (
     <Badge variant="highlight">
-      <Sparkles className="h-3 w-3" />
+      <Award className="h-3 w-3" />
       Curated
     </Badge>
   )

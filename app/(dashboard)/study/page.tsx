@@ -4,7 +4,7 @@ import { useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 import { motion } from "framer-motion"
-import { BookOpen, Sparkles } from "lucide-react"
+import { BookOpen, Flame } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 
@@ -51,7 +51,7 @@ export default function StudyIndexPage() {
           animate={{ scale: 1, opacity: 1 }}
           transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
         >
-          <Sparkles
+          <Flame
             className="h-7 w-7 text-ember"
             strokeWidth={1.75}
           />

@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Flame, Repeat, Sparkles } from "lucide-react"
+import { Flame, Play, Repeat } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type StudyProgressProps = {
@@ -39,7 +39,7 @@ export function StudyProgress({
               </>
             ) : (
               <>
-                <Sparkles className="h-3 w-3" strokeWidth={2.25} />
+                <Play className="h-3 w-3" strokeWidth={2.25} />
                 First pass
               </>
             )}

@@ -1,7 +1,7 @@
 "use client"
 
 import Link from "next/link"
-import { LogIn, Sparkles } from "lucide-react"
+import { LogIn, UserPlus } from "lucide-react"
 
 import { useMobileNav } from "@/components/layout/mobile-nav"
 
@@ -26,7 +26,7 @@ export function MobileAuthFooter() {
         className="flex items-center gap-3 rounded-xl bg-ink px-3 py-2.5 text-sm font-medium text-paper transition-colors hover:bg-ink/85"
       >
         <span className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-paper/15 text-paper">
-          <Sparkles className="h-4 w-4" strokeWidth={1.75} />
+          <UserPlus className="h-4 w-4" strokeWidth={1.75} />
         </span>
         Start forging
       </Link>

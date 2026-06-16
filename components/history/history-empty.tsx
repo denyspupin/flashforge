@@ -3,10 +3,9 @@
 import { useMemo } from "react"
 
 import { Card, CardContent } from "@/components/ui/card"
-import { History } from "lucide-react"
+import { History, Library } from "lucide-react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { Sparkles } from "lucide-react"
 
 export function HistoryEmpty() {
   return (
@@ -22,7 +21,7 @@ export function HistoryEmpty() {
       <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
         <Link href="/decks" className="w-full sm:w-auto">
           <Button className="w-full">
-            <Sparkles className="mr-2 h-4 w-4" />
+            <Library className="mr-2 h-4 w-4" />
             Browse my decks
           </Button>
         </Link>

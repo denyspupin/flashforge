@@ -7,12 +7,12 @@ import { useState } from "react"
 import { useUser } from "@clerk/nextjs"
 import {
   ArrowLeft,
+  Award,
   Globe,
   BookOpen,
   Copy,
   Play,
   Loader2,
-  Sparkles,
   User,
 } from "lucide-react"
 
@@ -198,7 +198,7 @@ export default function PublicDeckPage() {
           </Badge>
           {deck.isCurated && (
             <Badge variant="highlight">
-              <Sparkles className="h-3 w-3" />
+              <Award className="h-3 w-3" />
               Curated
             </Badge>
           )}

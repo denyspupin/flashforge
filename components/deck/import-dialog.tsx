@@ -8,8 +8,8 @@ import {
   Copy,
   FileUp,
   Loader2,
-  Sparkles,
   Upload,
+  Wand2,
   X,
 } from "lucide-react"
 
@@ -368,7 +368,7 @@ export function ImportDialog({
                 className="flex w-full items-center justify-between px-3 py-2 text-sm font-medium"
               >
                 <span className="flex items-center gap-2">
-                  <Sparkles className="h-4 w-4 text-muted-foreground" />
+                  <Wand2 className="h-4 w-4 text-muted-foreground" />
                   Don&rsquo;t have an export file?
                 </span>
                 <ChevronDown

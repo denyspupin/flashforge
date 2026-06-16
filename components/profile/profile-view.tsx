@@ -8,7 +8,7 @@ import {
   CalendarDays,
   Flame,
   Layers,
-  Sparkles,
+  Shield,
   Star,
   Trophy,
 } from "lucide-react"
@@ -105,12 +105,12 @@ export function ProfileView() {
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {dbUser.role === "admin" ? (
                 <Badge variant="highlight">
-                  <Sparkles className="h-3 w-3" />
+                  <Shield className="h-3 w-3" />
                   Admin
                 </Badge>
               ) : dbUser.role === "curator" ? (
                 <Badge variant="highlight">
-                  <Sparkles className="h-3 w-3" />
+                  <Award className="h-3 w-3" />
                   Curator
                 </Badge>
               ) : null}

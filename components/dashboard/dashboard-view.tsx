@@ -2,7 +2,7 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { BookOpen, Flame, Sparkles, Star } from "lucide-react"
+import { BookOpen, Flame, Library, Plus, Star } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -132,7 +132,7 @@ export function DashboardView() {
           <CardContent>
             <Link href="/decks">
               <Button size="sm" variant="outline">
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Library className="mr-2 h-4 w-4" />
                 Manage decks
               </Button>
             </Link>
@@ -157,7 +157,7 @@ export function DashboardView() {
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:gap-3">
             <Link href="/decks" className="w-full sm:w-auto">
               <Button className="w-full">
-                <Sparkles className="mr-2 h-4 w-4" />
+                <Plus className="mr-2 h-4 w-4" />
                 Create Deck
               </Button>
             </Link>
