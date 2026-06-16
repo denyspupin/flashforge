@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
+import { Loader2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -99,25 +100,56 @@ function SummaryView() {
   )
 }
 
+function SummaryLoading() {
+  const { state } = useStudyContext()
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 py-24 text-ink/60">
+      <Loader2 className="h-6 w-6 animate-spin text-ember" aria-hidden />
+      <p className="font-mono-tag text-[11px] uppercase tracking-widest">
+        Wrapping up “{state.deck.title}”…
+      </p>
+    </div>
+  )
+}
+
+function SummaryStage({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex min-h-[calc(100dvh-7rem)] items-center justify-center py-8">
+      {children}
+    </div>
+  )
+}
+
 function StudyRouter() {
   const { state } = useStudyContext()
   const { phase: summaryPhase } = useStudySummary()
 
-  if (!state.current) return null
-  if (state.phase === "done" && summaryPhase === "ready") {
-    return <SummaryView />
+  if (state.phase === "done") {
+    if (summaryPhase === "ready") {
+      return (
+        <SummaryStage>
+          <SummaryView />
+        </SummaryStage>
+      )
+    }
+    return (
+      <SummaryStage>
+        <CompletionEffect />
+        <SummaryLoading />
+      </SummaryStage>
+    )
   }
+
+  if (!state.current) return null
+
   return (
-    <>
-      <CompletionEffect />
-      <Study.Frame>
-        <Study.Header />
-        <Study.Progress />
-        <Study.Card />
-        <Study.Controls />
-        <Study.Hint />
-      </Study.Frame>
-    </>
+    <Study.Frame>
+      <Study.Header />
+      <Study.Progress />
+      <Study.Card />
+      <Study.Controls />
+      <Study.Hint />
+    </Study.Frame>
   )
 }
 
