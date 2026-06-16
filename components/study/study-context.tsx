@@ -177,7 +177,7 @@ export function StudyProvider({
   return <StudyContext value={value}>{children}</StudyContext>
 }
 
-type StudySummaryState = "idle" | "loading" | "ready"
+type StudySummaryState = "idle" | "loading" | "ready" | "error"
 
 type StudySummaryContextValue<T> = {
   phase: StudySummaryState
