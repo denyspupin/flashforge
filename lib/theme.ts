@@ -4,6 +4,8 @@ export const THEME_STORAGE_KEY = "ff-theme"
 export const THEME_COOKIE = "ff_theme"
 export const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 
+export const ALWAYS_LIGHT_PATHS = ["/", "/login", "/register"] as const
+
 export const THEME_LABELS: Record<Theme, string> = {
   light: "Light",
   dark: "Dark",
@@ -21,6 +23,10 @@ export function isTheme(value: unknown): value is Theme {
     typeof value === "string" &&
     (THEME_OPTIONS as readonly string[]).includes(value)
   )
+}
+
+export function isAlwaysLightPath(pathname: string): boolean {
+  return (ALWAYS_LIGHT_PATHS as readonly string[]).includes(pathname)
 }
 
 export function resolveTheme(
@@ -48,3 +54,10 @@ export function applyThemeToDocument(
   root.style.colorScheme = resolved
   return resolved
 }
+
+export function forceLightOnDocument() {
+  const root = document.documentElement
+  root.classList.remove("dark")
+  root.style.colorScheme = "light"
+}
+
