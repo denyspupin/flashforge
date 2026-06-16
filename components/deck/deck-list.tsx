@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { FileUp, Plus } from "lucide-react"
+import { FileUp, Globe, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -27,6 +27,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -43,6 +44,7 @@ import {
 } from "@/components/deck/deck-card"
 import { ImportDialog } from "@/components/deck/import-dialog"
 import { queryKeys } from "@/hooks"
+import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
 
 const createDeckSchema = z.object({
@@ -205,7 +207,7 @@ export default function DeckList() {
                 <Plus className="mr-2 h-4 w-4" />
                 New Deck
               </DialogTrigger>
-          <DialogContent className="sm:max-w-[500px]">
+          <DialogContent className="sm:max-w-[560px]">
             <DialogCloseButton />
             <DialogHeader>
               <DialogTitle>Create New Deck</DialogTitle>
@@ -262,7 +264,12 @@ export default function DeckList() {
                     name="sourceLanguageId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>From</FormLabel>
+                        <FormLabel>
+                          From{" "}
+                          <span className="font-normal text-muted-foreground">
+                            (source language)
+                          </span>
+                        </FormLabel>
                         <Select
                           items={languageItems(languages)}
                           value={field.value || null}
@@ -298,7 +305,12 @@ export default function DeckList() {
                     name="targetLanguageId"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>To</FormLabel>
+                        <FormLabel>
+                          To{" "}
+                          <span className="font-normal text-muted-foreground">
+                            (target language)
+                          </span>
+                        </FormLabel>
                         <Select
                           items={languageItems(languages)}
                           value={field.value || null}
@@ -333,27 +345,36 @@ export default function DeckList() {
                 <FormField
                   control={form.control}
                   name="visibility"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Visibility</FormLabel>
-                      <Select
-                        items={{ private: "Private", public: "Public" }}
-                        value={field.value || null}
-                        onValueChange={(v) => field.onChange(v ?? "")}
-                      >
-                        <FormControl>
-                          <SelectTrigger>
-                            <SelectValue />
-                          </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                          <SelectItem value="private">Private</SelectItem>
-                          <SelectItem value="public">Public</SelectItem>
-                        </SelectContent>
-                      </Select>
-                      <FormMessage />
-                    </FormItem>
-                  )}
+                  render={({ field }) => {
+                    const isPublic = field.value === "public"
+                    return (
+                      <FormItem className="flex flex-row items-center justify-between gap-4">
+                        <div className="space-y-0.5">
+                          <FormLabel className="text-sm">Make deck public</FormLabel>
+                          <p className="text-xs text-muted-foreground">
+                            Share with the community — anyone can discover, study, and fork it.
+                          </p>
+                        </div>
+                        <div className="flex items-center gap-2.5">
+                          <Globe
+                            className={cn(
+                              "h-5 w-5 transition-colors",
+                              isPublic ? "text-primary" : "text-muted-foreground/60"
+                            )}
+                            aria-hidden
+                          />
+                          <FormControl>
+                            <Switch
+                              checked={isPublic}
+                              onCheckedChange={(checked) =>
+                                field.onChange(checked ? "public" : "private")
+                              }
+                            />
+                          </FormControl>
+                        </div>
+                      </FormItem>
+                    )
+                  }}
                 />
                 <Button
                   type="submit"

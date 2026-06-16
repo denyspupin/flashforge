@@ -88,7 +88,7 @@ async function fetchDeck(id: string): Promise<{ data: Deck }> {
   return res.json()
 }
 
-async function fetchLanguages(): Promise<{ data: { id: string; name: string; code: string }[] }> {
+async function fetchLanguages(): Promise<{ data: { id: string; name: string; code: string; flag: string }[] }> {
   const res = await fetch("/api/v1/languages")
   if (!res.ok) throw new Error("Failed to fetch languages")
   return res.json()
@@ -250,7 +250,7 @@ export default function DeckDetailPage() {
                 value={deckTitle}
                 onChange={(e) => setDeckTitle(e.target.value)}
                 placeholder="Deck title"
-                className="text-xl font-bold h-auto py-1"
+                className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
               />
             ) : (
               <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
@@ -281,9 +281,9 @@ export default function DeckDetailPage() {
               value={deckDescription}
               onChange={(e) => setDeckDescription(e.target.value)}
               placeholder="Description"
-              className="min-h-[60px]"
+              className="min-h-[60px] bg-white dark:bg-input/30"
             />
-            <div className="flex gap-2">
+            <div className="flex justify-end gap-2">
               <Button
                 size="sm"
                 onClick={() =>
@@ -319,8 +319,18 @@ export default function DeckDetailPage() {
         <div className="flex flex-wrap items-center gap-2 sm:gap-3">
           {sourceLanguage && targetLanguage && (
             <span className="text-muted-foreground inline-flex items-center gap-1.5 font-mono-tag text-[11px] uppercase tracking-widest">
+              {sourceLanguage.flag && (
+                <span className="text-base leading-none" aria-hidden>
+                  {sourceLanguage.flag}
+                </span>
+              )}
               <span>{sourceLanguage.name}</span>
               <span aria-hidden>→</span>
+              {targetLanguage.flag && (
+                <span className="text-base leading-none" aria-hidden>
+                  {targetLanguage.flag}
+                </span>
+              )}
               <span>{targetLanguage.name}</span>
             </span>
           )}
@@ -434,39 +444,37 @@ export default function DeckDetailPage() {
             <Card key={card.id}>
               <CardContent className="p-4">
                 {editingCard === card.id ? (
-                  <div className="space-y-3">
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div>
-                        <Input
-                          defaultValue={card.front}
-                          id={`front-${card.id}`}
-                          placeholder="Front"
-                          className="h-11 px-2.5 text-xl"
-                        />
-                        {sourceLanguage && (
-                          <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
-                            {sourceLanguage.name}
-                          </p>
-                        )}
-                      </div>
-                      <div>
-                        <Input
-                          defaultValue={card.back}
-                          id={`back-${card.id}`}
-                          placeholder="Back"
-                          className="h-11 px-2.5 text-xl"
-                        />
-                        {targetLanguage && (
-                          <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
-                            {targetLanguage.name}
-                          </p>
-                        )}
-                      </div>
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <Input
+                        defaultValue={card.front}
+                        id={`front-${card.id}`}
+                        placeholder="Front"
+                        className="h-11 px-2.5 text-xl"
+                      />
+                      {sourceLanguage && (
+                        <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
+                          {sourceLanguage.name}
+                        </p>
+                      )}
                     </div>
-                    <div className="flex items-center justify-end gap-1">
+                    <div className="min-w-0 flex-1">
+                      <Input
+                        defaultValue={card.back}
+                        id={`back-${card.id}`}
+                        placeholder="Back"
+                        className="h-11 px-2.5 text-xl"
+                      />
+                      {targetLanguage && (
+                        <p className="text-muted-foreground mt-1 pl-2.5 font-mono-tag text-[10px] uppercase tracking-widest">
+                          {targetLanguage.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex h-11 shrink-0 items-center gap-1">
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
                         onClick={() => {
                           const front = (
                             document.getElementById(
@@ -483,37 +491,44 @@ export default function DeckDetailPage() {
                             cardData: { front, back },
                           })
                         }}
+                        aria-label="Save card"
                       >
-                        <Save className="mr-1.5 h-3.5 w-3.5" />
-                        Save
+                        <Save className="h-4 w-4" />
                       </Button>
                       <Button
                         variant="ghost"
-                        size="sm"
+                        size="icon"
+                        className="text-destructive"
                         onClick={() => setEditingCard(null)}
+                        aria-label="Cancel"
                       >
-                        <X className="mr-1.5 h-3.5 w-3.5" />
-                        Cancel
+                        <X className="h-4 w-4" />
                       </Button>
                     </div>
                   </div>
                 ) : (
-                  <div>
-                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                      <div>
-                        <p className="text-sm text-muted-foreground">Front</p>
-                        <p className="font-display text-2xl font-medium tracking-tight text-ink">
-                          {card.front}
+                  <div className="flex items-start gap-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display truncate text-2xl font-medium tracking-tight text-ink">
+                        {card.front}
+                      </p>
+                      {sourceLanguage && (
+                        <p className="text-muted-foreground mt-1 font-mono-tag text-[10px] uppercase tracking-widest">
+                          {sourceLanguage.name}
                         </p>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Back</p>
-                        <p className="font-display text-2xl font-medium tracking-tight text-ink">
-                          {card.back}
-                        </p>
-                      </div>
+                      )}
                     </div>
-                    <div className="mt-3 flex items-center justify-end gap-1 border-t border-ink/8 pt-3">
+                    <div className="min-w-0 flex-1">
+                      <p className="font-display truncate text-2xl font-medium tracking-tight text-ink">
+                        {card.back}
+                      </p>
+                      {targetLanguage && (
+                        <p className="text-muted-foreground mt-1 font-mono-tag text-[10px] uppercase tracking-widest">
+                          {targetLanguage.name}
+                        </p>
+                      )}
+                    </div>
+                    <div className="flex shrink-0 items-center gap-1">
                       <Button
                         variant="ghost"
                         size="icon"
