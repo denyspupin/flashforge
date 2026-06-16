@@ -243,6 +243,7 @@ export function AdminLanguagesView() {
     onSuccess: () => {
       setConfirmDelete(null)
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.languages() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.admin.decks() })
       queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() })
     },
   })
@@ -374,7 +375,11 @@ export function AdminLanguagesView() {
         open={!!confirmDelete}
         onOpenChange={(open) => !open && setConfirmDelete(null)}
         title="Soft-delete this language?"
-        description="The language will be hidden from the app. Existing decks that reference it keep their relationship for restoration. Hard deletion requires reassigning those decks first."
+        description={
+          confirmDelete && confirmDelete.deckCount > 0
+            ? `The language will be hidden from the app, and ${confirmDelete.deckCount} deck${confirmDelete.deckCount === 1 ? "" : "s"} that reference it (and their cards) will be soft-deleted and made private. Restore the language and the affected decks separately to bring them back.`
+            : "The language will be hidden from the app. No decks currently reference it."
+        }
         confirmLabel="Soft-delete"
         destructive
         pending={deleteMutation.isPending}

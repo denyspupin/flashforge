@@ -4,6 +4,7 @@ import { decks, deckTopics, cards, notifications } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { getActiveLanguageIds } from "@/lib/languages/valid"
 import { uniqueSlug } from "@/lib/slug"
 
 export const dynamic = "force-dynamic"
@@ -37,7 +38,21 @@ export async function POST(
   if (originalDeck[0].creatorId === user.id) {
     return NextResponse.json(
       errorResponse("You already own this deck", "CONFLICT"),
-      { status: 409 }
+      { status: 409 },
+    )
+  }
+
+  const activeLanguages = await getActiveLanguageIds([
+    originalDeck[0].sourceLanguageId,
+    originalDeck[0].targetLanguageId,
+  ])
+  if (
+    !activeLanguages.has(originalDeck[0].sourceLanguageId) ||
+    !activeLanguages.has(originalDeck[0].targetLanguageId)
+  ) {
+    return NextResponse.json(
+      errorResponse("This deck is no longer available", "CONFLICT"),
+      { status: 409 },
     )
   }
 
