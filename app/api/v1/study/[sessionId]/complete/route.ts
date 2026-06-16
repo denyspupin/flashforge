@@ -138,6 +138,7 @@ export async function POST(
       cardsReviewed,
       cardsCorrect,
       failedCardIds,
+      xpAwarded,
       updatedAt: now,
     })
     .where(eq(studySessions.id, sessionId))

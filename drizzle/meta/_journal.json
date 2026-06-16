@@ -29,6 +29,13 @@
       "when": 1781560390471,
       "tag": "0003_flowery_elektra",
       "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1781700000000,
+      "tag": "0004_study_session_xp_awarded",
+      "breakpoints": true
     }
   ]
 }

@@ -77,3 +77,11 @@ npx drizzle-kit migrate
 # Generate migration
 npx drizzle-kit generate
 ```
+
+> **Schema changes must be applied locally before they're usable.** Whenever
+> `lib/db/schema.ts` is edited, run `pnpm db:migrate` (or `pnpm db:push` in
+> dev) so the new columns/tables exist in your database. Drizzle generates
+> SQL against the current schema — if the DB is out of sync, every query
+> touching the changed table will fail at runtime with a "column does not
+> exist" error (e.g. `POST /api/v1/study` will break if `study_sessions`
+> is missing a new column). The migration files live in `drizzle/`.

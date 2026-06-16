@@ -26,6 +26,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { queryKeys } from "@/hooks"
+import { formatRelative } from "@/lib/format/date"
 import type { Language } from "@/types"
 
 const profileSchema = z.object({
@@ -253,16 +254,4 @@ function SaveStatus({ savedAt }: { savedAt: Date | null }) {
       Saved {formatRelative(savedAt)}
     </p>
   )
-}
-
-function formatRelative(date: Date): string {
-  const seconds = Math.max(0, Math.round((Date.now() - date.getTime()) / 1000))
-  if (seconds < 5) return "just now"
-  if (seconds < 60) return `${seconds}s ago`
-  const minutes = Math.round(seconds / 60)
-  if (minutes < 60) return `${minutes}m ago`
-  return date.toLocaleTimeString(undefined, {
-    hour: "numeric",
-    minute: "2-digit",
-  })
 }

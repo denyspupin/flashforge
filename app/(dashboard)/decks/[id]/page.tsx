@@ -45,6 +45,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
+import { DeckHistoryPanel } from "@/components/history/deck-history-panel"
 import { queryKeys } from "@/hooks"
 
 interface Card {
@@ -354,6 +355,8 @@ export default function DeckDetailPage() {
           </Button>
         </div>
       </div>
+
+      <DeckHistoryPanel deckId={deck.id} />
 
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold">
