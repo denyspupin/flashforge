@@ -19,7 +19,7 @@ export function Wordmark({
       >
         Flash
         <span
-          className="font-display-soft italic"
+          className="font-display-soft italic text-ember"
           style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
         >
           forge

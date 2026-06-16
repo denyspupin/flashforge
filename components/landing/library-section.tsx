@@ -29,7 +29,7 @@ const DECKS: Deck[] = [
     forks: 312,
     topic: "Food",
     hue: "ember",
-    featured: true,
+    featured: false,
     preview: [
       { front: "the check, please", back: "la cuenta, por favor" },
       { front: "for here or to go?", back: "¿para aquí o para llevar?" },

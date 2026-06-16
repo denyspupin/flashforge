@@ -34,14 +34,10 @@ export function LandingFooter() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col items-start justify-between gap-4 border-t border-ink/10 pt-8 text-xs text-ink/45 sm:flex-row sm:items-center">
+        <div className="mt-16 flex flex-col items-end justify-end gap-4 border-t border-ink/10 pt-8 text-xs text-ink/45 sm:flex-row sm:items-center">
           <span className="font-mono-tag uppercase tracking-wider">
             © {new Date().getFullYear()} FlashForge · A quiet workshop
           </span>
-          <div className="flex items-center gap-2 font-mono-tag uppercase tracking-wider">
-            <span className="h-1.5 w-1.5 animate-ember-pulse rounded-full bg-ember" />
-            All systems glowing
-          </div>
         </div>
       </div>
     </footer>

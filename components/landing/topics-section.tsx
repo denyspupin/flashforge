@@ -44,7 +44,7 @@ const ACCENT_BG: Record<Topic["accent"], string> = {
 const ACCENT_HOVER: Record<Topic["accent"], string> = {
   ember: "group-hover:bg-ember group-hover:text-paper",
   forest: "group-hover:bg-forest group-hover:text-paper",
-  honey: "group-hover:bg-honey group-hover:text-ink",
+  honey: "group-hover:bg-honey group-hover:text-paper",
   rust: "group-hover:bg-rust group-hover:text-paper",
   ink: "group-hover:bg-ink group-hover:text-paper",
 }
