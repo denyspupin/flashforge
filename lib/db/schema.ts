@@ -157,6 +157,7 @@ export const studySessions = pgTable("study_sessions", {
   cardsReviewed: integer("cards_reviewed").default(0).notNull(),
   cardsCorrect: integer("cards_correct").default(0).notNull(),
   failedCardIds: jsonb("failed_card_ids").default([]).notNull(),
+  xpAwarded: integer("xp_awarded").default(0).notNull(),
   createdAt: timestamp("created_at", { withTimezone: true })
     .defaultNow()
     .notNull(),

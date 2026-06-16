@@ -1,3 +1,5 @@
+import type { StudyHistoryFilters } from "@/lib/queries/study-history"
+
 export const queryKeys = {
   dashboard: () => ["dashboard"] as const,
   profile: () => ["profile"] as const,
@@ -9,7 +11,8 @@ export const queryKeys = {
   communityDecks: (q?: string) => ["community-decks", q ?? ""] as const,
   publicDeck: (id: string) => ["public-deck", id] as const,
   studySession: (id: string) => ["study", id] as const,
-  studyHistory: () => ["study", "history"] as const,
+  studyHistory: (filters?: StudyHistoryFilters) =>
+    ["study", "history", filters ?? {}] as const,
   notifications: () => ["notifications"] as const,
   activePrompt: (slug: string) => ["prompts", "active", slug] as const,
   admin: {

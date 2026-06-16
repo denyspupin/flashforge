@@ -10,6 +10,7 @@ export type StudySession = {
   cardsReviewed: number
   cardsCorrect: number
   failedCardIds: string[]
+  xpAwarded: number
   createdAt: string
   updatedAt: string
 }

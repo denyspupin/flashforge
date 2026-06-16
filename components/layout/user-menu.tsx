@@ -4,7 +4,14 @@ import { useQuery } from "@tanstack/react-query"
 import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
-import { Bell, LogOut, Settings, Shield, User as UserIcon } from "lucide-react"
+import {
+  Bell,
+  History,
+  LogOut,
+  Settings,
+  Shield,
+  User as UserIcon,
+} from "lucide-react"
 
 import {
   DropdownMenu,
@@ -160,6 +167,11 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
         <DropdownMenuItem onClick={() => router.push("/notifications")}>
           <Bell className="h-4 w-4" />
           Notifications
+        </DropdownMenuItem>
+
+        <DropdownMenuItem onClick={() => router.push("/history")}>
+          <History className="h-4 w-4" />
+          Study history
         </DropdownMenuItem>
 
         {meData?.data?.role === "admin" ? (
