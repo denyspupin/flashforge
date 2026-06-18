@@ -53,8 +53,17 @@ export const DECK_EXPORT = {
   MAX_IMPORT_CARDS: 1000,
 } as const
 
+export const COLLECTION_EXPORT = {
+  FORMAT: "flashforge.collection" as const,
+  FORMAT_VERSION: "1.0" as const,
+  GENERATOR: "flashforge" as const,
+  MAX_IMPORT_DECKS: 20,
+  MAX_IMPORT_CARDS: 2000,
+} as const
+
 export const PROMPT_TEMPLATES = {
   DECK_GENERATION_SLUG: "deck-generation",
+  COLLECTION_GENERATION_SLUG: "collection-generation",
   MAX_BODY_LENGTH: 50_000,
   MAX_DESCRIPTION_LENGTH: 256,
 } as const
