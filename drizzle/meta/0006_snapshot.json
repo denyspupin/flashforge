@@ -1,6 +1,6 @@
 {
-  "id": "81430285-f857-489a-b055-0f92672bad1a",
-  "prevId": "a03c2634-b9b9-4084-b3f8-c0c0130b38fa",
+  "id": "79e49d50-7b2f-43e2-9299-7b193eabe65c",
+  "prevId": "f517a7a4-c0b8-4e8b-8ffe-0f06a1f52bd1",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -153,6 +153,196 @@
             "id"
           ],
           "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.collection_decks": {
+      "name": "collection_decks",
+      "schema": "",
+      "columns": {
+        "collection_id": {
+          "name": "collection_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deck_id": {
+          "name": "deck_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "position": {
+          "name": "position",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "collection_decks_collection_id_collections_id_fk": {
+          "name": "collection_decks_collection_id_collections_id_fk",
+          "tableFrom": "collection_decks",
+          "tableTo": "collections",
+          "columnsFrom": [
+            "collection_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collection_decks_deck_id_decks_id_fk": {
+          "name": "collection_decks_deck_id_decks_id_fk",
+          "tableFrom": "collection_decks",
+          "tableTo": "decks",
+          "columnsFrom": [
+            "deck_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {
+        "collection_decks_collection_id_deck_id_pk": {
+          "name": "collection_decks_collection_id_deck_id_pk",
+          "columns": [
+            "collection_id",
+            "deck_id"
+          ]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.collections": {
+      "name": "collections",
+      "schema": "",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "title": {
+          "name": "title",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "slug": {
+          "name": "slug",
+          "type": "varchar(256)",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "creator_id": {
+          "name": "creator_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "source_language_id": {
+          "name": "source_language_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_language_id": {
+          "name": "target_language_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "collections_creator_id_users_id_fk": {
+          "name": "collections_creator_id_users_id_fk",
+          "tableFrom": "collections",
+          "tableTo": "users",
+          "columnsFrom": [
+            "creator_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "cascade",
+          "onUpdate": "no action"
+        },
+        "collections_source_language_id_languages_id_fk": {
+          "name": "collections_source_language_id_languages_id_fk",
+          "tableFrom": "collections",
+          "tableTo": "languages",
+          "columnsFrom": [
+            "source_language_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        },
+        "collections_target_language_id_languages_id_fk": {
+          "name": "collections_target_language_id_languages_id_fk",
+          "tableFrom": "collections",
+          "tableTo": "languages",
+          "columnsFrom": [
+            "target_language_id"
+          ],
+          "columnsTo": [
+            "id"
+          ],
+          "onDelete": "no action",
           "onUpdate": "no action"
         }
       },
@@ -707,6 +897,13 @@
           "notNull": true,
           "default": "'[]'::jsonb"
         },
+        "xp_awarded": {
+          "name": "xp_awarded",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 0
+        },
         "created_at": {
           "name": "created_at",
           "type": "timestamp with time zone",
@@ -720,13 +917,6 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
-        },
-        "xp_awarded": {
-          "name": "xp_awarded",
-          "type": "integer",
-          "primaryKey": false,
-          "notNull": true,
-          "default": 0
         }
       },
       "indexes": {},
@@ -953,6 +1143,14 @@
           "notNull": true,
           "default": "'user'"
         },
+        "theme": {
+          "name": "theme",
+          "type": "theme",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'system'"
+        },
         "is_banned": {
           "name": "is_banned",
           "type": "boolean",
@@ -1053,6 +1251,15 @@
         "active",
         "completed",
         "abandoned"
+      ]
+    },
+    "public.theme": {
+      "name": "theme",
+      "schema": "public",
+      "values": [
+        "light",
+        "dark",
+        "system"
       ]
     },
     "public.visibility": {

@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -142,8 +142,14 @@ async function updateDeck(
 export default function DeckDetailPage() {
   const params = useParams()
   const router = useRouter()
+  const searchParams = useSearchParams()
   const queryClient = useQueryClient()
   const deckId = params.id as string
+  const fromParam = searchParams.get("from")
+  const backHref =
+    fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")
+      ? fromParam
+      : "/decks"
 
   const [open, setOpen] = useState(false)
   const [editingCard, setEditingCard] = useState<string | null>(null)
@@ -239,9 +245,9 @@ export default function DeckDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push("/decks")}
+            onClick={() => router.push(backHref)}
             className="shrink-0"
-            aria-label="Back to decks"
+            aria-label="Back"
           >
             <ArrowLeft className="h-4 w-4" />
           </Button>
@@ -512,7 +518,7 @@ export default function DeckDetailPage() {
                 ) : (
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
-                      <p className="font-display truncate text-2xl font-medium tracking-tight text-ink">
+                      <p className="font-display line-clamp-3 break-words text-2xl font-medium tracking-tight text-ink">
                         {card.front}
                       </p>
                       {sourceLanguage && (
@@ -522,7 +528,7 @@ export default function DeckDetailPage() {
                       )}
                     </div>
                     <div className="min-w-0 flex-1">
-                      <p className="font-display truncate text-2xl font-medium tracking-tight text-ink">
+                      <p className="font-display line-clamp-3 break-words text-2xl font-medium tracking-tight text-ink">
                         {card.back}
                       </p>
                       {targetLanguage && (
