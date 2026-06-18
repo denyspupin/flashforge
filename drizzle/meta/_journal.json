@@ -43,6 +43,13 @@
       "when": 1781631805059,
       "tag": "0005_add_user_theme",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1781797099751,
+      "tag": "0006_petite_vertigo",
+      "breakpoints": true
     }
   ]
 }

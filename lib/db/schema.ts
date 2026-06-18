@@ -10,6 +10,7 @@ import {
   jsonb,
   pgEnum,
   uniqueIndex,
+  primaryKey,
   foreignKey,
 } from "drizzle-orm/pg-core"
 
@@ -213,6 +214,48 @@ export const notifications = pgTable("notifications", {
     .defaultNow()
     .notNull(),
 })
+
+export const collections = pgTable("collections", {
+  id: uuid("id").defaultRandom().primaryKey(),
+  title: varchar("title", { length: 256 }).notNull(),
+  slug: varchar("slug", { length: 256 }).notNull(),
+  description: text("description"),
+  creatorId: uuid("creator_id")
+    .references(() => users.id, { onDelete: "cascade" })
+    .notNull(),
+  sourceLanguageId: uuid("source_language_id")
+    .references(() => languages.id)
+    .notNull(),
+  targetLanguageId: uuid("target_language_id")
+    .references(() => languages.id)
+    .notNull(),
+  deletedAt: timestamp("deleted_at", { withTimezone: true }),
+  createdAt: timestamp("created_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+  updatedAt: timestamp("updated_at", { withTimezone: true })
+    .defaultNow()
+    .notNull(),
+})
+
+export const collectionDecks = pgTable(
+  "collection_decks",
+  {
+    collectionId: uuid("collection_id")
+      .references(() => collections.id, { onDelete: "cascade" })
+      .notNull(),
+    deckId: uuid("deck_id")
+      .references(() => decks.id, { onDelete: "cascade" })
+      .notNull(),
+    position: integer("position").default(0).notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    primaryKey({ columns: [table.collectionId, table.deckId] }),
+  ]
+)
 
 export const promptTemplates = pgTable(
   "prompt_templates",

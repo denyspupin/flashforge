@@ -3,7 +3,7 @@ import {
   LayoutDashboard,
   Library,
   Compass,
-  Plus,
+  Layers,
 } from "lucide-react"
 
 import { AppHeader } from "@/components/layout/app-header"
@@ -24,6 +24,11 @@ const NAV_ITEMS = [
     href: "/decks",
     label: "My Decks",
     icon: <Library className="h-4 w-4" strokeWidth={1.75} />,
+  },
+  {
+    href: "/collections",
+    label: "Collections",
+    icon: <Layers className="h-4 w-4" strokeWidth={1.75} />,
   },
   {
     href: "/explore",
