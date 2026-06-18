@@ -1,11 +1,11 @@
 import { NextResponse } from "next/server"
 import { z } from "zod"
-import { eq, sql } from "drizzle-orm"
+import { and, eq, inArray, isNull, or, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
 import { db } from "@/lib/db/client"
-import { languages } from "@/lib/db/schema"
+import { cards, decks, languages } from "@/lib/db/schema"
 
 export const dynamic = "force-dynamic"
 
@@ -89,9 +89,11 @@ export async function DELETE(
   }
 
   const { id } = await params
+  const now = sql`now()`
+
   const [updated] = await db
     .update(languages)
-    .set({ deletedAt: sql`now()`, updatedAt: sql`now()` })
+    .set({ deletedAt: now, updatedAt: now })
     .where(eq(languages.id, id))
     .returning({ id: languages.id })
 
@@ -101,7 +103,35 @@ export async function DELETE(
       { status: 404 },
     )
   }
+
+  const affectedDecks = await db
+    .update(decks)
+    .set({ deletedAt: now, updatedAt: now, visibility: "private" })
+    .where(
+      and(
+        isNull(decks.deletedAt),
+        or(eq(decks.sourceLanguageId, id), eq(decks.targetLanguageId, id)),
+      ),
+    )
+    .returning({ id: decks.id })
+
+  if (affectedDecks.length) {
+    await db
+      .update(cards)
+      .set({ deletedAt: now, updatedAt: now })
+      .where(
+        inArray(
+          cards.deckId,
+          affectedDecks.map((d) => d.id),
+        ),
+      )
+  }
+
   return NextResponse.json(
-    successResponse({ id, deletedAt: new Date().toISOString() }),
+    successResponse({
+      id,
+      deletedAt: new Date().toISOString(),
+      affectedDeckCount: affectedDecks.length,
+    }),
   )
 }

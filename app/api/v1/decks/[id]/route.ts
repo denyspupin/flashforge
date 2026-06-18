@@ -4,6 +4,7 @@ import { decks, deckTopics, topics, cards } from "@/lib/db/schema"
 import { eq, and, inArray, isNull } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { getActiveLanguageIds } from "@/lib/languages/valid"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -89,6 +90,21 @@ export async function PATCH(
       errorResponse("Invalid request body", "VALIDATION_ERROR"),
       { status: 400 }
     )
+  }
+
+  const newLanguageIds = [
+    parsed.data.sourceLanguageId,
+    parsed.data.targetLanguageId,
+  ].filter((id): id is string => id !== undefined)
+
+  if (newLanguageIds.length) {
+    const activeLanguages = await getActiveLanguageIds(newLanguageIds)
+    if (newLanguageIds.some((id) => !activeLanguages.has(id))) {
+      return NextResponse.json(
+        errorResponse("Selected language is unavailable", "VALIDATION_ERROR"),
+        { status: 400 },
+      )
+    }
   }
 
   const existing = await db
