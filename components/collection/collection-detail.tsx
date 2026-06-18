@@ -69,13 +69,10 @@ async function removeDeckFromCollection(
 
 export default function CollectionDetail() {
   const params = useParams()
-  const router = useRouter()
   const queryClient = useQueryClient()
   const collectionId = params.id as string
 
   const [editing, setEditing] = useState(false)
-  const [title, setTitle] = useState("")
-  const [description, setDescription] = useState("")
   const [addOpen, setAddOpen] = useState(false)
 
   const { data, isLoading } = useQuery({
@@ -108,6 +105,8 @@ export default function CollectionDetail() {
     },
   })
 
+  const startEditing = () => setEditing(true)
+
   const removeDeckMutation = useMutation({
     mutationFn: (deckId: string) =>
       removeDeckFromCollection(collectionId, deckId),
@@ -138,83 +137,18 @@ export default function CollectionDetail() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => router.push("/collections")}
-            className="shrink-0"
-            aria-label="Back to collections"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="min-w-0 flex-1">
-            {editing ? (
-              <Input
-                value={title}
-                onChange={(e) => setTitle(e.target.value)}
-                placeholder="Collection title"
-                className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
-              />
-            ) : (
-              <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
-                {collection.title}
-              </h1>
-            )}
-          </div>
-          {!editing && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setEditing(true)
-                setTitle(collection.title)
-                setDescription(collection.description || "")
-              }}
-              className="shrink-0"
-              aria-label="Edit collection"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
-          )}
-        </div>
-
         {editing ? (
-          <div className="space-y-2">
-            <Textarea
-              value={description}
-              onChange={(e) => setDescription(e.target.value)}
-              placeholder="Description"
-              className="min-h-[60px] bg-white dark:bg-input/30"
-            />
-            <div className="flex justify-end gap-2">
-              <Button
-                size="sm"
-                onClick={() =>
-                  updateMutation.mutate({ title, description })
-                }
-              >
-                <Save className="mr-2 h-4 w-4" />
-                Save
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                onClick={() => {
-                  setEditing(false)
-                  setTitle(collection.title)
-                  setDescription(collection.description || "")
-                }}
-              >
-                <X className="mr-2 h-4 w-4" />
-                Cancel
-              </Button>
-            </div>
-          </div>
+          <CollectionEditForm
+            collection={collection}
+            onSave={(values) => updateMutation.mutate(values)}
+            onCancel={() => setEditing(false)}
+            saving={updateMutation.isPending}
+          />
         ) : (
-          collection.description && (
-            <p className="text-muted-foreground">{collection.description}</p>
-          )
+          <CollectionViewHeader
+            collection={collection}
+            onEdit={startEditing}
+          />
         )}
 
         <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-muted-foreground">
@@ -373,5 +307,105 @@ function CollectionDeckRow({
         </Button>
       </CardContent>
     </Card>
+  )
+}
+
+function CollectionViewHeader({
+  collection,
+  onEdit,
+}: {
+  collection: Collection
+  onEdit: () => void
+}) {
+  const router = useRouter()
+
+  return (
+    <div className="space-y-4">
+      <div className="flex items-center gap-2 sm:gap-3">
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={() => router.push("/collections")}
+          className="shrink-0"
+          aria-label="Back to collections"
+        >
+          <ArrowLeft className="h-4 w-4" />
+        </Button>
+        <div className="min-w-0 flex-1">
+          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+            {collection.title}
+          </h1>
+        </div>
+        <Button
+          variant="ghost"
+          size="icon"
+          onClick={onEdit}
+          className="shrink-0"
+          aria-label="Edit collection"
+        >
+          <Pencil className="h-4 w-4" />
+        </Button>
+      </div>
+      {collection.description && (
+        <p className="text-muted-foreground">{collection.description}</p>
+      )}
+    </div>
+  )
+}
+
+function CollectionEditForm({
+  collection,
+  onSave,
+  onCancel,
+  saving,
+}: {
+  collection: Collection
+  onSave: (values: { title: string; description: string }) => void
+  onCancel: () => void
+  saving: boolean
+}) {
+  const [title, setTitle] = useState(collection.title)
+  const [description, setDescription] = useState(collection.description || "")
+
+  const handleSave = () => {
+    onSave({ title, description })
+  }
+
+  const handleCancel = () => {
+    setTitle(collection.title)
+    setDescription(collection.description || "")
+    onCancel()
+  }
+
+  return (
+    <div className="space-y-2">
+      <Input
+        value={title}
+        onChange={(e) => setTitle(e.target.value)}
+        placeholder="Collection title"
+        className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
+      />
+      <Textarea
+        value={description}
+        onChange={(e) => setDescription(e.target.value)}
+        placeholder="Description"
+        className="min-h-[60px] bg-white dark:bg-input/30"
+      />
+      <div className="flex justify-end gap-2">
+        <Button size="sm" onClick={handleSave} disabled={saving}>
+          <Save className="mr-2 h-4 w-4" />
+          {saving ? "Saving..." : "Save"}
+        </Button>
+        <Button
+          size="sm"
+          variant="ghost"
+          onClick={handleCancel}
+          disabled={saving}
+        >
+          <X className="mr-2 h-4 w-4" />
+          Cancel
+        </Button>
+      </div>
+    </div>
   )
 }
