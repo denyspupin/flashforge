@@ -19,19 +19,8 @@ import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
-import {
-  Card,
-  CardContent,
-} from "@/components/ui/card"
-import {
-  Dialog,
-  DialogCloseButton,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from "@/components/ui/dialog"
+import { Card, CardContent } from "@/components/ui/card"
+import { CollectionAddDecksDialog } from "@/components/collection/collection-add-decks-dialog"
 import { queryKeys } from "@/hooks"
 import type { Collection, CollectionDeck } from "@/types/collection"
 import type { Deck, Language } from "@/types/deck"
@@ -67,22 +56,6 @@ async function updateCollection(
   return res.json()
 }
 
-async function addDeckToCollection(
-  collectionId: string,
-  deckId: string
-): Promise<{ data: { collectionId: string; deckId: string } }> {
-  const res = await fetch(`/api/v1/collections/${collectionId}/decks`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ deckId }),
-  })
-  const body = await res.json().catch(() => null)
-  if (!res.ok) {
-    throw new Error(body?.error?.message ?? "Failed to add deck")
-  }
-  return body
-}
-
 async function removeDeckFromCollection(
   collectionId: string,
   deckId: string
@@ -104,7 +77,6 @@ export default function CollectionDetail() {
   const [title, setTitle] = useState("")
   const [description, setDescription] = useState("")
   const [addOpen, setAddOpen] = useState(false)
-  const [addError, setAddError] = useState<string | null>(null)
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.collection(collectionId),
@@ -136,19 +108,6 @@ export default function CollectionDetail() {
     },
   })
 
-  const addDeckMutation = useMutation({
-    mutationFn: (deckId: string) => addDeckToCollection(collectionId, deckId),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.collection(collectionId) })
-      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
-      setAddError(null)
-      setAddOpen(false)
-    },
-    onError: (error) => {
-      setAddError(error instanceof Error ? error.message : "Couldn’t add deck")
-    },
-  })
-
   const removeDeckMutation = useMutation({
     mutationFn: (deckId: string) =>
       removeDeckFromCollection(collectionId, deckId),
@@ -174,13 +133,7 @@ export default function CollectionDetail() {
   const sourceLanguage = languagesById[collection.sourceLanguageId]
   const targetLanguage = languagesById[collection.targetLanguageId]
   const decksInCollection = collection.decks ?? []
-  const deckIdsInCollection = new Set(decksInCollection.map((d) => d.id))
-  const addableDecks = allDecks.filter(
-    (d) =>
-      d.sourceLanguageId === collection.sourceLanguageId &&
-      d.targetLanguageId === collection.targetLanguageId &&
-      !deckIdsInCollection.has(d.id)
-  )
+  const existingDeckIds = new Set(decksInCollection.map((d) => d.id))
 
   return (
     <div className="space-y-6">
@@ -296,59 +249,10 @@ export default function CollectionDetail() {
 
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold">Decks in this collection</h2>
-        <Dialog open={addOpen} onOpenChange={setAddOpen}>
-          <DialogTrigger render={<Button size="sm" />}>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Deck
-          </DialogTrigger>
-          <DialogContent>
-            <DialogCloseButton />
-            <DialogHeader>
-              <DialogTitle>Add Deck to Collection</DialogTitle>
-              <DialogDescription>
-                Only your decks that match the collection’s language pair are
-                shown.
-              </DialogDescription>
-            </DialogHeader>
-            {addError && (
-              <div
-                role="alert"
-                className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-              >
-                {addError}
-              </div>
-            )}
-            <div className="max-h-80 space-y-2 overflow-y-auto">
-              {addableDecks.length === 0 ? (
-                <p className="text-muted-foreground px-1 py-8 text-center text-sm">
-                  No matching decks. Create a deck with this language pair first.
-                </p>
-              ) : (
-                addableDecks.map((deck) => (
-                  <div
-                    key={deck.id}
-                    className="flex items-center justify-between gap-3 rounded-lg border px-3 py-2"
-                  >
-                    <div className="min-w-0 flex-1">
-                      <p className="truncate text-sm font-medium">{deck.title}</p>
-                      <p className="text-muted-foreground text-xs">
-                        {deck.cardCount} {deck.cardCount === 1 ? "card" : "cards"}
-                      </p>
-                    </div>
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={() => addDeckMutation.mutate(deck.id)}
-                      disabled={addDeckMutation.isPending}
-                    >
-                      Add
-                    </Button>
-                  </div>
-                ))
-              )}
-            </div>
-          </DialogContent>
-        </Dialog>
+        <Button size="sm" onClick={() => setAddOpen(true)}>
+          <Plus className="mr-2 h-4 w-4" />
+          Add Decks
+        </Button>
       </div>
 
       <div className="space-y-3">
@@ -366,11 +270,23 @@ export default function CollectionDetail() {
               key={deck.id}
               deck={deck}
               languagesById={languagesById}
+              collectionId={collectionId}
               onRemove={() => removeDeckMutation.mutate(deck.id)}
             />
           ))
         )}
       </div>
+
+      <CollectionAddDecksDialog
+        open={addOpen}
+        onOpenChange={setAddOpen}
+        collectionId={collectionId}
+        sourceLanguageId={collection.sourceLanguageId}
+        targetLanguageId={collection.targetLanguageId}
+        existingDeckIds={existingDeckIds}
+        decks={allDecks}
+        languages={languages}
+      />
     </div>
   )
 }
@@ -378,10 +294,12 @@ export default function CollectionDetail() {
 function CollectionDeckRow({
   deck,
   languagesById,
+  collectionId,
   onRemove,
 }: {
   deck: CollectionDeck
   languagesById: Record<string, Language>
+  collectionId: string
   onRemove: () => void
 }) {
   const sourceName = languagesById[deck.sourceLanguageId]?.name
@@ -394,7 +312,7 @@ function CollectionDeckRow({
       <CardContent className="flex items-center gap-3 p-4">
         <div className="min-w-0 flex-1">
           <Link
-            href={`/decks/${deck.id}`}
+            href={`/decks/${deck.id}?from=${encodeURIComponent(`/collections/${collectionId}`)}`}
             className="block truncate text-base font-semibold outline-none transition-colors hover:text-ink/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             {deck.title}

@@ -72,7 +72,7 @@ export function CollectionImportSection({
   languages,
   onSuccess,
 }: CollectionImportSectionProps) {
-  const [source, setSource] = useState<Source>("file")
+  const [source, setSource] = useState<Source>("paste")
   const [parsed, setParsed] = useState<CollectionImportPayload | null>(null)
   const [fileName, setFileName] = useState<string | null>(null)
   const [pastedText, setPastedText] = useState("")
@@ -140,16 +140,6 @@ export function CollectionImportSection({
     const text = e.target.value
     setPastedText(text)
     tryParse(text, "Could not parse the text.")
-  }
-
-  const onPasteFromClipboard = async () => {
-    try {
-      const text = await navigator.clipboard.readText()
-      setPastedText(text)
-      tryParse(text, "Could not read the clipboard content.")
-    } catch {
-      setParseError("Could not read the clipboard. Try pasting manually.")
-    }
   }
 
   const onSourceChange = (next: Source) => {
@@ -280,33 +270,23 @@ export function CollectionImportSection({
           )}
         </div>
       ) : (
-        <div>
+        <div className="space-y-2">
           <Textarea
             value={pastedText}
             onChange={onPasteText}
             placeholder="Paste your FlashForge collection export JSON here…"
             spellCheck={false}
-            rows={8}
-            className="max-h-64 min-h-32 resize-y bg-muted/30 font-mono text-xs leading-relaxed"
+            rows={10}
+            className="max-h-72 min-h-40 resize-y bg-muted/30 font-mono text-xs leading-relaxed"
           />
-          <div className="mt-2 flex items-center justify-between text-xs text-muted-foreground">
-            <Button
-              type="button"
-              variant="ghost"
-              size="sm"
-              onClick={onPasteFromClipboard}
-              className="h-6 sm:h-6 px-2 sm:px-2"
-            >
-              <ClipboardPaste className="mr-1 h-3 w-3" />
-              Paste from clipboard
-            </Button>
+          <div className="flex items-center justify-end gap-2 text-xs text-muted-foreground">
             {pastedText && (
               <Button
                 type="button"
                 variant="ghost"
                 size="sm"
                 onClick={resetPaste}
-                className="h-6 sm:h-6 px-2 sm:px-2"
+                className="h-7"
               >
                 <X className="mr-1 h-3 w-3" />
                 Clear
