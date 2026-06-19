@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
 import { Copy, Globe, Loader2 } from "lucide-react"
 
@@ -72,6 +72,7 @@ export default function ExplorePage() {
   const [pendingForkId, setPendingForkId] = useState<string | null>(null)
   const [pendingStudyId, setPendingStudyId] = useState<string | null>(null)
   const [forkError, setForkError] = useState<string | null>(null)
+  const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.communityDecks(query),
@@ -90,8 +91,9 @@ export default function ExplorePage() {
   })
 
   const myId = meQuery.data?.data?.id ?? null
-  const languagesById = Object.fromEntries(
-    (languagesData?.data ?? []).map((l) => [l.id, l]),
+  const languagesById = useMemo(
+    () => Object.fromEntries((languagesData?.data ?? []).map((l) => [l.id, l])),
+    [languagesData]
   )
 
   const forkMutation = useMutation({
@@ -100,7 +102,7 @@ export default function ExplorePage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: ["community-decks"] })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      router.push(`/decks/${result.data.id}`)
+      startNavigate(() => router.push(`/decks/${result.data.id}`))
     },
     onError: (error) => {
       setForkError(error instanceof Error ? error.message : "Couldn’t fork this deck")
@@ -113,7 +115,7 @@ export default function ExplorePage() {
   const studyMutation = useMutation({
     mutationFn: startStudy,
     onSuccess: (result) => {
-      router.push(`/study/${result.data.session.id}`)
+      startNavigate(() => router.push(`/study/${result.data.session.id}`))
     },
     onError: (error) => {
       setForkError(
@@ -162,14 +164,14 @@ export default function ExplorePage() {
         </div>
       </div>
 
-      {forkError && isSignedIn && (
+      {forkError && isSignedIn ? (
         <div
           role="alert"
           className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
         >
           {forkError}
         </div>
-      )}
+      ) : null}
 
       {isLoading ? (
         <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -183,7 +185,7 @@ export default function ExplorePage() {
           description="Be the first to share a deck with the community"
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
           {decks.map((deck) => {
             const isMine = myId && deck.creatorId === myId
             const isForking = pendingForkId === deck.id
@@ -219,7 +221,8 @@ export default function ExplorePage() {
                 onStudy={
                   isSignedIn
                     ? () => onStudy(deck)
-                    : (id) => router.push(`/explore/decks/${id}/study`)
+                    : (id) =>
+                        startNavigate(() => router.push(`/explore/decks/${id}/study`))
                 }
                 actions={
                   isSignedIn ? (
@@ -231,7 +234,7 @@ export default function ExplorePage() {
                       onClick={(e) => {
                         e.stopPropagation()
                         if (isMine) {
-                          router.push(`/decks/${deck.id}`)
+                          startNavigate(() => router.push(`/decks/${deck.id}`))
                           return
                         }
                         onFork(deck)

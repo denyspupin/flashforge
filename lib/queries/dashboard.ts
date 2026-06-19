@@ -39,59 +39,60 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
   const user = await requireCurrentUser()
   if (!user) return null
 
-  const displayName = await resolveDisplayName(user.name)
+  const [deckCountRow, activeSessionRows, recentDeckRows, displayName] =
+    await Promise.all([
+      db
+        .select({ count: sql<number>`count(*)::int` })
+        .from(decks)
+        .where(eq(decks.creatorId, user.id)),
+      db
+        .select({
+          id: studySessions.id,
+          deckId: studySessions.deckId,
+          startedAt: studySessions.startedAt,
+          cardsReviewed: studySessions.cardsReviewed,
+          cardsCorrect: studySessions.cardsCorrect,
+          status: studySessions.status,
+          deckTitle: decks.title,
+        })
+        .from(studySessions)
+        .innerJoin(decks, eq(decks.id, studySessions.deckId))
+        .where(
+          and(
+            eq(studySessions.userId, user.id),
+            eq(studySessions.status, "active"),
+            eq(decks.creatorId, user.id),
+          ),
+        )
+        .orderBy(desc(studySessions.startedAt))
+        .limit(1),
+      db
+        .select({
+          id: decks.id,
+          title: decks.title,
+          slug: decks.slug,
+          description: decks.description,
+          visibility: decks.visibility,
+          sourceLanguageId: decks.sourceLanguageId,
+          targetLanguageId: decks.targetLanguageId,
+          creatorId: decks.creatorId,
+          isCurated: decks.isCurated,
+          forkedFromDeckId: decks.forkedFromDeckId,
+          createdAt: decks.createdAt,
+          updatedAt: decks.updatedAt,
+          cardCount: sql<number>`(
+            SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = decks.id
+          )`,
+        })
+        .from(decks)
+        .where(eq(decks.creatorId, user.id))
+        .orderBy(desc(decks.updatedAt))
+        .limit(6),
+      resolveDisplayName(user.name),
+    ])
 
-  const [deckCountRow] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(decks)
-    .where(eq(decks.creatorId, user.id))
-
-  const deckCount = deckCountRow?.count ?? 0
-
-  const [activeSession] = await db
-    .select({
-      id: studySessions.id,
-      deckId: studySessions.deckId,
-      startedAt: studySessions.startedAt,
-      cardsReviewed: studySessions.cardsReviewed,
-      cardsCorrect: studySessions.cardsCorrect,
-      status: studySessions.status,
-      deckTitle: decks.title,
-    })
-    .from(studySessions)
-    .innerJoin(decks, eq(decks.id, studySessions.deckId))
-    .where(
-      and(
-        eq(studySessions.userId, user.id),
-        eq(studySessions.status, "active"),
-        eq(decks.creatorId, user.id),
-      ),
-    )
-    .orderBy(desc(studySessions.startedAt))
-    .limit(1)
-
-  const recentDeckRows = await db
-    .select({
-      id: decks.id,
-      title: decks.title,
-      slug: decks.slug,
-      description: decks.description,
-      visibility: decks.visibility,
-      sourceLanguageId: decks.sourceLanguageId,
-      targetLanguageId: decks.targetLanguageId,
-      creatorId: decks.creatorId,
-      isCurated: decks.isCurated,
-      forkedFromDeckId: decks.forkedFromDeckId,
-      createdAt: decks.createdAt,
-      updatedAt: decks.updatedAt,
-      cardCount: sql<number>`(
-        SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = decks.id
-      )`,
-    })
-    .from(decks)
-    .where(eq(decks.creatorId, user.id))
-    .orderBy(desc(decks.updatedAt))
-    .limit(6)
+  const activeSession = activeSessionRows[0]
+  const deckCount = deckCountRow[0]?.count ?? 0
 
   const languageIds = Array.from(
     new Set(
@@ -99,33 +100,30 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
     ),
   )
 
-  const languageRows = languageIds.length
-    ? await db
-        .select()
-        .from(languages)
-        .where(
-          and(
-            inArray(languages.id, languageIds),
-            isNull(languages.deletedAt),
-          ),
-        )
-    : []
-
-  const languagesById: Record<string, Language> = Object.fromEntries(
-    enrichLanguages(languageRows).map((l) => [l.id, l]),
-  )
-
   const recentDeckIds = recentDeckRows.map((d) => d.id)
 
-  const topicIdsForDecks = recentDeckIds.length
-    ? await db
-        .select({
-          deckId: deckTopics.deckId,
-          topicId: deckTopics.topicId,
-        })
-        .from(deckTopics)
-        .where(inArray(deckTopics.deckId, recentDeckIds))
-    : []
+  const [languageRows, topicIdsForDecks] = await Promise.all([
+    languageIds.length === 0
+      ? []
+      : db
+          .select()
+          .from(languages)
+          .where(
+            and(
+              inArray(languages.id, languageIds),
+              isNull(languages.deletedAt),
+            ),
+          ),
+    recentDeckIds.length === 0
+      ? []
+      : db
+          .select({
+            deckId: deckTopics.deckId,
+            topicId: deckTopics.topicId,
+          })
+          .from(deckTopics)
+          .where(inArray(deckTopics.deckId, recentDeckIds)),
+  ])
 
   const topicIdSet = Array.from(new Set(topicIdsForDecks.map((t) => t.topicId)))
   const topicRows = topicIdSet.length
@@ -135,6 +133,10 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
         .where(and(inArray(topics.id, topicIdSet), isNull(topics.deletedAt)))
     : []
   const topicsById = Object.fromEntries(topicRows.map((t) => [t.id, t]))
+
+  const languagesById: Record<string, Language> = Object.fromEntries(
+    enrichLanguages(languageRows).map((l) => [l.id, l]),
+  )
 
   const recentDecks: Deck[] = recentDeckRows.map((row) => ({
     id: row.id,

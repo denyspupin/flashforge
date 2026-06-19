@@ -3,7 +3,7 @@
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
 import { useParams, useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
 import {
   ArrowLeft,
@@ -90,6 +90,7 @@ export default function PublicDeckPage() {
   const deckId = params.id as string
   const [actionError, setActionError] = useState<string | null>(null)
   const [pendingAction, setPendingAction] = useState<"fork" | "study" | null>(null)
+  const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.publicDeck(deckId),
@@ -104,7 +105,10 @@ export default function PublicDeckPage() {
 
   const myId = meQuery.data?.data?.id ?? null
   const deck = data?.data
-  const isOwner = !!(myId && deck && deck.creatorId === myId)
+  const isOwner = useMemo(
+    () => !!(myId && deck && deck.creatorId === myId),
+    [myId, deck]
+  )
 
   const forkMutation = useMutation({
     mutationFn: () => forkDeck(deckId),
@@ -112,7 +116,7 @@ export default function PublicDeckPage() {
       queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: ["community-decks"] })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      router.push(`/decks/${result.data.id}`)
+      startNavigate(() => router.push(`/decks/${result.data.id}`))
     },
     onError: (error) => {
       setActionError(error instanceof Error ? error.message : "Couldn’t fork this deck")
@@ -123,7 +127,7 @@ export default function PublicDeckPage() {
   const studyMutation = useMutation({
     mutationFn: () => startStudy(deckId),
     onSuccess: (result) => {
-      router.push(`/study/${result.data.session.id}`)
+      startNavigate(() => router.push(`/study/${result.data.session.id}`))
     },
     onError: (error) => {
       setActionError(error instanceof Error ? error.message : "Couldn’t start a study session")
@@ -163,7 +167,10 @@ export default function PublicDeckPage() {
           <p className="text-muted-foreground mt-1">
             This deck might be private or does not exist
           </p>
-          <Button className="mt-4" onClick={() => router.push("/explore")}>
+          <Button
+            className="mt-4"
+            onClick={() => startNavigate(() => router.push("/explore"))}
+          >
             Back to Explore
           </Button>
         </Card>
@@ -177,7 +184,7 @@ export default function PublicDeckPage() {
         <Button
           variant="ghost"
           size="icon"
-          onClick={() => router.push("/explore")}
+          onClick={() => startNavigate(() => router.push("/explore"))}
           className="shrink-0"
           aria-label="Back to explore"
         >
@@ -229,7 +236,9 @@ export default function PublicDeckPage() {
               <Button
                 variant="outline"
                 className="w-full sm:w-auto"
-                onClick={() => router.push(`/decks/${deck.id}`)}
+                onClick={() =>
+                  startNavigate(() => router.push(`/decks/${deck.id}`))
+                }
               >
                 Edit in dashboard
               </Button>
@@ -310,7 +319,7 @@ export default function PublicDeckPage() {
         </div>
       )}
 
-      <div className="space-y-3">
+      <div className="space-y-3 [contain:layout]">
         {deck.cards?.length === 0 ? (
         <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />

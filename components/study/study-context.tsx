@@ -14,6 +14,7 @@ import { useShallow } from "zustand/shallow"
 
 import {
   selectCurrentCard,
+  selectIsLast,
   selectProgress,
   useStudyStore,
   type StudyCard,
@@ -95,9 +96,8 @@ export function StudyProvider({
   const phase = useStudyStore((s) => s.phase)
   const flipped = useStudyStore((s) => s.flipped)
   const index = useStudyStore((s) => s.index)
-  const cardsInPass1 = useStudyStore((s) => s.cards.length)
-  const retryCount = useStudyStore((s) => s.retryCards.length)
   const current = useStudyStore(selectCurrentCard)
+  const isLast = useStudyStore(selectIsLast)
   const { position, total } = useStudyStore(useShallow(selectProgress))
 
   useEffect(() => {
@@ -118,25 +118,21 @@ export function StudyProvider({
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
+      const s = useStudyStore.getState()
       if (e.key === " " || e.key === "Enter") {
         e.preventDefault()
-        if (phase !== "done") flip()
+        if (s.phase !== "done") s.flip()
       } else if (e.key === "1" || e.key.toLowerCase() === "f") {
-        if (flipped) answer(false)
+        if (s.flipped) s.answer(false)
       } else if (e.key === "2" || e.key.toLowerCase() === "j") {
-        if (flipped) answer(true)
+        if (s.flipped) s.answer(true)
       } else if (e.key === "Escape") {
         handleExit()
       }
     }
     window.addEventListener("keydown", onKey)
     return () => window.removeEventListener("keydown", onKey)
-  }, [flip, answer, flipped, phase, handleExit])
-
-  const isLast =
-    phase === "retry"
-      ? index === retryCount - 1
-      : index === cardsInPass1 - 1
+  }, [handleExit])
 
   const value = useMemo<StudyContextValue>(
     () => ({

@@ -5,6 +5,7 @@ import { eq, and, inArray, isNull } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { getActiveLanguageIds } from "@/lib/languages/valid"
+import { slugify } from "@/lib/slug"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -123,10 +124,7 @@ export async function PATCH(
 
   if (parsed.data.title !== undefined) {
     updateData.title = parsed.data.title
-    updateData.slug = parsed.data.title
-      .toLowerCase()
-      .replace(/[^a-z0-9]+/g, "-")
-      .replace(/(^-|-$)/g, "")
+    updateData.slug = slugify(parsed.data.title)
   }
   if (parsed.data.description !== undefined)
     updateData.description = parsed.data.description
