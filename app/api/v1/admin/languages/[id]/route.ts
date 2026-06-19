@@ -1,9 +1,16 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { z } from "zod"
 import { and, eq, inArray, isNull, or, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import {
+  COMMUNITY_DECKS_CACHE_TAG,
+  COMMUNITY_DECKS_DETAIL_CACHE_TAG,
+} from "@/lib/cache/community-decks-detail"
+import { LANGUAGES_CACHE_TAG } from "@/lib/cache/languages"
+import { TOPIC_DECKS_CACHE_TAG } from "@/lib/cache/topic-decks"
 import { db } from "@/lib/db/client"
 import { cards, decks, languages } from "@/lib/db/schema"
 
@@ -65,6 +72,10 @@ export async function PATCH(
         { status: 404 },
       )
     }
+
+    revalidateCache(LANGUAGES_CACHE_TAG)
+    revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
+
     return NextResponse.json(successResponse(updated))
   } catch (err) {
     if (err instanceof Error && err.message.includes("languages_code_unique")) {
@@ -126,6 +137,11 @@ export async function DELETE(
         ),
       )
   }
+
+  revalidateCache(LANGUAGES_CACHE_TAG)
+  revalidateCache(COMMUNITY_DECKS_CACHE_TAG)
+  revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
+  revalidateCache(TOPIC_DECKS_CACHE_TAG)
 
   return NextResponse.json(
     successResponse({

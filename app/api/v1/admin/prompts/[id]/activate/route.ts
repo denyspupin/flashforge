@@ -1,8 +1,10 @@
 import { and, eq, isNull, sql } from "drizzle-orm"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { NextResponse } from "next/server"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { PROMPTS_CACHE_TAG } from "@/lib/cache/active-prompt"
 import { db } from "@/lib/db/client"
 import { promptTemplates } from "@/lib/db/schema"
 import { getAdminPrompt } from "@/lib/queries/admin-prompts"
@@ -56,5 +58,8 @@ export async function POST(
       status: 404,
     })
   }
+
+  revalidateCache(PROMPTS_CACHE_TAG)
+
   return NextResponse.json(successResponse(activated))
 }

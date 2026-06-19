@@ -88,7 +88,7 @@ export function CollectionImportSection({
     ),
     queryFn: () =>
       fetchActivePrompt(PROMPT_TEMPLATES.COLLECTION_GENERATION_SLUG),
-    staleTime: 60_000,
+    staleTime: Infinity,
   })
 
   const promptBody =

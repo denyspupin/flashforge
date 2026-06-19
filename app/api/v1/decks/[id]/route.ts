@@ -1,9 +1,15 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { db } from "@/lib/db/client"
 import { decks, deckTopics, topics, cards } from "@/lib/db/schema"
 import { eq, and, inArray, isNull } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import {
+  COMMUNITY_DECKS_CACHE_TAG,
+  COMMUNITY_DECKS_DETAIL_CACHE_TAG,
+} from "@/lib/cache/community-decks-detail"
+import { TOPIC_DECKS_CACHE_TAG } from "@/lib/cache/topic-decks"
 import { getActiveLanguageIds } from "@/lib/languages/valid"
 import { slugify } from "@/lib/slug"
 import { z } from "zod"
@@ -153,6 +159,12 @@ export async function PATCH(
     }
   }
 
+  revalidateCache(COMMUNITY_DECKS_CACHE_TAG)
+  revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
+  if (parsed.data.topicIds !== undefined) {
+    revalidateCache(TOPIC_DECKS_CACHE_TAG)
+  }
+
   return NextResponse.json(successResponse(updated))
 }
 
@@ -183,6 +195,10 @@ export async function DELETE(
   }
 
   await db.delete(decks).where(eq(decks.id, id))
+
+  revalidateCache(COMMUNITY_DECKS_CACHE_TAG)
+  revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
+  revalidateCache(TOPIC_DECKS_CACHE_TAG)
 
   return NextResponse.json(successResponse({ success: true }))
 }

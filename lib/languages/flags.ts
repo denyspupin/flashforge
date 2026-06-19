@@ -1,3 +1,4 @@
+import { LRUCache } from "lru-cache"
 import type { Language } from "@/types/deck"
 
 const LANGUAGE_TO_COUNTRY: Record<string, string> = {
@@ -84,11 +85,25 @@ function countryToFlag(code: string): string {
     .join("")
 }
 
+const flagCache = new LRUCache<string, string>({
+  max: 256,
+})
+
 export function getLanguageFlag(code: string | null | undefined): string {
   if (!code || typeof code !== "string") return ""
+
+  const cached = flagCache.get(code)
+  if (cached !== undefined) return cached
+
   const countryCode = LANGUAGE_TO_COUNTRY[code.toLowerCase()]
-  if (!countryCode) return ""
-  return countryToFlag(countryCode)
+  if (!countryCode) {
+    flagCache.set(code, "")
+    return ""
+  }
+
+  const flag = countryToFlag(countryCode)
+  flagCache.set(code, flag)
+  return flag
 }
 
 export function enrichLanguage<T extends Pick<Language, "code">>(

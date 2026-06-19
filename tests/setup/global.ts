@@ -48,6 +48,19 @@ vi.mock("@clerk/nextjs/server", () => ({
   },
 }))
 
+vi.mock("@/lib/cache/revalidate", () => ({
+  revalidateCache: () => {},
+}))
+
+vi.mock("next/cache", async () => {
+  const actual =
+    await vi.importActual<typeof import("next/cache")>("next/cache")
+  return {
+    ...actual,
+    unstable_cache: <T extends (...args: never[]) => unknown>(fn: T) => fn,
+  }
+})
+
 export const testDb = {
   set: refs.setDb,
   get: refs.getDb,

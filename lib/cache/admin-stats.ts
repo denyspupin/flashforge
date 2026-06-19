@@ -1,3 +1,4 @@
+import { unstable_cache } from "next/cache"
 import { and, count, desc, eq, gte, isNull, sql } from "drizzle-orm"
 
 import { db } from "@/lib/db/client"
@@ -50,13 +51,12 @@ export type AdminStats = {
   generatedAt: string
 }
 
-const DAY_MS = 24 * 60 * 60 * 1000
+export const ADMIN_STATS_CACHE_TAG = "admin-stats"
 
-function daysAgo(days: number): Date {
-  return new Date(Date.now() - days * DAY_MS)
-}
+async function loadAdminStatsFresh(): Promise<AdminStats> {
+  const DAY_MS = 24 * 60 * 60 * 1000
+  const daysAgo = (days: number) => new Date(Date.now() - days * DAY_MS)
 
-export async function loadAdminStats(): Promise<AdminStats> {
   const [
     userTotalsRow,
     deckTotalsRow,
@@ -88,19 +88,13 @@ export async function loadAdminStats(): Promise<AdminStats> {
       .select({ count: count() })
       .from(decks)
       .where(
-        and(
-          eq(decks.visibility, "public"),
-          isNull(decks.deletedAt),
-        ),
+        and(eq(decks.visibility, "public"), isNull(decks.deletedAt))
       ),
     db
       .select({ count: count() })
       .from(decks)
       .where(
-        and(
-          eq(decks.visibility, "private"),
-          isNull(decks.deletedAt),
-        ),
+        and(eq(decks.visibility, "private"), isNull(decks.deletedAt))
       ),
     db
       .select({ count: count() })
@@ -140,38 +134,46 @@ export async function loadAdminStats(): Promise<AdminStats> {
   const deckTotals = deckTotalsRow[0]
   const activeUsers = (userTotals?.total ?? 0) - (userTotals?.deleted ?? 0)
 
-  const topLanguagePairs = await db
-    .select({
-      sourceLanguageId: decks.sourceLanguageId,
-      targetLanguageId: decks.targetLanguageId,
-      sourceName: sql<string>`src.name`,
-      sourceCode: sql<string>`src.code`,
-      targetName: sql<string>`tgt.name`,
-      targetCode: sql<string>`tgt.code`,
-      deckCount: sql<number>`count(*)::int`,
-    })
-    .from(decks)
-    .innerJoin(sql`${languages} src`, sql`src.id = ${decks.sourceLanguageId}`)
-    .innerJoin(sql`${languages} tgt`, sql`tgt.id = ${decks.targetLanguageId}`)
-    .where(isNull(decks.deletedAt))
-    .groupBy(decks.sourceLanguageId, decks.targetLanguageId, sql`src.name`, sql`src.code`, sql`tgt.name`, sql`tgt.code`)
-    .orderBy(desc(sql`count(*)`))
-    .limit(5)
-
-  const topTopics = await db
-    .select({
-      topicId: topics.id,
-      name: topics.name,
-      slug: topics.slug,
-      deckCount: sql<number>`count(*)::int`,
-    })
-    .from(deckTopics)
-    .innerJoin(topics, eq(topics.id, deckTopics.topicId))
-    .innerJoin(decks, eq(decks.id, deckTopics.deckId))
-    .where(isNull(decks.deletedAt))
-    .groupBy(topics.id, topics.name, topics.slug)
-    .orderBy(desc(sql`count(*)`))
-    .limit(5)
+  const [topLanguagePairs, topTopics] = await Promise.all([
+    db
+      .select({
+        sourceLanguageId: decks.sourceLanguageId,
+        targetLanguageId: decks.targetLanguageId,
+        sourceName: sql<string>`src.name`,
+        sourceCode: sql<string>`src.code`,
+        targetName: sql<string>`tgt.name`,
+        targetCode: sql<string>`tgt.code`,
+        deckCount: sql<number>`count(*)::int`,
+      })
+      .from(decks)
+      .innerJoin(sql`${languages} src`, sql`src.id = ${decks.sourceLanguageId}`)
+      .innerJoin(sql`${languages} tgt`, sql`tgt.id = ${decks.targetLanguageId}`)
+      .where(isNull(decks.deletedAt))
+      .groupBy(
+        decks.sourceLanguageId,
+        decks.targetLanguageId,
+        sql`src.name`,
+        sql`src.code`,
+        sql`tgt.name`,
+        sql`tgt.code`
+      )
+      .orderBy(desc(sql`count(*)`))
+      .limit(5),
+    db
+      .select({
+        topicId: topics.id,
+        name: topics.name,
+        slug: topics.slug,
+        deckCount: sql<number>`count(*)::int`,
+      })
+      .from(deckTopics)
+      .innerJoin(topics, eq(topics.id, deckTopics.topicId))
+      .innerJoin(decks, eq(decks.id, deckTopics.deckId))
+      .where(isNull(decks.deletedAt))
+      .groupBy(topics.id, topics.name, topics.slug)
+      .orderBy(desc(sql`count(*)`))
+      .limit(5),
+  ])
 
   return {
     users: {
@@ -203,3 +205,9 @@ export async function loadAdminStats(): Promise<AdminStats> {
     generatedAt: new Date().toISOString(),
   }
 }
+
+export const loadAdminStats = unstable_cache(
+  loadAdminStatsFresh,
+  ["admin-stats"],
+  { revalidate: 60, tags: [ADMIN_STATS_CACHE_TAG] }
+)

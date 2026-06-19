@@ -166,6 +166,7 @@ export default function DeckDetailPage() {
   const { data: languagesData } = useQuery({
     queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
+    staleTime: Infinity,
   })
 
   const deck = data?.data

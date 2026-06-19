@@ -83,6 +83,7 @@ export default function CollectionDetail() {
   const { data: languagesData } = useQuery({
     queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
+    staleTime: Infinity,
   })
 
   const { data: decksData } = useQuery({

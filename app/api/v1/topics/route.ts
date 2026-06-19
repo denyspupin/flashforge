@@ -1,12 +1,10 @@
 import { NextResponse } from "next/server"
-import { isNull } from "drizzle-orm"
-import { db } from "@/lib/db/client"
-import { topics } from "@/lib/db/schema"
 import { successResponse } from "@/lib/api/response"
+import { getActiveTopics } from "@/lib/cache/topics"
 
 export const dynamic = "force-dynamic"
 
 export async function GET() {
-  const data = await db.select().from(topics).where(isNull(topics.deletedAt))
+  const data = await getActiveTopics()
   return NextResponse.json(successResponse(data))
 }

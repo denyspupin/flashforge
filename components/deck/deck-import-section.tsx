@@ -94,7 +94,7 @@ export function DeckImportSection({
     queryKey: queryKeys.activePrompt(PROMPT_TEMPLATES.DECK_GENERATION_SLUG),
     queryFn: () =>
       fetchActivePrompt(PROMPT_TEMPLATES.DECK_GENERATION_SLUG),
-    staleTime: 60_000,
+    staleTime: Infinity,
   })
 
   const promptBody =

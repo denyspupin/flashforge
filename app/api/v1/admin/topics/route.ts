@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { z } from "zod"
 import { asc, eq, isNull, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { TOPICS_CACHE_TAG } from "@/lib/cache/topics"
 import { db } from "@/lib/db/client"
 import { deckTopics, decks, topics } from "@/lib/db/schema"
 
@@ -94,6 +96,8 @@ export async function POST(request: Request) {
       .insert(topics)
       .values({ name: parsed.data.name, slug })
       .returning()
+
+    revalidateCache(TOPICS_CACHE_TAG)
 
     return NextResponse.json(successResponse(created), { status: 201 })
   } catch (err) {
