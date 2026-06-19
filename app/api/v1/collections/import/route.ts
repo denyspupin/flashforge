@@ -46,9 +46,6 @@ export async function POST(request: Request) {
         `Unknown language code(s): ${resolved.missingLanguages.join(", ")}`
       )
     }
-    if (resolved.missingTopics.length) {
-      parts.push(`Unknown topic slug(s): ${resolved.missingTopics.join(", ")}`)
-    }
     if (resolved.duplicateDeckTitles.length) {
       parts.push(
         `Duplicate deck title(s) in the file: ${resolved.duplicateDeckTitles.join(", ")}`
