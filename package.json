@@ -15,7 +15,12 @@
     "db:seed": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed.ts",
     "db:seed:mock": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts",
     "db:seed:mock:reset": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts --reset",
-    "db:seed:prompts": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-prompts.ts"
+    "db:seed:prompts": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-prompts.ts",
+    "test": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run",
+    "test:watch": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs",
+    "test:unit": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run tests/unit",
+    "test:integration": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run tests/integration",
+    "test:coverage": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run --coverage"
   },
   "dependencies": {
     "@base-ui/react": "1.5.0",
@@ -48,12 +53,14 @@
     "@types/node": "^25.9.2",
     "@types/pg": "8.20.0",
     "@types/react": "^19.2.17",
+    "@vitest/coverage-v8": "^4.1.9",
     "autoprefixer": "^10.4.0",
     "drizzle-kit": "^0.31.10",
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.7",
     "postcss": "^8.4.0",
     "tailwindcss": "^4.3.0",
-    "typescript": "^6.0.3"
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
   }
 }
