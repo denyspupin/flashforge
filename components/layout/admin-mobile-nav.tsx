@@ -7,6 +7,7 @@ import {
   Globe,
   Shield,
   MessageSquareQuote,
+  Layers,
   type LucideIcon,
 } from "lucide-react"
 
@@ -29,6 +30,7 @@ const NAV_ITEMS: AdminNavItem[] = [
   },
   { href: "/admin/users", label: "Users", icon: Shield },
   { href: "/admin/decks", label: "Decks", icon: Library },
+  { href: "/admin/collections", label: "Collections", icon: Layers },
   {
     href: "/admin/prompts",
     label: "Prompts",

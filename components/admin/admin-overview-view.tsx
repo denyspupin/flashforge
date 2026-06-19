@@ -5,6 +5,7 @@ import {
   Award,
   BookOpen,
   Flame,
+  Layers,
   Library,
   Tag,
   UserPlus,
@@ -128,6 +129,11 @@ export function AdminOverviewView() {
             value={data.content.decks.toLocaleString()}
             icon={Library}
             hint={`${data.content.publicDecks} public · ${data.content.privateDecks} private`}
+          />
+          <StatTile
+            label="Collections"
+            value={data.content.collections.toLocaleString()}
+            icon={Layers}
           />
           <StatTile
             label="Curated"

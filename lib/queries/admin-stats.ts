@@ -3,6 +3,7 @@ import { and, count, desc, eq, gte, isNull, sql } from "drizzle-orm"
 import { db } from "@/lib/db/client"
 import {
   cards,
+  collections,
   deckTopics,
   decks,
   languages,
@@ -26,6 +27,7 @@ export type AdminStats = {
     privateDecks: number
     curatedDecks: number
     cards: number
+    collections: number
   }
   activity: {
     sessionsLast7d: number
@@ -62,6 +64,7 @@ export async function loadAdminStats(): Promise<AdminStats> {
     privateDecksRow,
     curatedDecksRow,
     cardTotalsRow,
+    collectionsRow,
     sessions7dRow,
     sessions30dRow,
     activeUsers7dRow,
@@ -107,6 +110,10 @@ export async function loadAdminStats(): Promise<AdminStats> {
       .select({ count: count() })
       .from(cards)
       .where(isNull(cards.deletedAt)),
+    db
+      .select({ count: count() })
+      .from(collections)
+      .where(isNull(collections.deletedAt)),
     db
       .select({ count: count() })
       .from(studySessions)
@@ -181,6 +188,7 @@ export async function loadAdminStats(): Promise<AdminStats> {
       privateDecks: privateDecksRow[0]?.count ?? 0,
       curatedDecks: curatedDecksRow[0]?.count ?? 0,
       cards: cardTotalsRow[0]?.count ?? 0,
+      collections: collectionsRow[0]?.count ?? 0,
     },
     activity: {
       sessionsLast7d: sessions7dRow[0]?.count ?? 0,
