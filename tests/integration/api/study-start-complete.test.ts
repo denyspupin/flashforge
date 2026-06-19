@@ -184,10 +184,7 @@ describe("study start + complete", () => {
     })
   })
 
-  test.skip("complete with 0 cards awards no XP and no deck-complete bonus", async () => {
-    // KNOWN BUG: the complete route currently grants DECK_PERFECT (100 XP) when
-    // failedCardIds is empty, regardless of cardsReviewed. With 0 cards the
-    // condition is trivially true. Spec says 0 XP; fix in the route, not here.
+  test("complete with 0 cards awards no XP and no deck-complete bonus", async () => {
     vi.useFakeTimers()
     vi.setSystemTime(new Date("2026-06-15T12:00:00Z"))
 
