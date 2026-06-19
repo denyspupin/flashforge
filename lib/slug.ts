@@ -2,9 +2,14 @@ import { db } from "@/lib/db/client"
 import { collections, decks } from "@/lib/db/schema"
 import { like } from "drizzle-orm"
 
-export async function uniqueSlug(base: string): Promise<string> {
+type Executor = Pick<typeof db, "select">
+
+export async function uniqueSlug(
+  base: string,
+  executor: Executor = db,
+): Promise<string> {
   const root = `${base}-copy`
-  const existing = await db
+  const existing = await executor
     .select({ slug: decks.slug })
     .from(decks)
     .where(like(decks.slug, `${root}%`))
@@ -25,9 +30,12 @@ export function slugify(value: string): string {
     .replace(/(^-|-$)/g, "")
 }
 
-export async function uniqueCollectionSlug(base: string): Promise<string> {
+export async function uniqueCollectionSlug(
+  base: string,
+  executor: Executor = db,
+): Promise<string> {
   const root = slugify(base)
-  const existing = await db
+  const existing = await executor
     .select({ slug: collections.slug })
     .from(collections)
     .where(like(collections.slug, `${root}%`))

@@ -95,7 +95,7 @@ export async function POST(request: Request) {
     let cardsCreated = 0
 
     for (const deck of resolved.resolved.decks) {
-      const deckSlug = await uniqueSlug(deck.title)
+      const deckSlug = await uniqueSlug(deck.title, tx)
       const [createdDeck] = await tx
         .insert(decks)
         .values({
