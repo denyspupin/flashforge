@@ -32,6 +32,9 @@ export const queryKeys = {
     prompts: (filters?: AdminPromptFilters) =>
       ["admin", "prompts", filters ?? {}] as const,
     prompt: (id: string) => ["admin", "prompts", id] as const,
+    collections: (filters?: AdminCollectionFilters) =>
+      ["admin", "collections", filters ?? {}] as const,
+    collection: (id: string) => ["admin", "collections", id] as const,
   },
 } as const
 
@@ -53,6 +56,14 @@ export type AdminDeckFilters = {
   q?: string
   visibility?: "private" | "public"
   curated?: boolean
+  creatorId?: string
+  deleted?: boolean
+  page?: number
+  limit?: number
+}
+
+export type AdminCollectionFilters = {
+  q?: string
   creatorId?: string
   deleted?: boolean
   page?: number
