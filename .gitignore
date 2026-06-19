@@ -46,3 +46,7 @@ next-env.d.ts
 
 # os
 Thumbs.db
+
+# opencode
+.opencode/
+.ocx/

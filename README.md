@@ -1,158 +1,130 @@
+<div align="center">
+
+<img src="public/logo.png" width="72" height="72" alt="FlashForge" />
+
 # FlashForge
 
-A vocabulary learning platform built around flashcard decks, study sessions, and gamification (XP and daily streaks). Users create decks organized by language pairs and topics, share them publicly, fork community decks, and track their progress.
+### *Forge your fluency, one flash at a time.*
 
-## Features
+A quiet workshop for learning vocabulary — build flashcard decks your way, study them with focus, and watch a streak of small sessions compound into something remarkable.
 
-- **Decks organized by language pairs and topics** — source/target language enforced at the deck level, with cards inheriting the deck's pair.
-- **Public discovery and forking** — publish any deck to the community feed; anyone can fork a public deck to their own account.
-- **Curated collections** — trusted curators publish featured decks highlighted on the platform.
-- **Study sessions** — front-of-card reveal flow with Pass/Fail, one retry round for failed cards, resumable across visits.
-- **Gamification** — XP awarded per session, daily streaks with multipliers, achievement unlocks.
-- **Notifications** — fork events and achievement unlocks surfaced in-app.
+[**Start forging →**](https://flashforge.app) · [Browse the library](#explore-the-library) · [How it works](#how-it-works)
 
-## Tech Stack
+</div>
 
-| Layer       | Technology                                      |
-| ----------- | ----------------------------------------------- |
-| Framework   | Next.js 16 (App Router)                         |
-| Database    | PostgreSQL + Drizzle ORM                        |
-| Auth        | Clerk (credentials + OAuth, webhook user sync)  |
-| Styling     | Tailwind CSS + shadcn/ui                        |
-| Server state| TanStack Query                                  |
-| UI state    | Zustand                                         |
-| Validation  | Zod                                             |
-| Hosting     | Vercel                                          |
+---
 
-## Project Structure
+<p align="center">
+  <img src="docs/screenshots/01-landing-hero.png" alt="FlashForge — forge your fluency, one flash at a time" width="100%" />
+</p>
 
-```
-flashforge/
-├── app/
-│   ├── (public)/           # Landing, explore, public deck view
-│   ├── (auth)/             # Login, register
-│   ├── (dashboard)/        # Authenticated app (decks, study, profile, notifications)
-│   ├── api/v1/             # REST API
-│   ├── layout.tsx
-│   └── globals.css
-├── components/             # Type-organized: deck/, card/, study/, layout/, profile/, notifications/, ui/
-├── lib/
-│   ├── db/                 # Drizzle schema + client
-│   ├── api/                # Response helpers, error codes
-│   ├── auth/               # Clerk helpers
-│   ├── constants.ts        # XP values, streak multipliers, topics
-│   └── utils/
-├── hooks/                  # Custom React hooks
-├── stores/                 # Zustand stores
-├── types/                  # Shared TypeScript types
-├── docs/                   # Full project documentation
-└── scripts/                # DB init and seed scripts
-```
+---
 
-## Getting Started
+## What is FlashForge?
 
-### Prerequisites
+FlashForge is a vocabulary learning platform built around flashcard decks, study sessions, and a streak system that rewards **showing up** instead of grinding.
 
-- Node.js 20+
-- pnpm 11+
-- PostgreSQL 16 (or use the bundled `docker-compose.yml`)
-- A Clerk application (publishable + secret key)
+You build decks organized by language pairs (English → German, Spanish → Japanese, anything) and topics (Food, Travel, Doctor Visit, …). You study them one card at a time — no scrolling, no flashcard fatigue, no notifications begging you back. Sessions save themselves, so you can step away and pick up exactly where you left off.
 
-### 1. Install dependencies
+Whether you write your own decks or fork one from the community, the loop is the same: **a small, focused ritual you can actually keep.**
 
-```bash
-pnpm install
-```
+> No streaks-as-shaming. No notifications begging. Just a small loop that rewards showing up.
 
-### 2. Configure environment
+---
 
-Copy the example file and fill in real values:
+## How it works
 
-```bash
-cp .env.example .env.local
-```
+Three quiet rituals, every day.
 
-Required variables:
+### 1 · Compose your deck
+Pair any two languages. Add cards one at a time, paste a list, or fork a deck the community has already polished. Every deck is yours to shape.
 
-```env
-DATABASE_URL=postgresql://flashforge:flashforge@localhost:5432/flashforge
-NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=pk_test_...
-CLERK_SECRET_KEY=sk_test_...
-```
+### 2 · Study with focus
+One card. No scroll. Flip, self-assess, and retry the ones that miss. Sessions save themselves — step away and return to exactly where you left off.
 
-`.env.local` is gitignored. Never commit secrets.
+### 3 · Stack the small wins
+XP for cards reviewed, multipliers for streaks that hold. A daily practice that asks for ten minutes, but rewards a lifetime of vocabulary.
 
-### 3. Start the database
+<p align="center">
+  <img src="docs/screenshots/06-study-back.png" alt="Study mode — one card, no scroll" width="100%" />
+</p>
 
-```bash
-docker compose up -d
-```
+---
 
-Or point `DATABASE_URL` at any existing PostgreSQL instance (Neon, Supabase, local install, etc.).
+## Explore the library
 
-### 4. Apply the schema
+The community has built decks across **nine languages** and dozens of real-world topics. Browse, study any deck as a guest, or **fork** one into your own account to make it your own.
 
-```bash
-pnpm db:push
-```
+Every deck has a clear language pair, the topics it belongs to, who built it, and how many cards it has. Curated decks are highlighted by trusted community members.
 
-For production-style migrations, use `pnpm db:generate` and `pnpm db:migrate` instead.
+<p align="center">
+  <img src="docs/screenshots/03-explore.png" alt="Explore community decks" width="100%" />
+</p>
 
-### 5. Start the dev server
+---
 
-```bash
-pnpm dev
-```
+## Anatomy of a deck
 
-The app runs at [http://localhost:3000](http://localhost:3000).
+Each deck has a title, description, a language pair, the topics it belongs to, and the cards inside. Public decks are open to the world; private decks live only in your account. You can flip visibility whenever you want.
 
-## Scripts
+<p align="center">
+  <img src="docs/screenshots/04-deck-detail.png" alt="A public deck — Restaurant Essentials" width="100%" />
+</p>
 
-| Command           | Purpose                                        |
-| ----------------- | ---------------------------------------------- |
-| `pnpm dev`        | Start the Next.js dev server                   |
-| `pnpm build`      | Production build                               |
-| `pnpm start`      | Start the production server                    |
-| `pnpm lint`       | Run ESLint (`eslint .`)                        |
-| `pnpm db:push`    | Push the Drizzle schema to the dev database    |
-| `pnpm db:generate`| Generate a new migration from schema changes   |
-| `pnpm db:migrate` | Apply generated migrations                     |
-| `pnpm db:studio`  | Open Drizzle Studio                            |
+---
 
-## API
+## XP that compounds, streaks that reward patience
 
-REST API under `/api/v1`. All responses follow:
+A day-one session earns what a day-one session should. A thirty-day streak earns three times that. The numbers reward the thing you actually want to build: **a habit that sticks.**
 
-```json
-{ "data": { ... }, "error": null }
-```
+| Streak | Multiplier | Vibe |
+| --- | --- | --- |
+| 1 day | ×1 | Warm-up |
+| 3 days | ×1.5 | Gaining |
+| 7 days | ×2 | Locked in |
+| 14 days | ×2.5 | On fire |
+| 30 days | ×3 | Forged |
 
-Error codes: `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `CONFLICT`, `INTERNAL_ERROR`.
+> **A streak is a sentence — not a chain.** One card keeps it alive. There is no penalty for missing a day; there is only a quiet loss of the multiplier. The fire returns the moment you do.
 
-Highlights:
+---
 
-- `GET /community/decks` — browse public decks (filters: source, target, topic, q, sort)
-- `POST /decks` / `PATCH /decks/:id` / `DELETE /decks/:id` — manage own decks
-- `POST /decks/:id/fork` — fork a public deck
-- `POST /decks/:id/cards/bulk` — bulk add cards
-- `POST /study/start` / `GET /study/:sessionId` / `POST /study/:sessionId/complete` — resumable sessions
-- `GET /notifications` / `PATCH /notifications/:id/read` — in-app notifications
+## Topics in the workshop
 
-Full endpoint table and database schema live in [`docs/PROJECT.md`](./docs/PROJECT.md).
+Every topic is a doorway — build it out in any direction the language takes you. A single deck can belong to multiple topics at once (*"Restaurant Essentials"* spans **Food** + **Shopping**; *"Fruits & Vegetables"* lives across both).
 
-## Conventions
+**Food** · **Animals** · **Household** · **Work Meeting** · **Doctor Visit** · **Travel** · **Shopping** · *…and more, all the time.*
 
-- Type-based component organization (`components/deck/`, `components/card/`, etc.)
-- shadcn/ui primitives in `components/ui/`
-- Custom hooks in `hooks/`, Zustand stores in `stores/`
-- Tailwind 4 with CSS-first config — no `tailwind.config.ts`; theme tokens live in `app/globals.css` under `@theme inline`
-- ESLint flat config in `eslint.config.mjs`; `pnpm lint` runs `eslint .`
-- All tables include `created_at` and `updated_at`
-- UUIDs for decks, cards, and sessions (future import/export)
-- UTC timestamps on the server; client renders in local time
+---
 
-See [`AGENTS.md`](./AGENTS.md) for the agent-facing summary.
+## For curious learners
+
+- **Free forever** — no credit card, no ads, no premium tier.
+- **Open library** — every public deck is browseable, forkable, and studyable as a guest.
+- **Resumable sessions** — start a deck, walk away, come back to the same card.
+- **One retry round** — failed cards come back for a second pass so you actually learn them.
+- **Notifications for the good stuff** — get a quiet ping when someone forks your deck or you unlock an achievement.
+
+---
+
+## For builders
+
+If you'd like to set up the project locally, check out the developer documentation:
+
+- [`docs/DEVELOPER.md`](docs/DEVELOPER.md) — installation, scripts, and the developer quickstart
+- [`docs/PROJECT.md`](docs/PROJECT.md) — full architecture, schema, and API reference
+- [`AGENTS.md`](AGENTS.md) — agent-facing summary and conventions
+
+The project is built with **Next.js 16**, **React 19**, **PostgreSQL + Drizzle**, **Clerk** for auth, **Tailwind 4** + **shadcn/ui**, and lives on **Vercel**.
+
+---
 
 ## License
 
 Private — not currently licensed for redistribution.
+
+<div align="center">
+
+<sub>Built with care. Two card flips at a time.</sub>
+
+</div>
