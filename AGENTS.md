@@ -10,7 +10,7 @@ FlashForge is a vocabulary learning platform with flashcard decks, study session
 | State   | TanStack Query (server) + Zustand (UI)                        |
 | Hosting | Vercel                                                        |
 
-Full documentation: `docs/PROJECT.md`
+Full documentation: `docs/PROJECT.md` · `docs/DEPLOYMENT.md`
 
 ## Key Decisions
 
