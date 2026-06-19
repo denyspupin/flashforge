@@ -15,6 +15,9 @@ export const metadata: Metadata = {
   title: "FlashForge — Forge your fluency, one flash at a time",
   description:
     "A vocabulary learning workshop. Build flashcard decks, study with focus, and craft habits that last — one streak at a time.",
+  icons: {
+    icon: "/favicon.png",
+  },
 }
 
 export const dynamic = "force-dynamic"

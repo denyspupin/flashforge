@@ -1,16 +1,23 @@
-import { CreditCard } from "lucide-react"
-import { cn } from "@/lib/utils"
+import Image from "next/image";
+import { cn } from "@/lib/utils";
 
 export function Wordmark({
   className,
   textClassName,
 }: {
-  className?: string
-  textClassName?: string
+  className?: string;
+  textClassName?: string;
 }) {
   return (
     <span className={cn("inline-flex items-center gap-2", className)}>
-      <CreditCard className="h-5 w-5 text-ember" strokeWidth={1.75} />
+      <Image
+        src="/logo.png"
+        alt=""
+        width={20}
+        height={20}
+        priority
+        className="h-5 w-5 shrink-0"
+      />
       <span
         className={cn(
           "font-display text-[1.05em] font-medium leading-none tracking-tight",
@@ -26,5 +33,5 @@ export function Wordmark({
         </span>
       </span>
     </span>
-  )
+  );
 }
