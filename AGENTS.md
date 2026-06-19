@@ -78,6 +78,20 @@ npx drizzle-kit migrate
 npx drizzle-kit generate
 ```
 
+## Testing
+
+Tests run against a separate Postgres database (`flashforge_test`). Copy `tests/.env.test.example` to `tests/.env.test` and set `TEST_DATABASE_URL`, then apply migrations to the test DB (`pnpm db:migrate` after pointing the env at the test DB) before the first run.
+
+```bash
+pnpm test              # full suite
+pnpm test:unit         # unit tests only
+pnpm test:integration  # integration tests only
+pnpm test:watch        # watch mode
+pnpm test:coverage     # with coverage report
+```
+
+Scope and conventions live in `docs/TEST_PLAN.md`.
+
 > **Schema changes must be applied locally before they're usable.** Whenever
 > `lib/db/schema.ts` is edited, run `pnpm db:migrate` (or `pnpm db:push` in
 > dev) so the new columns/tables exist in your database. Drizzle generates

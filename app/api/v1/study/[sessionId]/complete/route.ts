@@ -124,7 +124,7 @@ export async function POST(
     cardsReviewed * XP_VALUES.CARD_REVIEWED +
     cardsCorrect * XP_VALUES.CARD_CORRECT +
     (cardsReviewed > 0 ? XP_VALUES.DECK_COMPLETE : 0) +
-    (failedCardIds.length === 0 ? XP_VALUES.DECK_PERFECT : 0)
+    (failedCardIds.length === 0 && cardsReviewed > 0 ? XP_VALUES.DECK_PERFECT : 0)
 
   const xpAwarded = Math.round(baseXp * multiplier)
 
