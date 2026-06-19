@@ -1,6 +1,6 @@
 /**
  * Default deck-generation prompt body used as:
- *  - a fallback in `ImportDialog` when the active DB prompt cannot be loaded
+ *  - a fallback in `DeckImportSection` when the active DB prompt cannot be loaded
  *  - the initial v1 body in `scripts/seed-prompts.ts`
  *
  * The runtime prompt is served from the `prompt_templates` table and is
