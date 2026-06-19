@@ -1,5 +1,5 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
-import { eq } from "drizzle-orm"
+import { eq, inArray } from "drizzle-orm"
 import { setupTestPool, teardownTestPool, withTx } from "../../setup/db"
 import { mockClerk } from "../../setup/clerk"
 import { callRoute } from "../../setup/route-call"
@@ -376,6 +376,93 @@ describe("publish / fork / import", () => {
           body: { payload: oversizedPayload, target: { mode: "new" } },
         })
         expect(res.status).toBe(400)
+      })
+    })
+
+    test("mode=new auto-creates missing topics and attaches them", async () => {
+      await withTx(async (db) => {
+        const owner = await seedUser(db, {})
+        const importer = await seedUser(db, {})
+        const source = await seedLanguage(db, "en")
+        const target = await seedLanguage(db, "es")
+        const sourceDeck = await makeDeck(db, {
+          creatorId: owner.id,
+          sourceLanguageId: source.id,
+          targetLanguageId: target.id,
+          slug: "topic-export-source",
+        })
+        await seedCards(db, sourceDeck.id, 1)
+
+        const payload = await exportOwnedDeck(db, owner.clerkId, sourceDeck.id)
+        payload.deck.topics = ["travel", "food"]
+
+        mockClerk({ clerkId: importer.clerkId })
+        const res = await callRoute(importDeck, {
+          method: "POST",
+          body: { payload, target: { mode: "new" } },
+        })
+        expect(res.status).toBe(200)
+        expect(res.data).toMatchObject({ mode: "new", cardsCreated: 1 })
+
+        const createdTopics = await db
+          .select({ slug: schema.topics.slug, name: schema.topics.name })
+          .from(schema.topics)
+          .where(inArray(schema.topics.slug, ["travel", "food"]))
+        expect(createdTopics).toHaveLength(2)
+        expect(createdTopics.map((t) => t.slug).sort()).toEqual(["food", "travel"])
+        expect(createdTopics.every((t) => t.name === t.slug)).toBe(true)
+
+        const deckTopicRows = await db
+          .select({ topicId: schema.deckTopics.topicId })
+          .from(schema.deckTopics)
+          .where(eq(schema.deckTopics.deckId, res.data!.deckId))
+        expect(deckTopicRows).toHaveLength(2)
+      })
+    })
+
+    test("mode=new keeps pre-existing topics and creates only the missing ones", async () => {
+      await withTx(async (db) => {
+        const owner = await seedUser(db, {})
+        const importer = await seedUser(db, {})
+        const source = await seedLanguage(db, "en")
+        const target = await seedLanguage(db, "es")
+        const sourceDeck = await makeDeck(db, {
+          creatorId: owner.id,
+          sourceLanguageId: source.id,
+          targetLanguageId: target.id,
+          slug: "topic-merge-source",
+        })
+        await seedCards(db, sourceDeck.id, 1)
+
+        const existing = await db
+          .insert(schema.topics)
+          .values({ slug: "travel", name: "Travel" })
+          .returning()
+
+        const payload = await exportOwnedDeck(db, owner.clerkId, sourceDeck.id)
+        payload.deck.topics = ["travel", "food"]
+
+        mockClerk({ clerkId: importer.clerkId })
+        const res = await callRoute(importDeck, {
+          method: "POST",
+          body: { payload, target: { mode: "new" } },
+        })
+        expect(res.status).toBe(200)
+
+        const travelRows = await db
+          .select()
+          .from(schema.topics)
+          .where(eq(schema.topics.slug, "travel"))
+        expect(travelRows).toHaveLength(1)
+        expect(travelRows[0].id).toBe(existing[0].id)
+        expect(travelRows[0].name).toBe("Travel")
+
+        const foodRows = await db
+          .select()
+          .from(schema.topics)
+          .where(eq(schema.topics.slug, "food"))
+        expect(foodRows).toHaveLength(1)
+        expect(foodRows[0].name).toBe("food")
       })
     })
   })

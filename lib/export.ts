@@ -22,7 +22,7 @@ export type ResolvedImport = {
 
 export type ResolveResult =
   | { ok: true; resolved: ResolvedImport }
-  | { ok: false; missingLanguages: string[]; missingTopics: string[] }
+  | { ok: false; missingLanguages: string[] }
 
 export type ResolvedCollectionDeck = {
   title: string
@@ -44,9 +44,42 @@ export type CollectionResolveResult =
   | {
       ok: false
       missingLanguages: string[]
-      missingTopics: string[]
       duplicateDeckTitles: string[]
     }
+
+async function ensureTopicsExist(
+  slugs: string[]
+): Promise<Record<string, string>> {
+  const uniqueSlugs = Array.from(new Set(slugs.filter(Boolean)))
+  if (!uniqueSlugs.length) return {}
+
+  const existing = await db
+    .select({ id: topics.id, slug: topics.slug })
+    .from(topics)
+    .where(inArray(topics.slug, uniqueSlugs))
+
+  const bySlug: Record<string, string> = Object.fromEntries(
+    existing.map((t) => [t.slug, t.id])
+  )
+
+  const missing = uniqueSlugs.filter((slug) => !bySlug[slug])
+  if (missing.length) {
+    await db
+      .insert(topics)
+      .values(missing.map((slug) => ({ name: slug, slug })))
+      .onConflictDoNothing({ target: topics.slug })
+
+    const reloaded = await db
+      .select({ id: topics.id, slug: topics.slug })
+      .from(topics)
+      .where(inArray(topics.slug, missing))
+    for (const row of reloaded) {
+      bySlug[row.slug] = row.id
+    }
+  }
+
+  return bySlug
+}
 
 export async function buildExportPayload(
   deckId: string
@@ -114,26 +147,14 @@ export async function resolveImportReferences(
   const langByCode = Object.fromEntries(langRows.map((l) => [l.code, l.id]))
   const missingLanguages = langCodes.filter((c) => !langByCode[c])
 
-  let topicIds: string[] = []
-  const missingTopics: string[] = []
-  if (payload.deck.topics.length) {
-    const topicRows = await db
-      .select({ id: topics.id, slug: topics.slug })
-      .from(topics)
-      .where(inArray(topics.slug, payload.deck.topics))
-
-    const topicBySlug = Object.fromEntries(topicRows.map((t) => [t.slug, t.id]))
-    missingTopics.push(
-      ...payload.deck.topics.filter((s) => !topicBySlug[s])
-    )
-    topicIds = payload.deck.topics
-      .map((s) => topicBySlug[s])
-      .filter((id): id is string => Boolean(id))
+  if (missingLanguages.length) {
+    return { ok: false, missingLanguages }
   }
 
-  if (missingLanguages.length || missingTopics.length) {
-    return { ok: false, missingLanguages, missingTopics }
-  }
+  const topicBySlug = await ensureTopicsExist(payload.deck.topics)
+  const topicIds = payload.deck.topics
+    .map((s) => topicBySlug[s])
+    .filter((id): id is string => Boolean(id))
 
   return {
     ok: true,
@@ -160,20 +181,7 @@ export async function resolveCollectionImport(
   const allTopicSlugs = Array.from(
     new Set(payload.decks.flatMap((d) => d.topics))
   )
-  const topicBySlug: Record<string, string> = {}
-  const missingTopics: string[] = []
-  if (allTopicSlugs.length) {
-    const topicRows = await db
-      .select({ id: topics.id, slug: topics.slug })
-      .from(topics)
-      .where(inArray(topics.slug, allTopicSlugs))
-    for (const row of topicRows) {
-      topicBySlug[row.slug] = row.id
-    }
-    for (const slug of allTopicSlugs) {
-      if (!topicBySlug[slug]) missingTopics.push(slug)
-    }
-  }
+  const topicBySlug = await ensureTopicsExist(allTopicSlugs)
 
   const titleCounts = new Map<string, number>()
   for (const d of payload.decks) {
@@ -183,12 +191,8 @@ export async function resolveCollectionImport(
     .filter(([, count]) => count > 1)
     .map(([title]) => title)
 
-  if (
-    missingLanguages.length ||
-    missingTopics.length ||
-    duplicateDeckTitles.length
-  ) {
-    return { ok: false, missingLanguages, missingTopics, duplicateDeckTitles }
+  if (missingLanguages.length || duplicateDeckTitles.length) {
+    return { ok: false, missingLanguages, duplicateDeckTitles }
   }
 
   const decks: ResolvedCollectionDeck[] = payload.decks.map((d) => ({

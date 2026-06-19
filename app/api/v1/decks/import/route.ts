@@ -49,9 +49,6 @@ export async function POST(request: Request) {
         `Unknown language code(s): ${resolved.missingLanguages.join(", ")}`
       )
     }
-    if (resolved.missingTopics.length) {
-      parts.push(`Unknown topic slug(s): ${resolved.missingTopics.join(", ")}`)
-    }
     return NextResponse.json(
       errorResponse(parts.join(" · "), "VALIDATION_ERROR"),
       { status: 400 }
