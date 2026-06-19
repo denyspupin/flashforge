@@ -28,7 +28,7 @@ import { Input } from "@/components/ui/input"
 import { Skeleton } from "@/components/ui/skeleton"
 import { Textarea } from "@/components/ui/textarea"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
-import { queryKeys } from "@/hooks"
+import { useBulkSelection, queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
 import type { AdminCollectionDetail } from "@/lib/queries/admin-collections"
 import { cn } from "@/lib/utils"
@@ -126,9 +126,6 @@ export function AdminCollectionDetailView({
   const [confirmDelete, setConfirmDelete] = React.useState(false)
   const [confirmRestore, setConfirmRestore] = React.useState(false)
   const [formKey, setFormKey] = React.useState(0)
-  const [selectedDeckIds, setSelectedDeckIds] = React.useState<Set<string>>(
-    new Set(),
-  )
   const [pendingRemoveDeckId, setPendingRemoveDeckId] = React.useState<
     string | null
   >(null)
@@ -172,12 +169,7 @@ export function AdminCollectionDetailView({
       removeDeckFromCollection(collectionId, deckId),
     onSuccess: (_data, deckId) => {
       setPendingRemoveDeckId(null)
-      setSelectedDeckIds((prev) => {
-        if (!prev.has(deckId)) return prev
-        const next = new Set(prev)
-        next.delete(deckId)
-        return next
-      })
+      deckSelection.remove([deckId])
       queryClient.invalidateQueries({
         queryKey: queryKeys.admin.collection(collectionId),
       })
@@ -195,30 +187,17 @@ export function AdminCollectionDetailView({
     },
     onSuccess: ({ deckIds, failed }) => {
       setConfirmBulkRemove(false)
-      if (failed === 0) {
-        setSelectedDeckIds((prev) => {
-          const next = new Set(prev)
-          for (const id of deckIds) next.delete(id)
-          return next
-        })
-      }
+      if (failed === 0) deckSelection.remove(deckIds)
       queryClient.invalidateQueries({
         queryKey: queryKeys.admin.collection(collectionId),
       })
     },
   })
 
-  const headerCheckboxRef = React.useRef<HTMLInputElement | null>(null)
-  React.useEffect(() => {
-    const el = headerCheckboxRef.current
-    if (!el || !data) return
-    const visibleDecks = data.decks.slice(0, DECK_LIST_LIMIT)
-    const allSelected =
-      visibleDecks.length > 0 &&
-      visibleDecks.every((d) => selectedDeckIds.has(d.id))
-    const someSelected = visibleDecks.some((d) => selectedDeckIds.has(d.id))
-    el.indeterminate = !allSelected && someSelected
-  }, [data, selectedDeckIds])
+  const visibleDecks = (data?.decks ?? []).slice(0, DECK_LIST_LIMIT)
+  const [deckSelection, bindDeckHeaderCheckbox] = useBulkSelection(
+    visibleDecks.map((d) => d.id),
+  )
 
   if (isLoading) return <CollectionDetailSkeleton />
   if (error) throw error
@@ -227,38 +206,6 @@ export function AdminCollectionDetailView({
   const isDeleted = data.deletedAt !== null
   const updatePending = updateMutation.isPending
   const activeDecks = data.decks.filter((d) => !d.deletedAt)
-
-  const visibleDecks = data.decks.slice(0, DECK_LIST_LIMIT)
-  const visibleDeckIds = new Set(visibleDecks.map((d) => d.id))
-  const allVisibleSelected =
-    visibleDecks.length > 0 &&
-    visibleDecks.every((d) => selectedDeckIds.has(d.id))
-  const someVisibleSelected = visibleDecks.some((d) =>
-    selectedDeckIds.has(d.id),
-  )
-
-  const toggleDeck = (id: string) => {
-    setSelectedDeckIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  const toggleAllVisibleDecks = () => {
-    setSelectedDeckIds((prev) => {
-      const next = new Set(prev)
-      if (allVisibleSelected) {
-        for (const id of visibleDeckIds) next.delete(id)
-      } else {
-        for (const id of visibleDeckIds) next.add(id)
-      }
-      return next
-    })
-  }
-
-  const clearDeckSelection = () => setSelectedDeckIds(new Set())
 
   const handleSave = () => {
     const nextTitle = titleRef.current?.value.trim() ?? ""
@@ -274,7 +221,6 @@ export function AdminCollectionDetailView({
     setFormKey((k) => k + 1)
   }
 
-  const selectedDeckCount = selectedDeckIds.size
   const bulkRemovePending = bulkRemoveMutation.isPending
   const singleRemovePending =
     removeDeckMutation.isPending &&
@@ -451,13 +397,13 @@ export function AdminCollectionDetailView({
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-3">
-          {selectedDeckCount > 0 ? (
+          {deckSelection.count > 0 ? (
             <div className="bg-ink/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
               <span className="text-ink/90">
                 <span className="tabular-nums font-medium">
-                  {selectedDeckCount}
+                  {deckSelection.count}
                 </span>{" "}
-                {selectedDeckCount === 1 ? "deck" : "decks"} selected
+                {deckSelection.count === 1 ? "deck" : "decks"} selected
                 {data.decks.length > DECK_LIST_LIMIT ? (
                   <span className="text-muted-foreground ml-1 text-xs">
                     (from first {DECK_LIST_LIMIT})
@@ -468,7 +414,7 @@ export function AdminCollectionDetailView({
                 <Button
                   size="xs"
                   variant="ghost"
-                  onClick={clearDeckSelection}
+                  onClick={deckSelection.clear}
                   disabled={bulkRemovePending}
                 >
                   <X className="mr-1 h-3 w-3" />
@@ -496,7 +442,7 @@ export function AdminCollectionDetailView({
           ) : (
             <ul className="divide-y divide-ink/8">
               {visibleDecks.map((deck) => {
-                const isSelected = selectedDeckIds.has(deck.id)
+                const isSelected = deckSelection.has(deck.id)
                 const isDeckDeleted = deck.deletedAt !== null
                 return (
                   <li
@@ -510,7 +456,7 @@ export function AdminCollectionDetailView({
                     <input
                       type="checkbox"
                       checked={isSelected}
-                      onChange={() => toggleDeck(deck.id)}
+                      onChange={() => deckSelection.toggle(deck.id)}
                       aria-label={`Select ${deck.title}`}
                       className="ml-1 h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30"
                     />
@@ -574,11 +520,11 @@ export function AdminCollectionDetailView({
           {data.decks.length > 0 ? (
             <div className="border-ink/8 text-muted-foreground flex items-center gap-2 border-t pt-2 text-xs">
               <input
-                ref={headerCheckboxRef}
+                ref={bindDeckHeaderCheckbox}
                 type="checkbox"
-                checked={allVisibleSelected}
-                onChange={toggleAllVisibleDecks}
-                disabled={visibleDecks.length === 0}
+                checked={deckSelection.allSelected}
+                onChange={deckSelection.toggleAll}
+                disabled={deckSelection.isEmpty}
                 aria-label="Select all visible decks"
                 className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
               />
@@ -670,15 +616,15 @@ export function AdminCollectionDetailView({
       <ConfirmDialog
         open={confirmBulkRemove}
         onOpenChange={(open) => !open && setConfirmBulkRemove(false)}
-        title={`Remove ${selectedDeckCount} ${
-          selectedDeckCount === 1 ? "deck" : "decks"
+        title={`Remove ${deckSelection.count} ${
+          deckSelection.count === 1 ? "deck" : "decks"
         } from the collection?`}
         description="The decks themselves are unaffected. They will no longer appear in this collection."
         confirmLabel="Remove"
         destructive
         pending={bulkRemovePending}
         onConfirm={() =>
-          bulkRemoveMutation.mutate(Array.from(selectedDeckIds))
+          bulkRemoveMutation.mutate(Array.from(deckSelection.selectedIds))
         }
       />
     </div>

@@ -19,7 +19,7 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
-import { queryKeys, type AdminCollectionFilters } from "@/hooks"
+import { useBulkSelection, queryKeys, type AdminCollectionFilters } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
 import type { AdminCollectionListResult } from "@/lib/queries/admin-collections"
 import { cn } from "@/lib/utils"
@@ -102,7 +102,6 @@ export function AdminCollectionsView() {
     queryFn: () => fetchCollections(filters),
   })
 
-  const [selectedIds, setSelectedIds] = React.useState<Set<string>>(new Set())
   const [pendingDeleteId, setPendingDeleteId] = React.useState<string | null>(
     null,
   )
@@ -113,16 +112,20 @@ export function AdminCollectionsView() {
     queryClient.invalidateQueries({ queryKey: queryKeys.admin.stats() })
   }, [queryClient])
 
+  const visibleItems = React.useMemo(
+    () => (data?.items ?? []).filter((c) => !c.deletedAt),
+    [data],
+  )
+
+  const [selection, bindHeaderCheckbox] = useBulkSelection(
+    visibleItems.map((c) => c.id),
+  )
+
   const deleteMutation = useMutation({
     mutationFn: deleteCollection,
     onSuccess: (_data, id) => {
       setPendingDeleteId(null)
-      setSelectedIds((prev) => {
-        if (!prev.has(id)) return prev
-        const next = new Set(prev)
-        next.delete(id)
-        return next
-      })
+      selection.remove([id])
       invalidate()
     },
   })
@@ -136,61 +139,11 @@ export function AdminCollectionsView() {
     },
     onSuccess: ({ ids, failed }) => {
       setConfirmBulkDelete(false)
-      if (failed === 0) {
-        setSelectedIds((prev) => {
-          const next = new Set(prev)
-          for (const id of ids) next.delete(id)
-          return next
-        })
-      }
+      if (failed === 0) selection.remove(ids)
       invalidate()
     },
   })
 
-  const visibleItems = React.useMemo(
-    () => (data?.items ?? []).filter((c) => !c.deletedAt),
-    [data],
-  )
-  const visibleIds = React.useMemo(
-    () => new Set(visibleItems.map((c) => c.id)),
-    [visibleItems],
-  )
-  const allVisibleSelected =
-    visibleItems.length > 0 && visibleItems.every((c) => selectedIds.has(c.id))
-  const someVisibleSelected = visibleItems.some((c) => selectedIds.has(c.id))
-
-  const toggleOne = React.useCallback((id: string) => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }, [])
-
-  const toggleAllVisible = React.useCallback(() => {
-    setSelectedIds((prev) => {
-      const next = new Set(prev)
-      if (allVisibleSelected) {
-        for (const id of visibleIds) next.delete(id)
-      } else {
-        for (const id of visibleIds) next.add(id)
-      }
-      return next
-    })
-  }, [allVisibleSelected, visibleIds])
-
-  const clearSelection = React.useCallback(() => {
-    setSelectedIds(new Set())
-  }, [])
-
-  const headerCheckboxRef = React.useRef<HTMLInputElement | null>(null)
-  React.useEffect(() => {
-    const el = headerCheckboxRef.current
-    if (el) el.indeterminate = !allVisibleSelected && someVisibleSelected
-  }, [allVisibleSelected, someVisibleSelected])
-
-  const selectedCount = selectedIds.size
   const bulkPending = bulkDeleteMutation.isPending
   const singlePending =
     deleteMutation.isPending && deleteMutation.variables === pendingDeleteId
@@ -236,17 +189,17 @@ export function AdminCollectionsView() {
         </Select>
       </div>
 
-      {selectedCount > 0 ? (
+      {selection.count > 0 ? (
         <div className="bg-ink/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
           <span className="text-ink/90">
-            <span className="tabular-nums font-medium">{selectedCount}</span>{" "}
-            {selectedCount === 1 ? "collection" : "collections"} selected
+            <span className="tabular-nums font-medium">{selection.count}</span>{" "}
+            {selection.count === 1 ? "collection" : "collections"} selected
           </span>
           <div className="flex items-center gap-2">
             <Button
               size="xs"
               variant="ghost"
-              onClick={clearSelection}
+              onClick={selection.clear}
               disabled={bulkPending}
             >
               <X className="mr-1 h-3 w-3" />
@@ -292,11 +245,11 @@ export function AdminCollectionsView() {
                   <tr className="border-ink/8 text-muted-foreground border-b text-left font-mono-tag text-[10px] uppercase tracking-widest">
                     <th className="w-10 px-4 py-2.5">
                       <input
-                        ref={headerCheckboxRef}
+                        ref={bindHeaderCheckbox}
                         type="checkbox"
-                        checked={allVisibleSelected}
-                        onChange={toggleAllVisible}
-                        disabled={visibleItems.length === 0}
+                        checked={selection.allSelected}
+                        onChange={selection.toggleAll}
+                        disabled={selection.isEmpty}
                         aria-label="Select all visible collections"
                         className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
                       />
@@ -316,7 +269,7 @@ export function AdminCollectionsView() {
                 </thead>
                 <tbody>
                   {data.items.map((collection) => {
-                    const isSelected = selectedIds.has(collection.id)
+                    const isSelected = selection.has(collection.id)
                     const isDeleted = collection.deletedAt !== null
                     return (
                       <tr
@@ -331,7 +284,7 @@ export function AdminCollectionsView() {
                           <input
                             type="checkbox"
                             checked={isSelected}
-                            onChange={() => toggleOne(collection.id)}
+                            onChange={() => selection.toggle(collection.id)}
                             disabled={isDeleted}
                             aria-label={`Select ${collection.title}`}
                             className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
@@ -468,15 +421,15 @@ export function AdminCollectionsView() {
       <ConfirmDialog
         open={confirmBulkDelete}
         onOpenChange={(open) => !open && setConfirmBulkDelete(false)}
-        title={`Soft-delete ${selectedCount} ${
-          selectedCount === 1 ? "collection" : "collections"
+        title={`Soft-delete ${selection.count} ${
+          selection.count === 1 ? "collection" : "collections"
         }?`}
         description="These collections will be hidden from the app. You can restore them later from their detail pages."
         confirmLabel="Soft-delete"
         destructive
         pending={bulkPending}
         onConfirm={() =>
-          bulkDeleteMutation.mutate(Array.from(selectedIds))
+          bulkDeleteMutation.mutate(Array.from(selection.selectedIds))
         }
       />
     </div>

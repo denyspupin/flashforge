@@ -5,6 +5,8 @@ export type {
   AdminPromptFilters,
   AdminCollectionFilters,
 } from "./query-keys"
+export { useBulkSelection } from "./use-bulk-selection"
+export type { BulkSelection } from "./use-bulk-selection"
 export { useDeckImport } from "./use-deck-import"
 export type { ImportDeckResult } from "./use-deck-import"
 export { useTheme } from "./use-theme"
