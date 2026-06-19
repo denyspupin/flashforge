@@ -107,19 +107,6 @@ Every topic is a doorway — build it out in any direction the language takes yo
 
 ---
 
-## For builders
-
-If you'd like to set up the project locally, check out the developer documentation:
-
-- [`docs/DEVELOPER.md`](docs/DEVELOPER.md) — installation, scripts, and the developer quickstart
-- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — production deploy runbook (Vercel, Neon, Clerk, Cloudflare)
-- [`docs/PROJECT.md`](docs/PROJECT.md) — full architecture, schema, and API reference
-- [`AGENTS.md`](AGENTS.md) — agent-facing summary and conventions
-
-The project is built with **Next.js 16**, **React 19**, **PostgreSQL + Drizzle**, **Clerk** for auth, **Tailwind 4** + **shadcn/ui**, and lives on **Vercel**.
-
----
-
 ## License
 
 Private — not currently licensed for redistribution.
