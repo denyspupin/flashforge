@@ -1,12 +1,26 @@
 import { NextResponse } from "next/server"
+import { Webhook } from "svix"
 import { eq } from "drizzle-orm"
 import { db } from "@/lib/db/client"
 import { users } from "@/lib/db/schema"
-import { successResponse } from "@/lib/api/response"
+import { successResponse, errorResponse } from "@/lib/api/response"
 
 export const dynamic = "force-dynamic"
 
 const VALID_ROLES = new Set(["user", "curator", "admin"])
+
+interface ClerkUserData {
+  id: string
+  first_name?: string | null
+  last_name?: string | null
+  image_url?: string | null
+  public_metadata?: { role?: unknown }
+}
+
+interface ClerkWebhookEvent {
+  type: string
+  data: ClerkUserData
+}
 
 function readRole(metadata: unknown): "user" | "curator" | "admin" {
   if (!metadata || typeof metadata !== "object") return "user"
@@ -29,9 +43,42 @@ function readImageUrl(value: unknown): string | null {
 }
 
 export async function POST(request: Request) {
-  const payload = await request.json()
-  const { type, data } = payload
+  const secret = process.env.CLERK_WEBHOOK_SECRET
+  if (!secret) {
+    return NextResponse.json(
+      errorResponse("Webhook secret not configured", "INTERNAL_ERROR"),
+      { status: 500 }
+    )
+  }
 
+  const svixId = request.headers.get("svix-id")
+  const svixTimestamp = request.headers.get("svix-timestamp")
+  const svixSignature = request.headers.get("svix-signature")
+
+  if (!svixId || !svixTimestamp || !svixSignature) {
+    return NextResponse.json(
+      errorResponse("Missing Svix signature headers", "VALIDATION_ERROR"),
+      { status: 400 }
+    )
+  }
+
+  const body = await request.text()
+
+  let event: ClerkWebhookEvent
+  try {
+    event = new Webhook(secret).verify(body, {
+      "svix-id": svixId,
+      "svix-timestamp": svixTimestamp,
+      "svix-signature": svixSignature,
+    }) as ClerkWebhookEvent
+  } catch {
+    return NextResponse.json(
+      errorResponse("Invalid webhook signature", "VALIDATION_ERROR"),
+      { status: 400 }
+    )
+  }
+
+  const { type, data } = event
   if (!data || typeof data.id !== "string") {
     return NextResponse.json(successResponse({ received: true }))
   }

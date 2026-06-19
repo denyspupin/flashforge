@@ -112,6 +112,7 @@ Every topic is a doorway — build it out in any direction the language takes yo
 If you'd like to set up the project locally, check out the developer documentation:
 
 - [`docs/DEVELOPER.md`](docs/DEVELOPER.md) — installation, scripts, and the developer quickstart
+- [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md) — production deploy runbook (Vercel, Neon, Clerk, Cloudflare)
 - [`docs/PROJECT.md`](docs/PROJECT.md) — full architecture, schema, and API reference
 - [`AGENTS.md`](AGENTS.md) — agent-facing summary and conventions
 
