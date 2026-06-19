@@ -1,4 +1,5 @@
 import { auth, currentUser } from "@clerk/nextjs/server"
+import { cache } from "react"
 import { eq, sql } from "drizzle-orm"
 import { db } from "@/lib/db/client"
 import { users } from "@/lib/db/schema"
@@ -21,7 +22,7 @@ function readRoleFromClerkMetadata(metadata: unknown): AppRole {
   return parseRole(role)
 }
 
-export async function getCurrentUser() {
+export const getCurrentUser = cache(async (): Promise<DbUser | null> => {
   const { userId: clerkId } = await auth()
 
   if (!clerkId) {
@@ -39,9 +40,9 @@ export async function getCurrentUser() {
   }
 
   return data[0]
-}
+})
 
-export async function requireCurrentUser() {
+export const requireCurrentUser = cache(async (): Promise<DbUser | null> => {
   const { userId: clerkId } = await auth()
 
   if (!clerkId) {
@@ -95,7 +96,7 @@ export async function requireCurrentUser() {
     .limit(1)
 
   return retry[0] ?? null
-}
+})
 
 export function isAdmin(
   user: Pick<DbUser, "role"> | null | undefined

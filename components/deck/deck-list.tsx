@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -107,6 +107,7 @@ export default function DeckList() {
   const [open, setOpen] = useState(false)
   const [mode, setMode] = useState<NewDeckMode>("create")
   const [submitError, setSubmitError] = useState<string | null>(null)
+  const [, startNavigate] = useTransition()
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
     queryKey: queryKeys.decks(),
@@ -196,13 +197,16 @@ export default function DeckList() {
     setOpen(false)
     setMode("create")
     if (result.mode === "new") {
-      router.push(`/decks/${result.deckId}`)
+      startNavigate(() => router.push(`/decks/${result.deckId}`))
     }
   }
 
   const decks = decksData?.data || []
-  const languages = languagesData?.data || []
-  const languagesById = Object.fromEntries(languages.map((l) => [l.id, l]))
+  const languages = useMemo(() => languagesData?.data ?? [], [languagesData])
+  const languagesById = useMemo(
+    () => Object.fromEntries(languages.map((l) => [l.id, l])),
+    [languages]
+  )
 
   return (
     <div className="space-y-6">
@@ -472,7 +476,7 @@ export default function DeckList() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
           {decks.map((deck) => {
             const sourceName = languagesById[deck.sourceLanguageId]?.name
             const targetName = languagesById[deck.targetLanguageId]?.name
@@ -489,11 +493,15 @@ export default function DeckList() {
                   sourceFlag,
                   targetFlag,
                 }}
-                onStudy={(deckId) => router.push(`/study?deckId=${deckId}`)}
+                onStudy={(deckId) =>
+                  startNavigate(() => router.push(`/study?deckId=${deckId}`))
+                }
                 actions={
                   <DeckActionsMenu
                     deck={deck}
-                    onEdit={() => router.push(`/decks/${deck.id}`)}
+                    onEdit={() =>
+                      startNavigate(() => router.push(`/decks/${deck.id}`))
+                    }
                     onTogglePublish={() =>
                       deck.visibility === "private"
                         ? publishMutation.mutate(deck.id)

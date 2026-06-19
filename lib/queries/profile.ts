@@ -42,16 +42,45 @@ export async function loadProfileData(): Promise<ProfileData | null> {
   const user = await requireCurrentUser()
   if (!user) return null
 
+  const [
+    allLanguages,
+    deckCountRow,
+    cardCountRow,
+    completedSessionRow,
+    achievementRow,
+    displayName,
+    email,
+  ] = await Promise.all([
+    db.select().from(languages).where(isNull(languages.deletedAt)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(decks)
+      .where(eq(decks.creatorId, user.id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(cards)
+      .innerJoin(decks, eq(decks.id, cards.deckId))
+      .where(eq(decks.creatorId, user.id)),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(studySessions)
+      .where(
+        and(
+          eq(studySessions.userId, user.id),
+          eq(studySessions.status, "completed"),
+        ),
+      ),
+    db
+      .select({ count: sql<number>`count(*)::int` })
+      .from(userAchievements)
+      .where(eq(userAchievements.userId, user.id)),
+    resolveDisplayName(user.name, user.avatarUrl),
+    resolvePrimaryEmail(),
+  ])
+
   const clerkUser = await currentUser()
   const clerkImageUrl = clerkUser?.imageUrl ?? null
 
-  const displayName = await resolveDisplayName(user.name, user.avatarUrl)
-  const email = await resolvePrimaryEmail()
-
-  const allLanguages = await db
-    .select()
-    .from(languages)
-    .where(isNull(languages.deletedAt))
   const enrichedLanguages = enrichLanguages(allLanguages)
   const languagesById: Record<string, Language> = Object.fromEntries(
     enrichedLanguages.map((l) => [l.id, l]),
@@ -59,41 +88,6 @@ export async function loadProfileData(): Promise<ProfileData | null> {
   const nativeLanguage = user.nativeLanguageId
     ? languagesById[user.nativeLanguageId] ?? null
     : null
-
-  const [deckCountRow] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(decks)
-    .where(eq(decks.creatorId, user.id))
-
-  const [cardCountRow] = await db
-    .select({
-      count: sql<number>`count(*)::int`,
-    })
-    .from(cards)
-    .innerJoin(decks, eq(decks.id, cards.deckId))
-    .where(eq(decks.creatorId, user.id))
-
-  const [completedSessionRow] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(studySessions)
-    .where(
-      and(
-        eq(studySessions.userId, user.id),
-        eq(studySessions.status, "completed"),
-      ),
-    )
-
-  const [achievementRow] = await db
-    .select({ count: sql<number>`count(*)::int` })
-    .from(userAchievements)
-    .where(eq(userAchievements.userId, user.id))
-
-  const [latestSession] = await db
-    .select({ startedAt: studySessions.startedAt })
-    .from(studySessions)
-    .where(eq(studySessions.userId, user.id))
-    .orderBy(desc(studySessions.startedAt))
-    .limit(1)
 
   return {
     user: {
@@ -115,10 +109,10 @@ export async function loadProfileData(): Promise<ProfileData | null> {
     nativeLanguage,
     languages: enrichedLanguages,
     stats: {
-      deckCount: deckCountRow?.count ?? 0,
-      cardCount: cardCountRow?.count ?? 0,
-      completedSessionCount: completedSessionRow?.count ?? 0,
-      achievementCount: achievementRow?.count ?? 0,
+      deckCount: deckCountRow[0]?.count ?? 0,
+      cardCount: cardCountRow[0]?.count ?? 0,
+      completedSessionCount: completedSessionRow[0]?.count ?? 0,
+      achievementCount: achievementRow[0]?.count ?? 0,
     },
   }
 }

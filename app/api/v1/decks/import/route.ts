@@ -8,7 +8,7 @@ import {
   loadOwnDeck,
   resolveImportReferences,
 } from "@/lib/export"
-import { uniqueSlug } from "@/lib/slug"
+import { slugify, uniqueSlug } from "@/lib/slug"
 
 export const dynamic = "force-dynamic"
 
@@ -60,12 +60,7 @@ export async function POST(request: Request) {
 
   if (target.mode === "new") {
     mode = "new"
-    const slug = await uniqueSlug(
-      payload.deck.title
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, "-")
-        .replace(/(^-|-$)/g, "")
-    )
+    const slug = await uniqueSlug(slugify(payload.deck.title))
 
     const [created] = await db
       .insert(decks)

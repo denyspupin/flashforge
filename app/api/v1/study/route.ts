@@ -32,20 +32,41 @@ export async function POST(request: Request) {
     )
   }
 
-  const deck = await db
-    .select()
-    .from(decks)
-    .where(eq(decks.id, parsed.data.deck_id))
+  const [existing, deckCards, deckRows] = await Promise.all([
+    db
+      .select()
+      .from(studySessions)
+      .where(
+        and(
+          eq(studySessions.userId, user.id),
+          eq(studySessions.deckId, parsed.data.deck_id),
+          eq(studySessions.status, "active")
+        )
+      )
+      .orderBy(desc(studySessions.startedAt))
+      .limit(1),
+    db
+      .select()
+      .from(cards)
+      .where(eq(cards.deckId, parsed.data.deck_id))
+      .orderBy(asc(cards.createdAt)),
+    db
+      .select()
+      .from(decks)
+      .where(eq(decks.id, parsed.data.deck_id))
+      .limit(1),
+  ])
 
-  if (!deck.length) {
+  if (!deckRows.length) {
     return NextResponse.json(
       errorResponse("Deck not found", "NOT_FOUND"),
       { status: 404 }
     )
   }
 
-  const isOwner = deck[0].creatorId === user.id
-  const isPublic = deck[0].visibility === "public"
+  const deck = deckRows[0]
+  const isOwner = deck.creatorId === user.id
+  const isPublic = deck.visibility === "public"
 
   if (!isOwner && !isPublic) {
     return NextResponse.json(
@@ -53,19 +74,6 @@ export async function POST(request: Request) {
       { status: 404 }
     )
   }
-
-  const existing = await db
-    .select()
-    .from(studySessions)
-    .where(
-      and(
-        eq(studySessions.userId, user.id),
-        eq(studySessions.deckId, parsed.data.deck_id),
-        eq(studySessions.status, "active")
-      )
-    )
-    .orderBy(desc(studySessions.startedAt))
-    .limit(1)
 
   let session = existing[0]
 
@@ -82,16 +90,10 @@ export async function POST(request: Request) {
     session = created
   }
 
-  const deckCards = await db
-    .select()
-    .from(cards)
-    .where(eq(cards.deckId, parsed.data.deck_id))
-    .orderBy(asc(cards.createdAt))
-
   return NextResponse.json(
     successResponse({
       session,
-      deck: deck[0],
+      deck,
       cards: deckCards,
     })
   )

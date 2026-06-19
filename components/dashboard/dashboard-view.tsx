@@ -183,7 +183,7 @@ export function DashboardView() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
             {recentDecks.map((deck) => (
               <RecentDeckCard
                 key={deck.id}

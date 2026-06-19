@@ -111,11 +111,13 @@ export async function POST(
   const { results } = parsed.data
 
   const cardsReviewed = results.length
-  const correctIds = results.filter((r) => r.correct).map((r) => r.cardId)
+  const correctIds: string[] = []
+  const failedCardIds: string[] = []
+  for (const r of results) {
+    if (r.correct) correctIds.push(r.cardId)
+    else failedCardIds.push(r.cardId)
+  }
   const cardsCorrect = correctIds.length
-  const failedCardIds = results
-    .filter((r) => !r.correct)
-    .map((r) => r.cardId)
 
   const newStreak = calculateNewStreak(user.streak, user.streakUpdatedAt)
   const multiplier = getStreakMultiplier(newStreak)

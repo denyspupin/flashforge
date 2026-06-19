@@ -210,6 +210,13 @@ export function selectProgress(state: StudyState): {
   return { position: state.index + 1, total: queue.length }
 }
 
+export function selectIsLast(state: StudyState): boolean {
+  if (state.phase === "retry") {
+    return state.retryCards.length > 0 && state.index === state.retryCards.length - 1
+  }
+  return state.cards.length > 0 && state.index === state.cards.length - 1
+}
+
 export function selectResults(state: StudyState): {
   cardId: string
   correct: boolean

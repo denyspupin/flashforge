@@ -2,7 +2,7 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useParams, useRouter, useSearchParams } from "next/navigation"
-import { useState } from "react"
+import { useMemo, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
@@ -156,6 +156,7 @@ export default function DeckDetailPage() {
   const [editingDeck, setEditingDeck] = useState(false)
   const [deckTitle, setDeckTitle] = useState("")
   const [deckDescription, setDeckDescription] = useState("")
+  const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
     queryKey: queryKeys.deck(deckId),
@@ -168,9 +169,13 @@ export default function DeckDetailPage() {
   })
 
   const deck = data?.data
-  const languages = languagesData?.data || []
-  const languagesById = Object.fromEntries(
-    languages.map((l) => [l.id, l] as const)
+  const languages = useMemo(
+    () => languagesData?.data ?? [],
+    [languagesData]
+  )
+  const languagesById = useMemo(
+    () => Object.fromEntries(languages.map((l) => [l.id, l] as const)),
+    [languages]
   )
   const sourceLanguage = deck ? languagesById[deck.sourceLanguageId] : null
   const targetLanguage = deck ? languagesById[deck.targetLanguageId] : null
@@ -245,7 +250,7 @@ export default function DeckDetailPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => router.push(backHref)}
+            onClick={() => startNavigate(() => router.push(backHref))}
             className="shrink-0"
             aria-label="Back"
           >
@@ -353,7 +358,9 @@ export default function DeckDetailPage() {
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
-            onClick={() => router.push(`/study?deckId=${deck.id}`)}
+            onClick={() =>
+              startNavigate(() => router.push(`/study?deckId=${deck.id}`))
+            }
             className="w-full sm:w-auto"
           >
             <Play className="mr-2 h-4 w-4" />
@@ -435,7 +442,7 @@ export default function DeckDetailPage() {
         </Dialog>
       </div>
 
-      <div className="space-y-3">
+      <div className="space-y-3 [contain:layout]">
         {deck.cards?.length === 0 ? (
           <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <Plus className="h-12 w-12 text-muted-foreground mb-4" />

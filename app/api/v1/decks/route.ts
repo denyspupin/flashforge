@@ -5,6 +5,7 @@ import { eq, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { getActiveLanguageIds } from "@/lib/languages/valid"
+import { slugify } from "@/lib/slug"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -86,10 +87,7 @@ export async function POST(request: Request) {
     )
   }
 
-  const slug = parsed.data.title
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
+  const slug = slugify(parsed.data.title)
 
   const [deck] = await db
     .insert(decks)
