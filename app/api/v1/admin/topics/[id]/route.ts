@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { z } from "zod"
 import { eq, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { TOPICS_CACHE_TAG } from "@/lib/cache/topics"
 import { db } from "@/lib/db/client"
 import { topics } from "@/lib/db/schema"
 
@@ -63,6 +65,9 @@ export async function PATCH(
         status: 404,
       })
     }
+
+    revalidateCache(TOPICS_CACHE_TAG)
+
     return NextResponse.json(successResponse(updated))
   } catch (err) {
     if (err instanceof Error && err.message.includes("topics_slug_unique")) {
@@ -98,6 +103,9 @@ export async function DELETE(
       status: 404,
     })
   }
+
+  revalidateCache(TOPICS_CACHE_TAG)
+
   return NextResponse.json(
     successResponse({ id, deletedAt: new Date().toISOString() }),
   )

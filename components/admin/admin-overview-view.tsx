@@ -23,7 +23,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
-import type { AdminStats } from "@/lib/queries/admin-stats"
+import type { AdminStats } from "@/lib/cache/admin-stats"
 
 async function fetchStats(): Promise<AdminStats> {
   const res = await fetch("/api/v1/admin/stats")

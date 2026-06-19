@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { z } from "zod"
 import { asc, eq, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { LANGUAGES_CACHE_TAG } from "@/lib/cache/languages"
 import { db } from "@/lib/db/client"
 import { decks, languages } from "@/lib/db/schema"
 
@@ -77,6 +79,8 @@ export async function POST(request: Request) {
       .insert(languages)
       .values({ name: parsed.data.name, code: parsed.data.code })
       .returning()
+
+    revalidateCache(LANGUAGES_CACHE_TAG)
 
     return NextResponse.json(successResponse(created), { status: 201 })
   } catch (err) {

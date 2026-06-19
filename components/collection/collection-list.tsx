@@ -106,6 +106,7 @@ export default function CollectionList() {
   const { data: languagesData } = useQuery({
     queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
+    staleTime: Infinity,
   })
 
   const createMutation = useMutation({

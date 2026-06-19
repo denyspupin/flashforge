@@ -1,9 +1,11 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { db } from "@/lib/db/client"
 import { cards, decks } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { COMMUNITY_DECKS_DETAIL_CACHE_TAG } from "@/lib/cache/community-decks-detail"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -57,6 +59,8 @@ export async function POST(
       back: parsed.data.back,
     })
     .returning()
+
+  revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
 
   return NextResponse.json(successResponse(card))
 }

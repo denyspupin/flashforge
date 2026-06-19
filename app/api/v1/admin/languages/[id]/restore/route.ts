@@ -1,8 +1,10 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { eq, sql } from "drizzle-orm"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { LANGUAGES_CACHE_TAG } from "@/lib/cache/languages"
 import { db } from "@/lib/db/client"
 import { languages } from "@/lib/db/schema"
 
@@ -32,5 +34,8 @@ export async function POST(
       { status: 404 },
     )
   }
+
+  revalidateCache(LANGUAGES_CACHE_TAG)
+
   return NextResponse.json(successResponse({ id, restored: true }))
 }

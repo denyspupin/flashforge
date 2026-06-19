@@ -1,9 +1,11 @@
 import { and, eq, isNull, sql } from "drizzle-orm"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { NextResponse } from "next/server"
 import { z } from "zod"
 
 import { errorResponse, successResponse } from "@/lib/api/response"
 import { requireAdmin } from "@/lib/auth/user"
+import { PROMPTS_CACHE_TAG } from "@/lib/cache/active-prompt"
 import { PROMPT_TEMPLATES } from "@/lib/constants"
 import { db } from "@/lib/db/client"
 import { promptTemplates } from "@/lib/db/schema"
@@ -111,6 +113,7 @@ export async function POST(request: Request) {
         .set({ isActive: true, updatedAt: sql`now()` })
         .where(eq(promptTemplates.id, created.id))
       created.isActive = true
+      revalidateCache(PROMPTS_CACHE_TAG)
     }
 
     return NextResponse.json(successResponse(created), { status: 201 })

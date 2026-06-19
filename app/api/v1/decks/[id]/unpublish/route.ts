@@ -1,9 +1,14 @@
 import { NextResponse } from "next/server"
+import { revalidateCache } from "@/lib/cache/revalidate"
 import { db } from "@/lib/db/client"
 import { decks } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import {
+  COMMUNITY_DECKS_CACHE_TAG,
+  COMMUNITY_DECKS_DETAIL_CACHE_TAG,
+} from "@/lib/cache/community-decks-detail"
 
 export const dynamic = "force-dynamic"
 
@@ -38,6 +43,9 @@ export async function POST(
     .set({ visibility: "private" })
     .where(eq(decks.id, id))
     .returning()
+
+  revalidateCache(COMMUNITY_DECKS_CACHE_TAG)
+  revalidateCache(COMMUNITY_DECKS_DETAIL_CACHE_TAG)
 
   return NextResponse.json(successResponse(updated))
 }

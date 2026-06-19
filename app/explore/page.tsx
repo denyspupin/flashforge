@@ -87,6 +87,7 @@ export default function ExplorePage() {
   const { data: languagesData } = useQuery({
     queryKey: queryKeys.languages(),
     queryFn: fetchLanguages,
+    staleTime: Infinity,
   })
 
   const myId = meQuery.data?.data?.id ?? null
