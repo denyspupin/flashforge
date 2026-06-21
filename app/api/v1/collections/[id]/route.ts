@@ -12,6 +12,11 @@ import { eq, and, isNull, inArray, asc, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { slugify } from "@/lib/slug"
+import { revalidateCache } from "@/lib/cache/revalidate"
+import {
+  COMMUNITY_COLLECTIONS_CACHE_TAG,
+  COMMUNITY_COLLECTIONS_DETAIL_CACHE_TAG,
+} from "@/lib/cache/community-collections-detail"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -196,6 +201,9 @@ export async function PATCH(
     .where(eq(collections.id, id))
     .returning()
 
+  revalidateCache(COMMUNITY_COLLECTIONS_CACHE_TAG)
+  revalidateCache(COMMUNITY_COLLECTIONS_DETAIL_CACHE_TAG)
+
   return NextResponse.json(successResponse(updated))
 }
 
@@ -233,6 +241,9 @@ export async function DELETE(
   }
 
   await db.delete(collections).where(eq(collections.id, id))
+
+  revalidateCache(COMMUNITY_COLLECTIONS_CACHE_TAG)
+  revalidateCache(COMMUNITY_COLLECTIONS_DETAIL_CACHE_TAG)
 
   return NextResponse.json(successResponse({ success: true }))
 }

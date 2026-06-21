@@ -1,13 +1,17 @@
-import type { Deck } from "@/types/deck"
+import type { Deck, DeckVisibility } from "@/types/deck"
 
 export type Collection = {
   id: string
   title: string
   description: string | null
   slug: string
+  visibility: DeckVisibility
   creatorId: string
+  creatorName?: string | null
   sourceLanguageId: string
   targetLanguageId: string
+  isCurated: boolean
+  forkedFromCollectionId: string | null
   deckCount: number
   totalCards: number
   decks?: CollectionDeck[]

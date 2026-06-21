@@ -46,6 +46,7 @@ import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { DeckHistoryPanel } from "@/components/history/deck-history-panel"
+import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import { queryKeys } from "@/hooks"
 
 interface Card {
@@ -139,6 +140,21 @@ async function updateDeck(
   return res.json()
 }
 
+async function deleteDeck(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/decks/${id}`, { method: "DELETE" })
+  if (!res.ok) throw new Error("Failed to delete deck")
+}
+
+async function publishDeck(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/decks/${id}/publish`, { method: "POST" })
+  if (!res.ok) throw new Error("Failed to publish deck")
+}
+
+async function unpublishDeck(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/decks/${id}/unpublish`, { method: "POST" })
+  if (!res.ok) throw new Error("Failed to unpublish deck")
+}
+
 export default function DeckDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -156,6 +172,7 @@ export default function DeckDetailPage() {
   const [editingDeck, setEditingDeck] = useState(false)
   const [deckTitle, setDeckTitle] = useState("")
   const [deckDescription, setDeckDescription] = useState("")
+  const [actionError, setActionError] = useState<string | null>(null)
   const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
@@ -222,6 +239,51 @@ export default function DeckDetailPage() {
     },
   })
 
+  const deleteMutation = useMutation({
+    mutationFn: () => deleteDeck(deckId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-decks"] })
+      startNavigate(() => router.push(backHref))
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t delete deck"
+      )
+    },
+  })
+
+  const publishMutation = useMutation({
+    mutationFn: () => publishDeck(deckId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-decks"] })
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t publish deck"
+      )
+    },
+  })
+
+  const unpublishMutation = useMutation({
+    mutationFn: () => unpublishDeck(deckId),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-decks"] })
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t unpublish deck"
+      )
+    },
+  })
+
   const cardForm = useForm<CardInput>({
     resolver: zodResolver(cardSchema),
     defaultValues: { front: "", back: "" },
@@ -229,6 +291,35 @@ export default function DeckDetailPage() {
 
   const onAddCard = (data: CardInput) => {
     addCardMutation.mutate(data)
+  }
+
+  const onEditDeck = () => {
+    if (!deck) return
+    setActionError(null)
+    setEditingDeck(true)
+    setDeckTitle(deck.title)
+    setDeckDescription(deck.description || "")
+  }
+
+  const onTogglePublish = () => {
+    if (!deck) return
+    setActionError(null)
+    if (deck.visibility === "private") {
+      publishMutation.mutate()
+    } else {
+      unpublishMutation.mutate()
+    }
+  }
+
+  const onDeleteDeck = () => {
+    if (
+      typeof window !== "undefined" &&
+      !window.confirm("Delete this deck? This can’t be undone.")
+    ) {
+      return
+    }
+    setActionError(null)
+    deleteMutation.mutate()
   }
 
   if (isLoading) {
@@ -272,19 +363,15 @@ export default function DeckDetailPage() {
             )}
           </div>
           {!editingDeck && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => {
-                setEditingDeck(true)
-                setDeckTitle(deck.title)
-                setDeckDescription(deck.description || "")
+            <DeckActionsMenu
+              deck={{
+                ...deck,
+                cardCount: deck.cards?.length ?? 0,
               }}
-              className="shrink-0"
-              aria-label="Edit deck"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+              onEdit={onEditDeck}
+              onTogglePublish={onTogglePublish}
+              onDelete={onDeleteDeck}
+            />
           )}
         </div>
 
@@ -356,6 +443,15 @@ export default function DeckDetailPage() {
             {deck.visibility}
           </Badge>
         </div>
+
+        {actionError && (
+          <div
+            role="alert"
+            className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+          >
+            {actionError}
+          </div>
+        )}
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button

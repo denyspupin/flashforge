@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Plus, Wand2 } from "lucide-react"
+import { Globe, Plus, Wand2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +28,7 @@ import {
   FormMessage,
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
+import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import {
   Select,
@@ -55,6 +56,7 @@ const createCollectionSchema = z.object({
   description: z.string().optional(),
   sourceLanguageId: z.string().uuid("Select a source language"),
   targetLanguageId: z.string().uuid("Select a target language"),
+  visibility: z.enum(["private", "public"]),
 })
 
 type CreateCollectionInput = z.infer<typeof createCollectionSchema>
@@ -91,6 +93,18 @@ async function deleteCollection(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to delete collection")
 }
 
+async function publishCollection(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/collections/${id}/publish`, { method: "POST" })
+  if (!res.ok) throw new Error("Failed to publish collection")
+}
+
+async function unpublishCollection(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/collections/${id}/unpublish`, {
+    method: "POST",
+  })
+  if (!res.ok) throw new Error("Failed to unpublish collection")
+}
+
 export default function CollectionList() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -113,6 +127,8 @@ export default function CollectionList() {
     mutationFn: createCollection,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
       setOpen(false)
       setMode("create")
       form.reset()
@@ -129,6 +145,25 @@ export default function CollectionList() {
     mutationFn: deleteCollection,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+    },
+  })
+
+  const publishMutation = useMutation({
+    mutationFn: publishCollection,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
+    },
+  })
+
+  const unpublishMutation = useMutation({
+    mutationFn: unpublishCollection,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
     },
   })
 
@@ -139,6 +174,7 @@ export default function CollectionList() {
       description: "",
       sourceLanguageId: "",
       targetLanguageId: "",
+      visibility: "private" as const,
     },
   })
 
@@ -365,6 +401,40 @@ export default function CollectionList() {
                         )}
                       />
                     </div>
+                    <FormField
+                      control={form.control}
+                      name="visibility"
+                      render={({ field }) => {
+                        const isPublic = field.value === "public"
+                        return (
+                          <FormItem className="flex flex-row items-center justify-between gap-4">
+                            <div className="space-y-0.5">
+                              <FormLabel className="text-sm">Make collection public</FormLabel>
+                              <p className="text-xs text-muted-foreground">
+                                Share with the community — all decks in the collection also become public.
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2.5">
+                              <Globe
+                                className={cn(
+                                  "h-5 w-5 transition-colors",
+                                  isPublic ? "text-primary" : "text-muted-foreground/60"
+                                )}
+                                aria-hidden
+                              />
+                              <FormControl>
+                                <Switch
+                                  checked={isPublic}
+                                  onCheckedChange={(checked) =>
+                                    field.onChange(checked ? "public" : "private")
+                                  }
+                                />
+                              </FormControl>
+                            </div>
+                          </FormItem>
+                        )
+                      }}
+                    />
                     <Button
                       type="submit"
                       className="w-full"
@@ -430,6 +500,11 @@ export default function CollectionList() {
                   <CollectionActionsMenu
                     collection={collection}
                     onEdit={() => router.push(`/collections/${collection.id}`)}
+                    onTogglePublish={() =>
+                      collection.visibility === "private"
+                        ? publishMutation.mutate(collection.id)
+                        : unpublishMutation.mutate(collection.id)
+                    }
                     onDelete={() => deleteMutation.mutate(collection.id)}
                   />
                 }

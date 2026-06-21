@@ -12,6 +12,8 @@ export const queryKeys = {
   topics: () => ["topics"] as const,
   communityDecks: (q?: string) => ["community-decks", q ?? ""] as const,
   publicDeck: (id: string) => ["public-deck", id] as const,
+  communityCollections: (q?: string) => ["community-collections", q ?? ""] as const,
+  publicCollection: (id: string) => ["public-collection", id] as const,
   studySession: (id: string) => ["study", id] as const,
   studyHistory: (filters?: StudyHistoryFilters) =>
     ["study", "history", filters ?? {}] as const,

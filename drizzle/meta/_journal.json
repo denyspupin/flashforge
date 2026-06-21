@@ -50,6 +50,13 @@
       "when": 1781797099751,
       "tag": "0006_petite_vertigo",
       "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1781904832943,
+      "tag": "0007_chubby_silverclaw",
+      "breakpoints": true
     }
   ]
 }

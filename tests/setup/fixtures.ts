@@ -1,6 +1,8 @@
 import type { TestDb } from "./db"
 import {
   cards,
+  collectionDecks,
+  collections,
   deckTopics,
   decks,
   languages,
@@ -186,7 +188,7 @@ export async function seedNotification(
   db: TestDb,
   overrides: {
     userId: string
-    type: "fork_received" | "achievement_unlocked"
+    type: "fork_received" | "achievement_unlocked" | "collection_fork_received"
     data?: Record<string, unknown>
     read?: boolean
   },
@@ -201,4 +203,59 @@ export async function seedNotification(
     })
     .returning()
   return row
+}
+
+type SeedCollectionOverrides = {
+  title?: string
+  slug?: string
+  description?: string | null
+  visibility?: "private" | "public"
+  creatorId: string
+  sourceLanguageId: string
+  targetLanguageId: string
+  isCurated?: boolean
+  forkedFromCollectionId?: string | null
+}
+
+export async function seedCollection(
+  db: TestDb,
+  overrides: SeedCollectionOverrides,
+): Promise<typeof collections.$inferSelect> {
+  const title = overrides.title ?? "Test Collection"
+  const slug = overrides.slug ?? title
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/(^-|-$)/g, "")
+  const [row] = await db
+    .insert(collections)
+    .values({
+      title,
+      slug,
+      description: overrides.description ?? null,
+      visibility: overrides.visibility ?? "private",
+      creatorId: overrides.creatorId,
+      sourceLanguageId: overrides.sourceLanguageId,
+      targetLanguageId: overrides.targetLanguageId,
+      isCurated: overrides.isCurated ?? false,
+      forkedFromCollectionId: overrides.forkedFromCollectionId ?? null,
+    })
+    .returning()
+  return row
+}
+
+export async function seedCollectionDecks(
+  db: TestDb,
+  collectionId: string,
+  deckIds: string[],
+): Promise<void> {
+  if (deckIds.length === 0) return
+  await db
+    .insert(collectionDecks)
+    .values(
+      deckIds.map((deckId, index) => ({
+        collectionId,
+        deckId,
+        position: index,
+      })),
+    )
 }

@@ -1,5 +1,5 @@
 import CollectionDetail from "@/components/collection/collection-detail"
 
 export default function CollectionDetailPage() {
-  return <CollectionDetail />
+  return <CollectionDetail backHref="/collections" />
 }
