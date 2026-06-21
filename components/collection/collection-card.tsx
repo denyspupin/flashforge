@@ -1,40 +1,48 @@
-"use client"
+"use client";
 
-import Link from "next/link"
-import { Library, Layers } from "lucide-react"
-import type { ReactNode } from "react"
+import Link from "next/link";
+import { ArrowRight, Award, Copy, Globe, Layers, Library, Lock } from "lucide-react";
+import type { ReactNode } from "react";
 
+import { Badge } from "@/components/ui/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { cn } from "@/lib/utils"
-import type { Collection } from "@/types/collection"
+} from "@/components/ui/card";
+import { cn } from "@/lib/utils";
+import type { Collection } from "@/types/collection";
 
 type CollectionCardProps = {
-  collection: Collection
-  href: string
+  collection: Collection;
+  href: string;
   languageNames?: {
-    source?: string
-    target?: string
-    sourceFlag?: string
-    targetFlag?: string
-  }
-  actions?: ReactNode
-  className?: string
-}
+    source?: string;
+    target?: string;
+    sourceFlag?: string;
+    targetFlag?: string;
+  };
+  badges?: ReactNode;
+  footerLeft?: ReactNode;
+  actions?: ReactNode;
+  className?: string;
+};
 
 function CollectionCard({
   collection,
   href,
   languageNames,
+  badges,
+  footerLeft,
   actions,
   className,
 }: CollectionCardProps) {
-  const hasLanguagePair = languageNames?.source && languageNames?.target
+  const hasLanguagePair = languageNames?.source && languageNames?.target;
+  const renderedBadges = badges ?? (
+    <DefaultCollectionBadges collection={collection} />
+  );
 
   return (
     <Card
@@ -87,22 +95,44 @@ function CollectionCard({
         </div>
       </CardHeader>
 
-      <CardContent className="mt-auto flex flex-1 items-end justify-between gap-3 px-5">
-        <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
-          <span className="inline-flex items-center gap-1.5">
-            <Layers className="h-3.5 w-3.5" />
-            <span>
-              {collection.deckCount} {collection.deckCount === 1 ? "deck" : "decks"}
-            </span>
-          </span>
-          <span aria-hidden>·</span>
-          <span>
-            {collection.totalCards} {collection.totalCards === 1 ? "card" : "cards"}
-          </span>
+      <CardContent className="mt-auto flex flex-1 flex-col gap-4 px-5">
+        {renderedBadges && (
+          <div className="flex flex-wrap items-center gap-1.5">
+            {renderedBadges}
+          </div>
+        )}
+
+        <div className="mt-auto flex items-center justify-between gap-3 pt-2">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted-foreground">
+            {footerLeft ?? (
+              <>
+                <span className="inline-flex items-center gap-1.5">
+                  <Layers className="h-3.5 w-3.5" />
+                  <span>
+                    {collection.deckCount}{" "}
+                    {collection.deckCount === 1 ? "deck" : "decks"}
+                  </span>
+                </span>
+                <span aria-hidden>·</span>
+                <span>
+                  {collection.totalCards}{" "}
+                  {collection.totalCards === 1 ? "card" : "cards"}
+                </span>
+              </>
+            )}
+          </div>
+          <Link
+            href={href}
+            aria-label={`Open ${collection.title}`}
+            title="Open"
+            className="inline-flex h-11 w-11 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-ink text-paper scale-90 opacity-0 shadow-sm transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-ink/90 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-visible:scale-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100"
+          >
+            <ArrowRight className="h-4 w-4" />
+          </Link>
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function CollectionCardSkeleton() {
@@ -116,12 +146,12 @@ function CollectionCardSkeleton() {
       </CardHeader>
       <CardContent className="px-5">
         <div className="flex gap-2">
-          <div className="h-3 w-16 rounded-full bg-muted" />
-          <div className="h-3 w-12 rounded-full bg-muted" />
+          <div className="h-5 w-16 rounded-full bg-muted" />
+          <div className="h-5 w-12 rounded-full bg-muted" />
         </div>
       </CardContent>
     </Card>
-  )
+  );
 }
 
 function CollectionCardEmptyState({
@@ -129,9 +159,9 @@ function CollectionCardEmptyState({
   description,
   action,
 }: {
-  title: string
-  description: string
-  action?: ReactNode
+  title: string;
+  description: string;
+  action?: ReactNode;
 }) {
   return (
     <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
@@ -140,13 +170,75 @@ function CollectionCardEmptyState({
       <p className="text-muted-foreground mt-1 mb-4">{description}</p>
       {action}
     </Card>
-  )
+  );
 }
 
-const CollectionCardCompound = Object.assign(CollectionCard, {
-  Skeleton: CollectionCardSkeleton,
-  EmptyState: CollectionCardEmptyState,
-})
+function VisibilityBadge({
+  visibility,
+}: {
+  visibility: Collection["visibility"];
+}) {
+  return (
+    <Badge variant={visibility === "public" ? "default" : "secondary"}>
+      {visibility === "public" ? (
+        <Globe className="h-3 w-3" />
+      ) : (
+        <Lock className="h-3 w-3" />
+      )}
+      {visibility === "public" ? "Public" : "Private"}
+    </Badge>
+  );
+}
 
-export { CollectionCardCompound as CollectionCard }
-export { CollectionCardSkeleton, CollectionCardEmptyState }
+function CuratedBadge() {
+  return (
+    <Badge variant="highlight">
+      <Award className="h-3 w-3" />
+      Curated
+    </Badge>
+  );
+}
+
+function ForkedBadge() {
+  return (
+    <Badge variant="outline">
+      <Copy className="h-3 w-3" />
+      Forked
+    </Badge>
+  );
+}
+
+function DefaultCollectionBadges({ collection }: { collection: Collection }) {
+  return (
+    <>
+      <VisibilityBadge visibility={collection.visibility} />
+      {collection.isCurated ? <CuratedBadge /> : null}
+      {collection.forkedFromCollectionId ? <ForkedBadge /> : null}
+    </>
+  );
+}
+
+type CollectionCardComponent = typeof CollectionCard & {
+  Skeleton: typeof CollectionCardSkeleton;
+  EmptyState: typeof CollectionCardEmptyState;
+  VisibilityBadge: typeof VisibilityBadge;
+  CuratedBadge: typeof CuratedBadge;
+  ForkedBadge: typeof ForkedBadge;
+  Badges: typeof DefaultCollectionBadges;
+};
+
+const CollectionCardCompound: CollectionCardComponent = Object.assign(
+  CollectionCard,
+  {
+    Skeleton: CollectionCardSkeleton,
+    EmptyState: CollectionCardEmptyState,
+    VisibilityBadge,
+    CuratedBadge,
+    ForkedBadge,
+    Badges: DefaultCollectionBadges,
+  },
+);
+
+export { CollectionCardCompound as CollectionCard };
+export { CollectionCardSkeleton, CollectionCardEmptyState };
+export { VisibilityBadge, CuratedBadge, ForkedBadge, DefaultCollectionBadges };

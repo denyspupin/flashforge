@@ -3,6 +3,8 @@ import { db } from "../lib/db/client.ts"
 import {
   achievements,
   cards,
+  collectionDecks,
+  collections,
   deckTopics,
   decks,
   languages,
@@ -29,6 +31,7 @@ type MockUserKey =
 
 const MOCK_CLERK_PREFIX = "mock_seed_"
 const MOCK_DECK_SLUG_PREFIX = "seed-"
+const MOCK_COLLECTION_SLUG_PREFIX = "seed-coll-"
 const SEED_MARKER_KEY = "_seed"
 
 const MOCK_USERS: Array<{
@@ -747,6 +750,79 @@ const DECKS: DeckSeed[] = [
   },
 ]
 
+type CollectionSeed = {
+  slugSuffix: string
+  title: string
+  description: string
+  visibility: "public" | "private"
+  isCurated: boolean
+  creator: MockUserKey
+  sourceLang: LangCode
+  targetLang: LangCode
+  deckSlugSuffixes: string[]
+}
+
+const COLLECTIONS: CollectionSeed[] = [
+  {
+    slugSuffix: "german-essentials-pack",
+    title: "German Essentials Pack",
+    description:
+      "All the German vocabulary you need for a first trip to Berlin.",
+    visibility: "public",
+    isCurated: true,
+    creator: "hans",
+    sourceLang: "en",
+    targetLang: "de",
+    deckSlugSuffixes: [
+      "restaurant-essentials-de",
+      "daily-greetings-de",
+      "german-numbers-and-colors-de",
+    ],
+  },
+  {
+    slugSuffix: "spanish-foodie-starter",
+    title: "Spanish Foodie Starter",
+    description:
+      "Order, shop, and cook your way through Spain with these three decks.",
+    visibility: "public",
+    isCurated: true,
+    creator: "maria",
+    sourceLang: "en",
+    targetLang: "es",
+    deckSlugSuffixes: [
+      "fruits-and-vegetables-es",
+      "animals-at-the-zoo-es",
+      "kitchen-and-cooking-es",
+    ],
+  },
+  {
+    slugSuffix: "italian-for-first-timers",
+    title: "Italian for First-Timers",
+    description:
+      "Travel phrases plus shopping vocabulary for your Italy trip.",
+    visibility: "public",
+    isCurated: false,
+    creator: "you",
+    sourceLang: "en",
+    targetLang: "it",
+    deckSlugSuffixes: [
+      "travel-phrases-it",
+      "shopping-for-clothes-it",
+    ],
+  },
+  {
+    slugSuffix: "my-private-italian-notes",
+    title: "My Private Italian Notes",
+    description: "Personal Italian study set I'm working through.",
+    visibility: "private",
+    isCurated: false,
+    creator: "you",
+    sourceLang: "en",
+    targetLang: "it",
+    deckSlugSuffixes: ["italian-recipes-vocab", "quick-spanish"],
+  },
+]
+
 type StudySessionSeed = {
   user: MockUserKey
   deckSlug: string
@@ -1132,6 +1208,10 @@ async function clearMockData(envClerkId: string | null) {
     .where(like(decks.slug, `${MOCK_DECK_SLUG_PREFIX}%`))
 
   await db
+    .delete(collections)
+    .where(like(collections.slug, `${MOCK_COLLECTION_SLUG_PREFIX}%`))
+
+  await db
     .delete(users)
     .where(like(users.clerkId, `${MOCK_CLERK_PREFIX}%`))
 
@@ -1287,6 +1367,60 @@ async function seedDecksAndCards(userIds: Map<MockUserKey, string>) {
   return deckIdBySlug
 }
 
+async function seedCollectionsAndMembers(
+  userIds: Map<MockUserKey, string>,
+  deckIdBySlug: Map<string, string>
+) {
+  const langRows = await db.select().from(languages)
+  const langByCode = new Map(langRows.map((l) => [l.code, l.id]))
+
+  const collectionIdBySlug = new Map<string, string>()
+
+  for (const coll of COLLECTIONS) {
+    const slug = `${MOCK_COLLECTION_SLUG_PREFIX}${coll.slugSuffix}`
+    const creatorId = userIds.get(coll.creator)
+    const sourceLanguageId = langByCode.get(coll.sourceLang)
+    const targetLanguageId = langByCode.get(coll.targetLang)
+
+    if (!creatorId || !sourceLanguageId || !targetLanguageId) {
+      throw new Error(`Missing reference for collection ${coll.slugSuffix}`)
+    }
+
+    const [row] = await db
+      .insert(collections)
+      .values({
+        title: coll.title,
+        slug,
+        description: coll.description,
+        visibility: coll.visibility,
+        creatorId,
+        sourceLanguageId,
+        targetLanguageId,
+        isCurated: coll.isCurated,
+      })
+      .returning({ id: collections.id })
+
+    collectionIdBySlug.set(slug, row.id)
+
+    const memberRows: Array<{ collectionId: string; deckId: string; position: number }> = []
+    coll.deckSlugSuffixes.forEach((deckSuffix, idx) => {
+      const deckId = deckIdBySlug.get(`${MOCK_DECK_SLUG_PREFIX}${deckSuffix}`)
+      if (!deckId) {
+        throw new Error(
+          `Missing deck ${deckSuffix} for collection ${coll.slugSuffix}`
+        )
+      }
+      memberRows.push({ collectionId: row.id, deckId, position: idx })
+    })
+
+    if (memberRows.length > 0) {
+      await db.insert(collectionDecks).values(memberRows)
+    }
+  }
+
+  return collectionIdBySlug
+}
+
 async function seedStudySessionsData(
   userIds: Map<MockUserKey, string>,
   deckIdBySlug: Map<string, string>
@@ -1417,6 +1551,12 @@ async function main() {
   console.log("Seeding decks and cards...")
   const deckIdBySlug = await seedDecksAndCards(userIds)
 
+  console.log("Seeding collections...")
+  const collectionIdBySlug = await seedCollectionsAndMembers(
+    userIds,
+    deckIdBySlug
+  )
+
   console.log("Seeding study sessions...")
   await seedStudySessionsData(userIds, deckIdBySlug)
 
@@ -1430,6 +1570,7 @@ async function main() {
   console.log("Mock seed complete:")
   console.log(`  users:         ${userIds.size}`)
   console.log(`  decks:         ${deckIdBySlug.size}`)
+  console.log(`  collections:   ${collectionIdBySlug.size}`)
   console.log(`  achievements:  ${achievementIds.size}`)
   console.log(`  sessions:      ${STUDY_SESSIONS.length}`)
   console.log(`  notifications: ${NOTIFICATIONS.length}`)

@@ -12,6 +12,10 @@ FlashForge is a vocabulary learning platform with flashcard decks, study session
 
 Full documentation: `docs/PROJECT.md` · `docs/DEPLOYMENT.md`
 
+## Data Safety
+
+**Never run destructive SQL (`DELETE`, `TRUNCATE`, `DROP`, mass `UPDATE`) against the dev database (`flashforge`) unless the user explicitly asks for it in that same message.** All destructive operations during debugging, testing, or exploration must target `flashforge_test` only. The dev DB holds the user's real local data and is not backed up.
+
 ## Key Decisions
 
 - **Type-based component organization** (`components/deck/`, `components/card/`, etc.)

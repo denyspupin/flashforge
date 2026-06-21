@@ -1,6 +1,6 @@
 "use client"
 
-import { MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -15,6 +15,7 @@ import type { Collection } from "@/types/collection"
 type CollectionActionsMenuProps = {
   collection: Collection
   onEdit: () => void
+  onTogglePublish: () => void
   onDelete: () => void
   triggerClassName?: string
 }
@@ -22,9 +23,12 @@ type CollectionActionsMenuProps = {
 export function CollectionActionsMenu({
   collection,
   onEdit,
+  onTogglePublish,
   onDelete,
   triggerClassName,
 }: CollectionActionsMenuProps) {
+  const isPrivate = collection.visibility === "private"
+
   return (
     <DropdownMenu>
       <DropdownMenuTrigger
@@ -43,6 +47,19 @@ export function CollectionActionsMenu({
         <DropdownMenuItem onClick={onEdit}>
           <Pencil className="mr-2 h-4 w-4" />
           Edit
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={onTogglePublish}>
+          {isPrivate ? (
+            <>
+              <Globe className="mr-2 h-4 w-4" />
+              Publish
+            </>
+          ) : (
+            <>
+              <Lock className="mr-2 h-4 w-4" />
+              Make Private
+            </>
+          )}
         </DropdownMenuItem>
         <DropdownMenuItem className="text-destructive" onClick={onDelete}>
           <Trash2 className="mr-2 h-4 w-4" />

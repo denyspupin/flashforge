@@ -23,6 +23,7 @@ export const sessionStatusEnum = pgEnum("session_status", [
 export const notificationTypeEnum = pgEnum("notification_type", [
   "fork_received",
   "achievement_unlocked",
+  "collection_fork_received",
 ])
 export const roleEnum = pgEnum("role", ["user", "curator", "admin"])
 export const themeEnum = pgEnum("theme", ["light", "dark", "system"])
@@ -215,28 +216,40 @@ export const notifications = pgTable("notifications", {
     .notNull(),
 })
 
-export const collections = pgTable("collections", {
-  id: uuid("id").defaultRandom().primaryKey(),
-  title: varchar("title", { length: 256 }).notNull(),
-  slug: varchar("slug", { length: 256 }).notNull(),
-  description: text("description"),
-  creatorId: uuid("creator_id")
-    .references(() => users.id, { onDelete: "cascade" })
-    .notNull(),
-  sourceLanguageId: uuid("source_language_id")
-    .references(() => languages.id)
-    .notNull(),
-  targetLanguageId: uuid("target_language_id")
-    .references(() => languages.id)
-    .notNull(),
-  deletedAt: timestamp("deleted_at", { withTimezone: true }),
-  createdAt: timestamp("created_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-  updatedAt: timestamp("updated_at", { withTimezone: true })
-    .defaultNow()
-    .notNull(),
-})
+export const collections = pgTable(
+  "collections",
+  {
+    id: uuid("id").defaultRandom().primaryKey(),
+    title: varchar("title", { length: 256 }).notNull(),
+    slug: varchar("slug", { length: 256 }).notNull(),
+    description: text("description"),
+    visibility: visibilityEnum("visibility").default("private").notNull(),
+    creatorId: uuid("creator_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    sourceLanguageId: uuid("source_language_id")
+      .references(() => languages.id)
+      .notNull(),
+    targetLanguageId: uuid("target_language_id")
+      .references(() => languages.id)
+      .notNull(),
+    isCurated: boolean("is_curated").default(false).notNull(),
+    forkedFromCollectionId: uuid("forked_from_collection_id"),
+    deletedAt: timestamp("deleted_at", { withTimezone: true }),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+    updatedAt: timestamp("updated_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.forkedFromCollectionId],
+      foreignColumns: [table.id],
+    }).onDelete("set null"),
+  ]
+)
 
 export const collectionDecks = pgTable(
   "collection_decks",
