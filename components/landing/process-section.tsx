@@ -17,7 +17,7 @@ const STEPS = [
     title: "Study with focus",
     icon: BookOpen,
     body:
-      "One card. No scroll. Flip, self-assess, and retry the ones that miss. Sessions save themselves — step away and return to exactly where you left off.",
+      "One card. No scroll. Flip, self-assess, and move on. Sessions save themselves — step away and return to exactly where you left off.",
     chip: "Practice",
   },
   {

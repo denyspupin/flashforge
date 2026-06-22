@@ -1,6 +1,6 @@
 "use client"
 
-import { Check, X, RotateCcw } from "lucide-react"
+import { Check, X } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 type StudyControlsProps = {
@@ -8,7 +8,6 @@ type StudyControlsProps = {
   onFlip: () => void
   onAnswer: (correct: boolean) => void
   isLast: boolean
-  phase: "pass1" | "retry" | "done"
 }
 
 export function StudyControls({
@@ -16,7 +15,6 @@ export function StudyControls({
   onFlip,
   onAnswer,
   isLast,
-  phase,
 }: StudyControlsProps) {
   if (!flipped) {
     return (
@@ -32,8 +30,7 @@ export function StudyControls({
     )
   }
 
-  const nextLabel =
-    phase === "retry" && isLast ? "Finish round" : "Next card"
+  const nextLabel = isLast ? "Finish session" : "Next card"
 
   return (
     <div className="grid w-full grid-cols-2 gap-3">

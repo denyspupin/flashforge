@@ -112,7 +112,7 @@ export function StudyCardArea() {
 
 export function StudyActionControls() {
   const {
-    state: { flipped, isLast, phase },
+    state: { flipped, isLast },
     actions: { flip, answer },
   } = useStudyContext()
 
@@ -122,7 +122,6 @@ export function StudyActionControls() {
       onFlip={flip}
       onAnswer={answer}
       isLast={isLast}
-      phase={phase}
     />
   )
 }
