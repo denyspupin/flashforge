@@ -26,7 +26,9 @@ export function StudyControls({
           className="h-14 sm:h-14 rounded-full bg-ink px-8 sm:px-8 text-[15px] text-paper shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] transition-all hover:bg-ink/90"
         >
           Reveal answer
-          <Kbd className="ml-2.5 border-paper/20 bg-paper/10 text-paper/85">Space</Kbd>
+          <span className="ml-2.5 hidden pointer-fine:inline-flex">
+            <Kbd className="border-paper/20 bg-paper/10 text-paper/85">Space</Kbd>
+          </span>
         </Button>
       </div>
     )
@@ -43,7 +45,9 @@ export function StudyControls({
       >
         <X className="mr-2 h-4 w-4" strokeWidth={2.5} />
         Missed it
-        <Kbd className="ml-2.5 border-paper/20 bg-paper/10 text-paper/85">1</Kbd>
+        <span className="ml-2.5 hidden pointer-fine:inline-flex">
+          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">1</Kbd>
+        </span>
       </Button>
       <Button
         onClick={() => onAnswer(true)}
@@ -52,7 +56,9 @@ export function StudyControls({
       >
         <Check className="mr-2 h-4 w-4" strokeWidth={2.5} />
         {nextLabel}
-        <Kbd className="ml-2.5 border-paper/20 bg-paper/10 text-paper/85">2</Kbd>
+        <span className="ml-2.5 hidden pointer-fine:inline-flex">
+          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">2</Kbd>
+        </span>
       </Button>
     </div>
   )
