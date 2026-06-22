@@ -31,7 +31,9 @@
   --ember: 14 78% 55%;
   --ember-deep: 12 82% 42%;
   --honey: 38 92% 60%;
+  --leaf: 142 71% 38%;
   --forest: 156 28% 23%;
+  --brick: 0 55% 42%;
   --rust: 18 60% 35%;
 }
 
@@ -61,7 +63,9 @@
   --ember: 14 78% 60%;
   --ember-deep: 12 82% 50%;
   --honey: 38 92% 65%;
+  --leaf: 142 60% 50%;
   --forest: 156 20% 45%;
+  --brick: 0 50% 50%;
   --rust: 18 50% 55%;
 }
 
@@ -90,7 +94,9 @@
   --color-ember: hsl(var(--ember));
   --color-ember-deep: hsl(var(--ember-deep));
   --color-honey: hsl(var(--honey));
+  --color-leaf: hsl(var(--leaf));
   --color-forest: hsl(var(--forest));
+  --color-brick: hsl(var(--brick));
   --color-rust: hsl(var(--rust));
   --radius-sm: calc(var(--radius) - 4px);
   --radius-md: calc(var(--radius) - 2px);

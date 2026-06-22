@@ -7,7 +7,7 @@ import {
   type StudyCard,
 } from "@/stores/study-store"
 
-const STORAGE_KEY_PREFIX = "study:v1:"
+const STORAGE_KEY_PREFIX = "study:v2:"
 
 function makeCard(id: string): StudyCard {
   return { id, deckId: "deck-1", front: `front ${id}`, back: `back ${id}` }
@@ -60,20 +60,18 @@ describe("useStudyStore", () => {
     expect(s.index).toBe(0)
     expect(s.phase).toBe("pass1")
     expect(s.flipped).toBe(false)
-    expect(s.retryCards).toHaveLength(0)
     expect(Object.keys(s.results)).toHaveLength(3)
     expect(Object.values(s.results).every((v) => v === false)).toBe(true)
   })
 
-  test("init warm-restores from localStorage when card count matches", () => {
+  test("init warm-restores pass1 progress from localStorage when card count matches", () => {
     const store = useStudyStore
     const cards = makeCards(3)
     const savedState = {
       sessionId: "s1",
       cards,
-      retryCards: [cards[2]],
       index: 2,
-      phase: "retry" as const,
+      phase: "pass1" as const,
       flipped: true,
       results: { c1: true, c2: true, c3: false },
       startedAt: 1_700_000_000_000,
@@ -81,10 +79,8 @@ describe("useStudyStore", () => {
     attachStorage({ [STORAGE_KEY_PREFIX + "s1"]: JSON.stringify(savedState) })
     store.getState().init("s1", cards)
     const s = store.getState()
-    expect(s.phase).toBe("retry")
+    expect(s.phase).toBe("pass1")
     expect(s.index).toBe(2)
-    expect(s.retryCards).toHaveLength(1)
-    expect(s.retryCards[0].id).toBe("c3")
     expect(s.results.c1).toBe(true)
     expect(s.results.c3).toBe(false)
   })
@@ -96,9 +92,8 @@ describe("useStudyStore", () => {
     const savedState = {
       sessionId: "s1",
       cards: originalCards,
-      retryCards: [originalCards[2]],
       index: 2,
-      phase: "retry" as const,
+      phase: "pass1" as const,
       flipped: true,
       results: { c1: true, c2: true, c3: false },
       startedAt: 1_700_000_000_000,
@@ -122,7 +117,7 @@ describe("useStudyStore", () => {
     expect(store.getState().flipped).toBe(false)
   })
 
-  test("answer in pass1 mid-list advances index and unflips", () => {
+  test("answer mid-list advances index and unflips", () => {
     const store = useStudyStore
     store.getState().init("s1", makeCards(3))
     store.getState().flip()
@@ -134,7 +129,7 @@ describe("useStudyStore", () => {
     expect(s.results.c1).toBe(true)
   })
 
-  test("pass1 last card with no failures transitions to done and clears storage", () => {
+  test("last card with no failures transitions to done and clears storage", () => {
     const storage = attachStorage()
     const store = useStudyStore
     const cards = makeCards(2)
@@ -149,28 +144,18 @@ describe("useStudyStore", () => {
     expect(storage.has(STORAGE_KEY_PREFIX + "s1")).toBe(false)
   })
 
-  test("pass1 last card with failures starts retry queue", () => {
+  test("last card with failures still ends the session (no auto-retry)", () => {
     const store = useStudyStore
-    const cards = makeCards(2)
+    const cards = makeCards(3)
     store.getState().init("s1", cards)
+    store.getState().answer(true)
     store.getState().answer(false)
     store.getState().answer(true)
     const s = store.getState()
-    expect(s.phase).toBe("retry")
-    expect(s.retryCards).toHaveLength(1)
-    expect(s.retryCards[0].id).toBe("c1")
-    expect(s.index).toBe(0)
-  })
-
-  test("retry last card transitions to done", () => {
-    const store = useStudyStore
-    const cards = makeCards(2)
-    store.getState().init("s1", cards)
-    store.getState().answer(false)
-    store.getState().answer(true)
-    store.getState().flip()
-    store.getState().answer(true)
-    expect(store.getState().phase).toBe("done")
+    expect(s.phase).toBe("done")
+    expect(s.results.c1).toBe(true)
+    expect(s.results.c2).toBe(false)
+    expect(s.results.c3).toBe(true)
   })
 
   test("answer is a no-op when there is no current card", () => {
@@ -190,14 +175,13 @@ describe("useStudyStore", () => {
     const s = store.getState()
     expect(s.sessionId).toBeNull()
     expect(s.cards).toHaveLength(0)
-    expect(s.retryCards).toHaveLength(0)
     expect(s.index).toBe(0)
     expect(s.phase).toBe("pass1")
     expect(s.flipped).toBe(false)
     expect(storage.has(STORAGE_KEY_PREFIX + "s1")).toBe(false)
   })
 
-  test("selectors reflect state across phases", () => {
+  test("selectors reflect state across pass1 and done", () => {
     const store = useStudyStore
     const cards = makeCards(3)
     store.getState().init("s1", cards)
@@ -214,14 +198,14 @@ describe("useStudyStore", () => {
     store.getState().answer(false)
     store.getState().answer(true)
 
-    expect(store.getState().phase).toBe("retry")
-    expect(selectCurrentCard(store.getState())?.id).toBe("c2")
-    expect(selectProgress(store.getState())).toEqual({ position: 1, total: 1 })
-
-    store.getState().answer(false)
     expect(store.getState().phase).toBe("done")
     expect(selectCurrentCard(store.getState())).toBeNull()
     expect(selectProgress(store.getState())).toEqual({ position: 3, total: 3 })
+    expect(selectResults(store.getState())).toEqual([
+      { cardId: "c1", correct: true },
+      { cardId: "c2", correct: false },
+      { cardId: "c3", correct: true },
+    ])
   })
 
   test("init is SSR-safe when window and localStorage are absent", () => {

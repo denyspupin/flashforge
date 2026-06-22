@@ -1,11 +1,11 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Flame, Play, Repeat } from "lucide-react"
+import { Flame, Play } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 type StudyProgressProps = {
-  phase: "pass1" | "retry" | "done"
+  phase: "pass1" | "done"
   position: number
   total: number
   streak?: number
@@ -17,7 +17,7 @@ export function StudyProgress({
   total,
   streak,
 }: StudyProgressProps) {
-  const isRetry = phase === "retry"
+  const isDone = phase === "done"
   const percent = total === 0 ? 0 : Math.min(100, (position / total) * 100)
 
   return (
@@ -27,22 +27,13 @@ export function StudyProgress({
           <span
             className={cn(
               "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono-tag uppercase tracking-wider",
-              isRetry
-                ? "bg-honey/15 text-honey"
+              isDone
+                ? "bg-forest/12 text-forest"
                 : "bg-ember/12 text-ember"
             )}
           >
-            {isRetry ? (
-              <>
-                <Repeat className="h-3 w-3" strokeWidth={2.25} />
-                Retry round
-              </>
-            ) : (
-              <>
-                <Play className="h-3 w-3" strokeWidth={2.25} />
-                First pass
-              </>
-            )}
+            <Play className="h-3 w-3" strokeWidth={2.25} />
+            {isDone ? "Session complete" : "Studying"}
           </span>
           <span className="font-mono-tag text-ink/55">
             {String(position).padStart(2, "0")} / {String(total).padStart(2, "0")}
@@ -63,7 +54,7 @@ export function StudyProgress({
         <motion.div
           className={cn(
             "absolute inset-y-0 left-0 rounded-full",
-            isRetry ? "bg-honey" : "bg-ember"
+            isDone ? "bg-forest" : "bg-ember"
           )}
           initial={false}
           animate={{ width: `${percent}%` }}

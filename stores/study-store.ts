@@ -1,6 +1,6 @@
 import { create } from "zustand"
 
-export type StudyPhase = "pass1" | "retry" | "done"
+export type StudyPhase = "pass1" | "done"
 
 export type StudyCard = {
   id: string
@@ -12,7 +12,6 @@ export type StudyCard = {
 type StudyState = {
   sessionId: string | null
   cards: StudyCard[]
-  retryCards: StudyCard[]
   index: number
   phase: StudyPhase
   flipped: boolean
@@ -28,7 +27,6 @@ type StudyState = {
 const initial = {
   sessionId: null,
   cards: [],
-  retryCards: [],
   index: 0,
   phase: "pass1" as StudyPhase,
   flipped: false,
@@ -36,12 +34,11 @@ const initial = {
   startedAt: null,
 }
 
-const STORAGE_PREFIX = "study:v1:"
+const STORAGE_PREFIX = "study:v2:"
 
 type PersistedState = {
   sessionId: string
   cards: StudyCard[]
-  retryCards: StudyCard[]
   index: number
   phase: StudyPhase
   flipped: boolean
@@ -54,9 +51,10 @@ function loadPersisted(sessionId: string): PersistedState | null {
   try {
     const raw = localStorage.getItem(STORAGE_PREFIX + sessionId)
     if (!raw) return null
-    const parsed = JSON.parse(raw) as PersistedState
-    if (parsed.sessionId !== sessionId) return null
-    return parsed
+    const value = JSON.parse(raw) as PersistedState
+    if (value.sessionId !== sessionId) return null
+    if (value.phase !== "pass1") return null
+    return value
   } catch {
     return null
   }
@@ -93,7 +91,6 @@ function persistCurrent(get: () => StudyState) {
   savePersisted({
     sessionId: state.sessionId,
     cards: state.cards,
-    retryCards: state.retryCards,
     index: state.index,
     phase: state.phase,
     flipped: state.flipped,
@@ -117,13 +114,9 @@ export const useStudyStore = create<StudyState>((set, get) => {
         cards.map((c) => [c.id, false]),
       )
       if (saved && saved.cards.length === cards.length) {
-        const validRetry = saved.retryCards.filter((rc) =>
-          cards.some((c) => c.id === rc.id),
-        )
         apply({
           sessionId,
           cards,
-          retryCards: validRetry,
           index: Math.min(saved.index, Math.max(cards.length - 1, 0)),
           phase: saved.phase,
           flipped: saved.flipped,
@@ -151,41 +144,18 @@ export const useStudyStore = create<StudyState>((set, get) => {
 
     answer: (correct) => {
       const state = get()
-      const activeQueue =
-        state.phase === "retry" ? state.retryCards : state.cards
-      const current = activeQueue[state.index]
+      const current = state.cards[state.index]
       if (!current) return
 
       const nextResults = { ...state.results, [current.id]: correct }
-      const isLast = state.index === activeQueue.length - 1
+      const isLast = state.index === state.cards.length - 1
 
-      if (state.phase === "pass1") {
-        if (isLast) {
-          const failedInPass1 = activeQueue.filter(
-            (c) => nextResults[c.id] === false
-          )
-          if (failedInPass1.length === 0) {
-            apply({ results: nextResults, phase: "done", flipped: false })
-          } else {
-            apply({
-              results: nextResults,
-              phase: "retry",
-              retryCards: failedInPass1,
-              index: 0,
-              flipped: false,
-            })
-          }
-        } else {
-          apply({
-            results: nextResults,
-            index: state.index + 1,
-            flipped: false,
-          })
-        }
+      if (isLast) {
+        apply({ results: nextResults, phase: "done", flipped: false })
       } else {
         apply({
           results: nextResults,
-          phase: "done",
+          index: state.index + 1,
           flipped: false,
         })
       }
@@ -195,8 +165,7 @@ export const useStudyStore = create<StudyState>((set, get) => {
 
 export function selectCurrentCard(state: StudyState): StudyCard | null {
   if (state.phase === "done") return null
-  const queue = state.phase === "retry" ? state.retryCards : state.cards
-  return queue[state.index] ?? null
+  return state.cards[state.index] ?? null
 }
 
 export function selectProgress(state: StudyState): {
@@ -206,14 +175,10 @@ export function selectProgress(state: StudyState): {
   if (state.phase === "done") {
     return { position: state.cards.length, total: state.cards.length }
   }
-  const queue = state.phase === "retry" ? state.retryCards : state.cards
-  return { position: state.index + 1, total: queue.length }
+  return { position: state.index + 1, total: state.cards.length }
 }
 
 export function selectIsLast(state: StudyState): boolean {
-  if (state.phase === "retry") {
-    return state.retryCards.length > 0 && state.index === state.retryCards.length - 1
-  }
   return state.cards.length > 0 && state.index === state.cards.length - 1
 }
 
