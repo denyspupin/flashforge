@@ -72,14 +72,14 @@ function CompletionEffect() {
 
 function SummaryView() {
   const router = useRouter()
-  const { state, actions } = useStudyContext()
+  const { state } = useStudyContext()
   const { summary, setSummary, setPhase } = useStudySummary<GuestSummary>()
 
   const handleRetry = useCallback(() => {
-    actions.reset()
+    useStudyStore.getState().init(state.deck.id, state.cards)
     setSummary(null)
     setPhase("idle")
-  }, [actions, setSummary, setPhase])
+  }, [state.deck.id, state.cards, setSummary, setPhase])
 
   const handleStudyAnother = useCallback(() => {
     router.push("/explore")

@@ -109,14 +109,12 @@ function CompletionRunner({
 
 function SummaryView() {
   const router = useRouter()
-  const { state, actions } = useStudyContext()
-  const { summary, setSummary, setPhase } = useStudySummary<CompleteResponse>()
+  const { state } = useStudyContext()
+  const { summary } = useStudySummary<CompleteResponse>()
 
   const handleRetry = useCallback(() => {
-    actions.reset()
-    setSummary(null)
-    setPhase("idle")
-  }, [actions, setSummary, setPhase])
+    router.replace(`/study?deckId=${state.deck.id}`)
+  }, [router, state.deck.id])
 
   if (!summary) return null
 
