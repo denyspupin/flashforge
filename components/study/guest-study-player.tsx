@@ -85,6 +85,12 @@ function SummaryView() {
     router.push("/explore")
   }, [router])
 
+  const missedCards = useMemo(() => {
+    if (!summary) return []
+    const failed = new Set(summary.failedCardIds)
+    return state.cards.filter((c) => failed.has(c.id))
+  }, [summary, state.cards])
+
   if (!summary) return null
 
   return (
@@ -94,6 +100,7 @@ function SummaryView() {
       cardsReviewed={summary.cardsReviewed}
       cardsCorrect={summary.cardsCorrect}
       failedCardIds={summary.failedCardIds}
+      missedCards={missedCards}
       onRetry={handleRetry}
       onStudyAnother={handleStudyAnother}
     />

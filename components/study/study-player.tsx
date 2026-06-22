@@ -1,6 +1,6 @@
 "use client"
 
-import { useCallback, useEffect, useRef } from "react"
+import { useCallback, useEffect, useMemo, useRef } from "react"
 import { useRouter } from "next/navigation"
 import { useMutation } from "@tanstack/react-query"
 import { Loader2 } from "lucide-react"
@@ -116,6 +116,12 @@ function SummaryView() {
     router.replace(`/study?deckId=${state.deck.id}`)
   }, [router, state.deck.id])
 
+  const missedCards = useMemo(() => {
+    if (!summary) return []
+    const failed = new Set(summary.session.failedCardIds)
+    return state.cards.filter((c) => failed.has(c.id))
+  }, [summary, state.cards])
+
   if (!summary) return null
 
   return (
@@ -123,6 +129,7 @@ function SummaryView() {
       cardsReviewed={summary.session.cardsReviewed}
       cardsCorrect={summary.session.cardsCorrect}
       failedCardIds={summary.session.failedCardIds}
+      missedCards={missedCards}
       xpAwarded={summary.xpAwarded}
       multiplier={summary.multiplier}
       newStreak={summary.newStreak}

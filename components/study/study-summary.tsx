@@ -9,14 +9,15 @@ import {
   Flame,
   Star,
   Trophy,
-  X,
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
+import type { StudyCard } from "@/stores/study-store"
 
 type StudySummaryProps = {
   cardsReviewed: number
   cardsCorrect: number
   failedCardIds: string[]
+  missedCards: StudyCard[]
   xpAwarded: number
   multiplier: number
   newStreak: number
@@ -53,6 +54,7 @@ export function StudySummary({
   cardsReviewed,
   cardsCorrect,
   failedCardIds,
+  missedCards,
   xpAwarded,
   multiplier,
   newStreak,
@@ -71,24 +73,24 @@ export function StudySummary({
         initial={{ scale: 0.6, opacity: 0 }}
         animate={{ scale: 1, opacity: 1 }}
         transition={{ duration: 0.7, ease: [0.16, 1, 0.3, 1] }}
-        className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-ember/12 sm:h-24 sm:w-24"
+        className="relative mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-leaf/12 sm:h-24 sm:w-24"
       >
         <div
           className="absolute inset-0 rounded-full"
           style={{
             background:
-              "radial-gradient(circle, hsl(var(--ember) / 0.25), transparent 70%)",
+              "radial-gradient(circle, hsl(var(--leaf) / 0.25), transparent 70%)",
             filter: "blur(12px)",
           }}
         />
         {isPerfect ? (
           <Trophy
-            className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
+            className="relative h-8 w-8 text-leaf sm:h-10 sm:w-10"
             strokeWidth={1.75}
           />
         ) : (
           <Check
-            className="relative h-8 w-8 text-ember sm:h-10 sm:w-10"
+            className="relative h-8 w-8 text-leaf sm:h-10 sm:w-10"
             strokeWidth={2}
           />
         )}
@@ -148,14 +150,36 @@ export function StudySummary({
         </div>
       </div>
 
-      {!isPerfect && failedCardIds.length > 0 && (
-        <div className="mt-6 inline-flex items-center gap-2 rounded-full border border-honey/30 bg-honey/8 px-3.5 py-1.5 text-xs text-ink/70">
-          <X className="h-3 w-3 text-honey" strokeWidth={2.5} />
-          <span className="font-mono-tag uppercase tracking-wider">
-            {failedCardIds.length} card
-            {failedCardIds.length === 1 ? "" : "s"} missed
-          </span>
-        </div>
+      {!isPerfect && missedCards.length > 0 && (
+        <section className="mt-8 w-full text-left">
+          <header className="mb-3 flex items-baseline justify-between gap-3">
+            <h2 className="font-mono-tag text-[11px] uppercase tracking-widest text-ink/55">
+              Cards to revisit
+            </h2>
+            <span className="font-mono-tag text-[11px] uppercase tracking-widest text-destructive">
+              {missedCards.length} missed
+            </span>
+          </header>
+          <ul className="grid gap-2 sm:grid-cols-2">
+            {missedCards.map((card) => (
+              <li
+                key={card.id}
+                className="rounded-2xl border border-destructive/25 bg-destructive/5 p-4"
+              >
+                <p
+                  className="font-display text-lg leading-snug text-ink"
+                  style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
+                >
+                  {card.front}
+                </p>
+                <p className="mt-1 flex items-center gap-1.5 font-display text-sm leading-snug text-ink/65">
+                  <span aria-hidden className="text-ink/35">→</span>
+                  {card.back}
+                </p>
+              </li>
+            ))}
+          </ul>
+        </section>
       )}
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-3">

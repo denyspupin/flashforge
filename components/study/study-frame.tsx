@@ -5,6 +5,7 @@ import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react"
 
 import { Button } from "@/components/ui/button"
+import { Kbd } from "@/components/ui/kbd"
 import { CardFront, CardBack, FlipCard } from "@/components/card"
 import { StudyProgress } from "@/components/study/study-progress"
 import { StudyControls } from "@/components/study/study-controls"
@@ -128,10 +129,28 @@ export function StudyActionControls() {
 
 export function StudyHint() {
   return (
-    <div className="hidden items-center justify-center gap-3 font-mono-tag text-[10px] uppercase tracking-widest text-ink/40 sm:flex">
-      <span>Space to flip</span>
-      <span className="h-1 w-1 rounded-full bg-ink/20" />
-      <span>1 fail · 2 pass</span>
+    <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono-tag text-[10px] uppercase tracking-widest text-ink/40 pointer-fine:flex">
+      <Shortcut keys={["Space"]} label="flip" />
+      <Dot />
+      <Shortcut keys={["1"]} label="miss" />
+      <Shortcut keys={["2"]} label="pass" />
+      <Dot />
+      <Shortcut keys={["Esc"]} label="exit" />
     </div>
   )
+}
+
+function Shortcut({ keys, label }: { keys: string[]; label: string }) {
+  return (
+    <span className="inline-flex items-center gap-1.5">
+      {keys.map((k) => (
+        <Kbd key={k}>{k}</Kbd>
+      ))}
+      <span>{label}</span>
+    </span>
+  )
+}
+
+function Dot() {
+  return <span aria-hidden className="h-1 w-1 rounded-full bg-ink/20" />
 }
