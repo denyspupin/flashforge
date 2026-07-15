@@ -1,0 +1,69 @@
+name: Feature request
+description: Suggest a new feature or an improvement to an existing one.
+title: ""
+labels: ["enhancement", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        FlashForge is a showcase project. Substantial new features usually need an issue discussion first so we can agree on direction before any code is written. Small, well-scoped improvements are welcome.
+
+  - type: input
+    id: title
+    attributes:
+      label: One-line summary
+    validations:
+      required: true
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where would this live?
+      options:
+        - Decks / cards
+        - Collections
+        - Study session
+        - Gamification (XP, streak, achievements)
+        - Notifications
+        - Profile / dashboard / history
+        - Admin tools
+        - Public surface (landing, explore, SEO)
+        - Other
+    validations:
+      required: true
+
+  - type: textarea
+    id: problem
+    attributes:
+      label: What's the problem or gap?
+      description: |
+        A short paragraph explaining the user problem this would solve.
+    validations:
+      required: true
+
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed solution
+      description: |
+        A sketch of what you'd build. Mockups, API shapes, or a short user flow are very helpful.
+    validations:
+      required: true
+
+  - type: textarea
+    id: alternatives
+    attributes:
+      label: Alternatives considered
+    validations:
+      required: false
+
+  - type: textarea
+    id: impact
+    attributes:
+      label: Impact
+      description: |
+        Who benefits? Does it require schema changes, new admin tooling, or third-party services?
+    validations:
+      required: false

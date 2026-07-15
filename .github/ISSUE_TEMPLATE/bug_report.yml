@@ -1,0 +1,96 @@
+name: Bug report
+description: Report something that isn't working as documented.
+title: "[bug] "
+labels: ["bug", "triage"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Thanks for taking the time to file a bug. The owner reviews issues without a strict SLA; small, well-scoped reports get the fastest response.
+
+  - type: dropdown
+    id: area
+    attributes:
+      label: Where is the bug?
+      options:
+        - Landing / marketing pages
+        - Authentication (sign-in, sign-up, Clerk)
+        - Decks (CRUD, cards, fork, import, export)
+        - Collections (CRUD, fork, import)
+        - Study session (start, complete, resume, abandon)
+        - Gamification (XP, streak, achievements, notifications)
+        - Profile / dashboard / history
+        - Admin tools
+        - API (`/api/v1/*`, `/api/webhooks/clerk`)
+        - Other
+    validations:
+      required: true
+
+  - type: input
+    id: url
+    attributes:
+      label: Link to the page or endpoint
+      placeholder: https://flashforge.denyspupin.dev/explore
+    validations:
+      required: true
+
+  - type: textarea
+    id: what
+    attributes:
+      label: What happened?
+      placeholder: |
+        Describe what you observed. A short, factual description works best.
+    validations:
+      required: true
+
+  - type: textarea
+    id: expected
+    attributes:
+      label: What did you expect to happen?
+    validations:
+      required: true
+
+  - type: textarea
+    id: repro
+    attributes:
+      label: Steps to reproduce
+      placeholder: |
+        1. Go to …
+        2. Click …
+        3. See error …
+    validations:
+      required: true
+
+  - type: dropdown
+    id: severity
+    attributes:
+      label: Severity
+      options:
+        - Cosmetic (text, alignment, theme glitch)
+        - Annoying (workaround exists, but normal flow is broken)
+        - Blocking (cannot complete a core flow)
+        - Security (see SECURITY.md instead — do not file here)
+    validations:
+      required: true
+
+  - type: input
+    id: env
+    attributes:
+      label: Environment
+      placeholder: |
+        Browser, OS, signed-in vs guest, dev or production URL.
+      value: |
+        - Browser:
+        - OS:
+        - URL:
+    validations:
+      required: false
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Anything else?
+    validations:
+      required: false
