@@ -4,218 +4,103 @@
 
 # FlashForge
 
-### *Forge your fluency, one flash at a time.*
+### Forge your fluency, one flash at a time.
 
-A quiet workshop for learning vocabulary — build flashcard decks your way, study them with focus, and watch a streak of small sessions compound into something remarkable.
+Build a vocabulary habit with focused flashcard sessions, useful community decks, and progress that rewards consistency.
 
-[**Open the workshop →**](https://flashforge.denyspupin.dev) · [Browse the library](#explore-the-library) · [How it works](#how-it-works)
+[**Start learning →**](https://flashforge.denyspupin.dev) · [Explore decks](https://flashforge.denyspupin.dev/explore) · [See how it works](#a-simple-daily-loop)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
 [![CI](https://github.com/denyspupin/flashforge/actions/workflows/ci.yml/badge.svg)](https://github.com/denyspupin/flashforge/actions/workflows/ci.yml)
 
 </div>
 
----
-
 <p align="center">
-  <img src="docs/screenshots/01-landing-hero.png" alt="FlashForge — forge your fluency, one flash at a time" width="100%" />
+  <img src="docs/screenshots/01_desktop_landing.jpg" alt="FlashForge landing page on desktop" width="100%" />
 </p>
 
----
+## Learn words. Keep the habit.
 
-## What is FlashForge?
+FlashForge is a calm place to build and study vocabulary. Make a deck for the words you actually need, pick up a community deck, or organise several decks into a collection. Then study one card at a time—without an endless feed or distracting prompts.
 
-FlashForge is a vocabulary learning platform built around flashcard decks, study sessions, and a streak system that rewards **showing up** instead of grinding.
+Your sessions are saved as you go, so a short break never means losing your place. XP, streaks, and achievements make steady practice feel visible without turning a missed day into a punishment.
 
-You build decks organized by language pairs (English → German, Spanish → Japanese, anything) and topics (Food, Travel, Doctor Visit, …). You study them one card at a time — no scrolling, no flashcard fatigue, no notifications begging you back. Sessions save themselves, so you can step away and pick up exactly where you left off.
+**[Try FlashForge →](https://flashforge.denyspupin.dev)**
 
-Whether you write your own decks or fork one from the community, the loop is the same: **a small, focused ritual you can actually keep.**
+## What you can do
 
-> No streaks-as-shaming. No notifications begging. Just a small loop that rewards showing up.
+- **Create decks for any language pair.** Add cards individually, add them in bulk, or import a deck you already have.
+- **Study without losing momentum.** Flip cards, mark your answer, revisit misses, and resume a session whenever you return.
+- **Find a useful starting point.** Browse public decks and curated collections; study them as a guest or fork them to tailor them to yourself.
+- **See your effort add up.** Earn XP, build a daily streak, and unlock achievements through regular practice.
+- **Make it yours.** Keep decks private or share them with the community, and choose light, dark, or system theme.
 
-**[Try it →](https://flashforge.denyspupin.dev)** — sign up, fork a deck, study a session.
+## A simple daily loop
 
----
+### 1. Pick a real-world goal
 
-## Highlights
+Build a deck around the vocabulary you need next—travel, food, work, or a topic all your own. Every deck keeps its language pair and topic in one clear place.
 
-- **Decks organized by language pairs and topics** — pair any two languages, attach any topics; cards inherit the pair.
-- **Curated collections** — group decks into themed collections, publish them, fork the whole thing in one click.
-- **Public discovery and forking** — flip a deck public and it appears in the community library. Anyone can fork a public deck (deck or collection) into their own account.
-- **Guest study** — anyone can study any public deck without an account. Sign in only when you want progress tracked.
-- **Resumable sessions** — start a deck, walk away, come back to the same card. Sessions survive refresh, tab close, and browser restart.
-- **Streak multipliers** — daily streaks compound (×1 → ×3 over 30 days), with a "sentence, not a chain" philosophy: one card keeps the streak alive, but the multiplier resets if you skip a day.
-- **Free forever** — no credit card, no ads, no premium tier. Hosting costs are absorbed by the project.
-- **Open library** — every public deck is browseable, studyable as a guest, and forkable.
-- **Notifications** — quiet in-app pings when someone forks your deck/collection or unlocks an achievement.
-- **Theming** — light, dark, and system theme, persisted per user.
+### 2. Study one card at a time
 
----
-
-## Tech stack
-
-| Layer | Technology |
-| --- | --- |
-| Framework | [Next.js 16](https://nextjs.org) (App Router, React 19) |
-| Database | [PostgreSQL 16](https://www.postgresql.org) + [Drizzle ORM](https://orm.drizzle.team) |
-| Auth | [Clerk](https://clerk.com) (credentials + OAuth, Svix-verified webhook user sync) |
-| Styling | [Tailwind CSS 4](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com) |
-| Server state | [TanStack Query](https://tanstack.com/query) |
-| UI state | [Zustand](https://zustand-demo.pmnd.rs) |
-| Validation | [Zod](https://zod.dev) |
-| Hosting | [Vercel](https://vercel.com) (serverless) + [Neon](https://neon.tech) (managed Postgres) |
-
-See [`docs/PROJECT.md`](./docs/PROJECT.md) for the full architecture write-up, database schema, and API surface.
-
----
-
-## How it works
-
-Three quiet rituals, every day.
-
-### 1 · Compose your deck
-Pair any two languages. Add cards one at a time, paste a list, or fork a deck the community has already polished. Every deck is yours to shape.
-
-### 2 · Study with focus
-One card. No scroll. Flip, self-assess, and review the missed ones at the end. Sessions save themselves — step away and return to exactly where you left off.
-
-### 3 · Stack the small wins
-XP for cards reviewed, multipliers for streaks that hold. A daily practice that asks for ten minutes, but rewards a lifetime of vocabulary.
+Reveal the answer, rate your recall, and review the cards that need another pass. The experience stays focused from the first card to the final summary.
 
 <p align="center">
-  <img src="docs/screenshots/06-study-back.png" alt="Study mode — one card, no scroll" width="100%" />
+  <img src="docs/screenshots/03_desktop_study_front.jpg" alt="A FlashForge study card before revealing the answer" width="49%" />
+  <img src="docs/screenshots/04_desktop_study_back.jpg" alt="A FlashForge study card after revealing the answer" width="49%" />
 </p>
 
----
+### 3. Return tomorrow
 
-## Explore the library
+One card is enough to keep a streak alive. Longer streaks increase XP, but the point is not perfection—it is making vocabulary practice easy to come back to.
 
-The community has built decks across **nine languages** and dozens of real-world topics. Browse, study any deck as a guest, or **fork** one into your own account to make it your own.
+## Learn from the library
 
-Every deck has a clear language pair, the topics it belongs to, who built it, and how many cards it has. Curated decks and collections are highlighted by trusted community members.
+Public decks are open to browse and study, even before you create an account. When you find one worth keeping, fork it into your own workspace and edit it freely. Collections bundle related decks so you can take on a larger theme without starting from a blank page.
 
 <p align="center">
-  <img src="docs/screenshots/03-explore.png" alt="Explore community decks" width="100%" />
+  <img src="docs/screenshots/02-desktop-explore.jpg" alt="FlashForge community deck library on desktop" width="100%" />
 </p>
 
----
+## Take your practice with you
 
-## Anatomy of a deck
-
-Each deck has a title, description, a language pair, the topics it belongs to, and the cards inside. Public decks are open to the world; private decks live only in your account. You can flip visibility whenever you want.
+FlashForge adapts naturally to smaller screens, so you can build a deck or fit in a quick review wherever you are.
 
 <p align="center">
-  <img src="docs/screenshots/04-deck-detail.png" alt="A public deck — Restaurant Essentials" width="100%" />
+  <img src="docs/screenshots/01_mobile_landing.jpg" alt="FlashForge landing page on mobile" width="36%" />
+  <img src="docs/screenshots/02_mobile_explore.jpg" alt="FlashForge community deck library on mobile" width="36%" />
 </p>
 
----
+<p align="center">
+  <img src="docs/screenshots/03_mobile_study_front.jpg" alt="A FlashForge study card before revealing the answer on mobile" width="36%" />
+  <img src="docs/screenshots/04_mobile_study_back.jpg" alt="A FlashForge study card after revealing the answer on mobile" width="36%" />
+</p>
 
-## Collections
+## For contributors
 
-A collection is a themed bundle of decks that share a language pair. Fork a whole collection and you get every deck inside, ready to study or customise.
+FlashForge is built with Next.js, React, PostgreSQL, Drizzle, Clerk, and Tailwind CSS. For the complete local setup, environment variables, database workflow, and test guidance, read the [developer guide](./docs/DEVELOPER.md).
 
----
-
-## XP that compounds, streaks that reward patience
-
-A day-one session earns what a day-one session should. A thirty-day streak earns three times that. The numbers reward the thing you actually want to build: **a habit that sticks.**
-
-| Streak | Multiplier | Vibe |
-| --- | --- | --- |
-| 1 day | ×1 | Warm-up |
-| 3 days | ×1.5 | Gaining |
-| 7 days | ×2 | Locked in |
-| 14 days | ×2.5 | On fire |
-| 30 days | ×3 | Forged |
-
-> **A streak is a sentence — not a chain.** One card keeps it alive. There is no penalty for missing a day; there is only a quiet loss of the multiplier. The fire returns the moment you do.
-
----
-
-## Topics in the workshop
-
-Every topic is a doorway — build it out in any direction the language takes you. A single deck can belong to multiple topics at once (*"Restaurant Essentials"* spans **Food** + **Shopping**; *"Fruits & Vegetables"* lives across both).
-
-**Food** · **Animals** · **Household** · **Work Meeting** · **Doctor Visit** · **Travel** · **Shopping** · *…and more, all the time.*
-
----
-
-## Local development
+Quick start:
 
 ```bash
-# 1. Use the pinned Node version
-nvm use            # or: asdf install
-
-# 2. Install dependencies
 corepack enable
 pnpm install --frozen-lockfile
-
-# 3. Start dev + test databases
-docker compose up -d
 cp .env.example .env.local
-cp tests/.env.test.example tests/.env.test
-
-# 4. Apply schema and run
-pnpm db:migrate
-pnpm db:migrate:test
-pnpm db:seed
-pnpm dev
+docker compose up -d && pnpm db:migrate && pnpm dev
 ```
 
-Then open <http://localhost:3000>. See [`docs/DEVELOPER.md`](./docs/DEVELOPER.md) for the full setup, including Clerk credentials, the test database, and the project layout.
+The app will be available at <http://localhost:3000>. You will need Clerk credentials in `.env.local`; see the [developer guide](./docs/DEVELOPER.md) for details.
 
-### Run the tests
+## Project links
 
-```bash
-pnpm test              # unit + integration
-pnpm test:unit         # unit only
-pnpm test:integration  # integration only
-pnpm test:watch        # watch mode
-```
-
-Tests run against an isolated Postgres (`flashforge_test`); they do not touch the dev database. See [`docs/TEST_PLAN.md`](./docs/TEST_PLAN.md) for what is and isn't covered.
-
----
-
-## Repository layout
-
-```
-app/                   # Next.js App Router
-  (public)/            # Landing, explore, public deck view
-  (auth)/              # Login, register
-  (dashboard)/         # Authenticated app
-  admin/               # Admin tools (role-gated)
-  api/v1/              # REST API
-components/            # deck/, card/, study/, layout/, profile/, …
-lib/                   # Drizzle schema, auth helpers, query layer, constants
-hooks/                 # Custom React hooks
-stores/                # Zustand stores
-docs/                  # This README + architecture, deployment, and release notes
-scripts/               # Seed scripts (db:seed, db:seed:mock, db:seed:prompts)
-drizzle/               # Generated SQL migrations
-tests/                 # Vitest suite (unit + integration against flashforge_test)
-```
-
----
-
-## Contributing
-
-This is a **showcase project**. Issues are welcome; please open one before sending substantial PRs so we can agree on direction. See [`CONTRIBUTING.md`](./CONTRIBUTING.md) for conventions, the agent-facing [`AGENTS.md`](./AGENTS.md) for safety rules, and [`SECURITY.md`](./SECURITY.md) for how to report a vulnerability privately.
-
----
-
-## Project status
-
-The application is live at <https://flashforge.denyspupin.dev>. The repository is currently **private** while the public-release checklist in [`docs/PUBLIC_RELEASE_PLAN.md`](./docs/PUBLIC_RELEASE_PLAN.md) is being worked through.
-
----
-
-## License
-
-[MIT](./LICENSE) — see the file for full text. The mock seed data in `scripts/seed-mock.ts` is original; the screenshots under `docs/screenshots/` are local product renders.
+- [Live app](https://flashforge.denyspupin.dev)
+- [Architecture and API](./docs/PROJECT.md)
+- [Contributing](./CONTRIBUTING.md)
+- [Security policy](./SECURITY.md)
+- [MIT License](./LICENSE)
 
 <div align="center">
 
-<sub>Built with care. Two card flips at a time.</sub>
+<sub>Built with care, one card flip at a time.</sub>
 
 </div>
