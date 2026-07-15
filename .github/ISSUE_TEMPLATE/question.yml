@@ -1,0 +1,27 @@
+name: Question
+description: Ask about how the codebase works, a design decision, or how to contribute.
+title: "[question] "
+labels: ["question"]
+assignees: []
+
+body:
+  - type: markdown
+    attributes:
+      value: |
+        For general questions about the codebase or the project. For bugs, use the bug report template. For security issues, see SECURITY.md.
+
+  - type: textarea
+    id: question
+    attributes:
+      label: What's your question?
+    validations:
+      required: true
+
+  - type: textarea
+    id: context
+    attributes:
+      label: Context (optional)
+      description: |
+        Links, code excerpts, or screenshots that help explain the question.
+    validations:
+      required: false

@@ -11,10 +11,58 @@ import "./globals.css"
 
 const geist = Geist({ subsets: ["latin"], variable: "--font-sans" })
 
+const SITE_URL =
+  process.env.NEXT_PUBLIC_APP_URL ?? "https://flashforge.denyspupin.dev"
+const SITE_NAME = "FlashForge"
+const SITE_DESCRIPTION =
+  "A vocabulary learning workshop. Build flashcard decks, study with focus, and craft habits that last — one streak at a time."
+
 export const metadata: Metadata = {
-  title: "FlashForge — Forge your fluency, one flash at a time",
-  description:
-    "A vocabulary learning workshop. Build flashcard decks, study with focus, and craft habits that last — one streak at a time.",
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: `${SITE_NAME} — Forge your fluency, one flash at a time`,
+    template: `%s · ${SITE_NAME}`,
+  },
+  description: SITE_DESCRIPTION,
+  applicationName: SITE_NAME,
+  keywords: [
+    "flashcards",
+    "vocabulary",
+    "language learning",
+    "spaced repetition",
+    "Next.js",
+    "PostgreSQL",
+    "Drizzle",
+  ],
+  authors: [{ name: "Denys Pupin" }],
+  creator: "Denys Pupin",
+  publisher: SITE_NAME,
+  alternates: {
+    canonical: "/",
+  },
+  openGraph: {
+    type: "website",
+    locale: "en_US",
+    url: "/",
+    siteName: SITE_NAME,
+    title: `${SITE_NAME} — Forge your fluency, one flash at a time`,
+    description: SITE_DESCRIPTION,
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${SITE_NAME} — Forge your fluency, one flash at a time`,
+    description: SITE_DESCRIPTION,
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
   icons: {
     icon: "/favicon.png",
   },

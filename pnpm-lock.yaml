@@ -65,9 +65,6 @@ importers:
       react-hook-form:
         specifier: 7.77.0
         version: 7.77.0(react@19.2.7)
-      shadcn:
-        specifier: 4.10.0
-        version: 4.10.0(@types/node@25.9.2)(typescript@6.0.3)
       svix:
         specifier: ^1.95.2
         version: 1.95.2
@@ -120,6 +117,9 @@ importers:
       postcss:
         specifier: ^8.4.0
         version: 8.5.15
+      shadcn:
+        specifier: 4.10.0
+        version: 4.10.0(@types/node@25.9.2)(typescript@6.0.3)
       tailwindcss:
         specifier: ^4.3.0
         version: 4.3.0

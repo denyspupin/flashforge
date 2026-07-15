@@ -1,0 +1,39 @@
+name: Dependency audit
+
+on:
+  schedule:
+    # Weekly on Monday at 08:00 UTC. GitHub Actions cron runs in UTC; the
+    # `Europe/London` string is only used for the Dependabot schedule below.
+    - cron: "0 8 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  audit:
+    name: pnpm audit
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 11.3.0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22.13.0
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Audit
+        # Treat anything that is not "info" or "low" as a hard failure.
+        # `--prod` keeps the audit focused on the production dependency tree.
+        run: pnpm audit --prod --audit-level=moderate
+        continue-on-error: false
