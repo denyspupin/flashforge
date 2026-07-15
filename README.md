@@ -11,6 +11,7 @@ Build a vocabulary habit with focused flashcard sessions, useful community decks
 [**Start learning →**](https://flashforge.denyspupin.dev) · [Explore decks](https://flashforge.denyspupin.dev/explore) · [See how it works](#a-simple-daily-loop)
 
 [![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](./LICENSE)
+[![Version](https://img.shields.io/badge/version-0.1.0-orange.svg)](./package.json)
 [![CI](https://github.com/denyspupin/flashforge/actions/workflows/ci.yml/badge.svg)](https://github.com/denyspupin/flashforge/actions/workflows/ci.yml)
 
 </div>
