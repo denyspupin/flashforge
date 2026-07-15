@@ -1,0 +1,83 @@
+{
+  "name": "flashforge",
+  "version": "0.1.0",
+  "private": true,
+  "description": "A vocabulary learning platform with flashcard decks, study sessions, and gamification (XP, streaks).",
+  "license": "MIT",
+  "homepage": "https://flashforge.denyspupin.dev",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/denyspupin/flashforge.git"
+  },
+  "bugs": {
+    "url": "https://github.com/denyspupin/flashforge/issues"
+  },
+  "engines": {
+    "node": ">=20.18.0"
+  },
+  "packageManager": "pnpm@11.3.0",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "db:generate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs generate",
+    "db:push": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs push",
+    "db:migrate": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs migrate",
+    "db:migrate:test": "node --env-file=tests/.env.test node_modules/drizzle-kit/bin.cjs migrate",
+    "db:studio": "node --env-file=.env.local node_modules/drizzle-kit/bin.cjs studio",
+    "db:seed": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed.ts",
+    "db:seed:mock": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts",
+    "db:seed:mock:reset": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts --reset",
+    "db:seed:prompts": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-prompts.ts",
+    "test": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run",
+    "test:watch": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs",
+    "test:unit": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run tests/unit",
+    "test:integration": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run tests/integration",
+    "test:coverage": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run --coverage"
+  },
+  "dependencies": {
+    "@base-ui/react": "1.5.0",
+    "@clerk/nextjs": "^7.4.3",
+    "@hookform/resolvers": "5.4.0",
+    "@neondatabase/serverless": "^1.1.0",
+    "@radix-ui/react-label": "2.1.9",
+    "@radix-ui/react-slot": "1.2.5",
+    "@tanstack/react-query": "5.101.0",
+    "@tanstack/react-query-devtools": "5.101.0",
+    "class-variance-authority": "0.7.1",
+    "clsx": "2.1.1",
+    "drizzle-orm": "^0.45.2",
+    "framer-motion": "12.40.0",
+    "lru-cache": "^11.5.1",
+    "lucide-react": "^1.17.0",
+    "next": "^16.2.7",
+    "pg": "8.21.0",
+    "react": "^19.2.7",
+    "react-dom": "^19.2.7",
+    "react-hook-form": "7.77.0",
+    "svix": "^1.95.2",
+    "tailwind-merge": "^3.6.0",
+    "tw-animate-css": "1.4.0",
+    "zod": "^4.4.3",
+    "zustand": "^5.0.14"
+  },
+  "devDependencies": {
+    "@eslint/eslintrc": "^3.3.5",
+    "@tailwindcss/postcss": "^4.3.0",
+    "@types/node": "^25.9.2",
+    "@types/pg": "8.20.0",
+    "@types/react": "^19.2.17",
+    "@vitest/coverage-v8": "^4.1.9",
+    "autoprefixer": "^10.4.0",
+    "drizzle-kit": "^0.31.10",
+    "eslint": "^9.39.4",
+    "eslint-config-next": "^16.2.7",
+    "playwright": "^1.61.0",
+    "postcss": "^8.4.0",
+    "shadcn": "4.10.0",
+    "tailwindcss": "^4.3.0",
+    "typescript": "^6.0.3",
+    "vitest": "^4.1.9"
+  }
+}

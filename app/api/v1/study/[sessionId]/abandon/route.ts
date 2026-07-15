@@ -1,0 +1,52 @@
+import { NextResponse } from "next/server"
+import { db } from "@/lib/db/client"
+import { studySessions } from "@/lib/db/schema"
+import { eq, and } from "drizzle-orm"
+import { successResponse, errorResponse } from "@/lib/api/response"
+import { requireCurrentUser } from "@/lib/auth/user"
+
+export const dynamic = "force-dynamic"
+
+export async function POST(
+  request: Request,
+  { params }: { params: Promise<{ sessionId: string }> }
+) {
+  const { sessionId } = await params
+  const user = await requireCurrentUser()
+
+  if (!user) {
+    return NextResponse.json(
+      errorResponse("Authentication required", "UNAUTHORIZED"),
+      { status: 401 }
+    )
+  }
+
+  const sessionRows = await db
+    .select()
+    .from(studySessions)
+    .where(
+      and(
+        eq(studySessions.id, sessionId),
+        eq(studySessions.userId, user.id),
+        eq(studySessions.status, "active")
+      )
+    )
+
+  if (!sessionRows.length) {
+    return NextResponse.json(
+      errorResponse("Active session not found", "NOT_FOUND"),
+      { status: 404 }
+    )
+  }
+
+  const [updated] = await db
+    .update(studySessions)
+    .set({
+      status: "abandoned",
+      updatedAt: new Date(),
+    })
+    .where(eq(studySessions.id, sessionId))
+    .returning()
+
+  return NextResponse.json(successResponse(updated))
+}
