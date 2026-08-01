@@ -1,5 +1,5 @@
 import type { Theme } from "@/lib/constants"
-import { ALWAYS_LIGHT_PATHS } from "@/lib/theme"
+import { THEME_STORAGE_KEY } from "@/lib/theme"
 
 type ThemeInitScriptProps = {
   initialTheme: Theme
@@ -10,7 +10,7 @@ export function ThemeInitScript({ initialTheme }: ThemeInitScriptProps) {
 (function () {
   try {
     var path = window.location.pathname;
-    var alwaysLight = ${JSON.stringify(ALWAYS_LIGHT_PATHS)}.indexOf(path) !== -1;
+    var alwaysLight = path === "/" || path.indexOf("/login") === 0 || path.indexOf("/register") === 0;
     if (alwaysLight) {
       var root = document.documentElement;
       root.classList.remove("dark");
@@ -19,7 +19,7 @@ export function ThemeInitScript({ initialTheme }: ThemeInitScriptProps) {
     }
     var pref = ${JSON.stringify(initialTheme)};
     var stored = null;
-    try { stored = localStorage.getItem("ff-theme"); } catch (e) {}
+    try { stored = localStorage.getItem(${JSON.stringify(THEME_STORAGE_KEY)}); } catch (e) {}
     if (stored === "light" || stored === "dark" || stored === "system") {
       pref = stored;
     }

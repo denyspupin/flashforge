@@ -34,9 +34,14 @@ function writePersistedPreference(value: Theme) {
   }
 }
 
+function readInitialResolved(): "light" | "dark" {
+  if (typeof window === "undefined") return "light"
+  return document.documentElement.classList.contains("dark") ? "dark" : "light"
+}
+
 export const useThemeStore = create<ThemeState>((set, get) => ({
   preference: DEFAULT_THEME,
-  resolved: "light",
+  resolved: readInitialResolved(),
 
   setPreference: (next, options) => {
     const persist = options?.persist !== false
