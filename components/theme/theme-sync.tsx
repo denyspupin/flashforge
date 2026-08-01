@@ -1,26 +1,49 @@
 "use client"
 
-import { useEffect } from "react"
+import { useEffect, useRef } from "react"
 import { usePathname } from "next/navigation"
 import { useThemeStore } from "@/stores"
 import type { Theme } from "@/lib/constants"
-import { forceLightOnDocument, isAlwaysLightPath } from "@/lib/theme"
+import { forceLightOnDocument, isAlwaysLightPath, THEME_STORAGE_KEY } from "@/lib/theme"
 
 type ThemeSyncProps = {
   initialTheme: Theme
 }
 
 export function ThemeSync({ initialTheme }: ThemeSyncProps) {
-  const setPreference = useThemeStore((s) => s.setPreference)
   const pathname = usePathname()
+  const wasOnAlwaysLightPath = useRef(true)
 
   useEffect(() => {
-    if (isAlwaysLightPath(pathname)) {
+    const isAlwaysLight = isAlwaysLightPath(pathname)
+    
+    if (isAlwaysLight) {
       forceLightOnDocument()
+      wasOnAlwaysLightPath.current = true
       return
     }
-    setPreference(initialTheme, { persist: false })
-  }, [pathname, initialTheme, setPreference])
+    
+    const stored = (() => {
+      try {
+        const raw = window.localStorage.getItem(THEME_STORAGE_KEY)
+        if (raw === "light" || raw === "dark" || raw === "system") return raw
+      } catch {
+        // ignore
+      }
+      return null
+    })()
+    const preference = stored ?? initialTheme
+    
+    if (wasOnAlwaysLightPath.current) {
+      useThemeStore.getState().setPreference(preference, { persist: false })
+      wasOnAlwaysLightPath.current = false
+      return
+    }
+    
+    const current = useThemeStore.getState().preference
+    if (current === preference) return
+    useThemeStore.getState().setPreference(preference, { persist: false })
+  }, [pathname, initialTheme])
 
   useEffect(() => {
     const mql = window.matchMedia("(prefers-color-scheme: dark)")
@@ -31,11 +54,6 @@ export function ThemeSync({ initialTheme }: ThemeSyncProps) {
     mql.addEventListener("change", onChange)
     return () => mql.removeEventListener("change", onChange)
   }, [])
-
-  useEffect(() => {
-    if (isAlwaysLightPath(pathname)) return
-    useThemeStore.getState().syncFromStorage()
-  }, [pathname])
 
   return null
 }
