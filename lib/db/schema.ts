@@ -42,6 +42,7 @@ export const users = pgTable(
     role: roleEnum("role").default("user").notNull(),
     theme: themeEnum("theme").default("system").notNull(),
     isBanned: boolean("is_banned").default(false).notNull(),
+    onboardedAt: timestamp("onboarded_at", { withTimezone: true }),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

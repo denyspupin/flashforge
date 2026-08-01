@@ -71,3 +71,9 @@ export const PROMPT_TEMPLATES = {
 export const THEME_OPTIONS = ["light", "dark", "system"] as const
 export type Theme = (typeof THEME_OPTIONS)[number]
 export const DEFAULT_THEME: Theme = "system"
+
+export const ONBOARDING = {
+  STORAGE_KEY: "ff-onboarding",
+  STEPS: ["welcome", "decks", "study", "ready"] as const,
+} as const
+export type OnboardingStep = (typeof ONBOARDING.STEPS)[number]

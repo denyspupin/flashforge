@@ -6,3 +6,4 @@ export {
 } from "./study-store"
 export type { StudyCard, StudyPhase } from "./study-store"
 export { useThemeStore } from "./theme-store"
+export { useOnboardingStore } from "./onboarding-store"
