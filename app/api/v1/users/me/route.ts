@@ -15,6 +15,7 @@ const updateProfileSchema = z.object({
   name: z.string().trim().min(1).max(256).nullable().optional(),
   nativeLanguageId: z.string().uuid().nullable().optional(),
   theme: z.enum(THEME_OPTIONS).optional(),
+  onboarded: z.literal(true).optional(),
   avatarUrl: z
     .string()
     .trim()
@@ -96,6 +97,9 @@ export async function PATCH(request: Request) {
     } else {
       updateData.avatarUrl = parsed.data.avatarUrl
     }
+  }
+  if (parsed.data.onboarded !== undefined) {
+    updateData.onboardedAt = sql`now()`
   }
 
   const [updated] = await db
