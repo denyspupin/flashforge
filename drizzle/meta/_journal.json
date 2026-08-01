@@ -57,6 +57,13 @@
       "when": 1781904832943,
       "tag": "0007_chubby_silverclaw",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1785611972967,
+      "tag": "0008_pending",
+      "breakpoints": true
     }
   ]
 }
