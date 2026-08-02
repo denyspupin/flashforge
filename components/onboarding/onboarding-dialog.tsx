@@ -163,17 +163,19 @@ export function OnboardingDialog() {
           </p>
         ) : null}
 
-        <DialogFooter>
-          {!isFirst && !isLast ? (
-            <Button
-              variant="ghost"
-              onClick={prev}
-              disabled={isSubmitting}
-            >
-              Back
-            </Button>
-          ) : null}
-          <div className="flex flex-1 items-center justify-end gap-2">
+        <DialogFooter className="flex-row justify-between">
+          <div>
+            {!isFirst && !isLast ? (
+              <Button
+                variant="ghost"
+                onClick={prev}
+                disabled={isSubmitting}
+              >
+                Back
+              </Button>
+            ) : null}
+          </div>
+          <div className="flex items-center gap-2">
             {!isLast ? (
               <Button
                 variant="ghost"
