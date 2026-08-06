@@ -74,7 +74,7 @@
     "eslint": "^9.39.4",
     "eslint-config-next": "^16.2.7",
     "playwright": "^1.61.0",
-    "postcss": "^8.4.0",
+    "postcss": "^8.5.23",
     "shadcn": "4.10.0",
     "tailwindcss": "^4.3.0",
     "typescript": "^6.0.3",
