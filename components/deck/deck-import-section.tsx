@@ -7,21 +7,22 @@ import {
   ClipboardPaste,
   Copy,
   FileUp,
-  Loader2,
   Upload,
   Wand2,
   X,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/garn/alert"
+import { Button } from "@/components/garn/button"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/garn/select"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import { useDeckImport, type ImportDeckResult } from "@/hooks/use-deck-import"
 import { DECK_GENERATION_PROMPT } from "@/lib/ai-prompt"
 import { importPayloadSchema, type ImportPayload } from "@/lib/export-schema"
@@ -316,7 +317,7 @@ export function DeckImportSection({
       )}
 
       {!parsed && (
-        <div className="rounded-lg border border-primary/30 bg-primary/5">
+        <div className="rounded-lg border border-brand/30 bg-brand-subtle">
           <div className="flex items-center justify-between gap-2 px-3 py-2 text-sm font-medium">
             <button
               type="button"
@@ -324,9 +325,9 @@ export function DeckImportSection({
               aria-expanded={promptOpen}
               className="flex min-w-0 flex-1 items-center gap-2 text-left"
             >
-              <Wand2 className="h-4 w-4 shrink-0 text-primary" />
+              <Wand2 className="h-4 w-4 shrink-0 text-brand-solid" />
               <span className="truncate">Generate a deck with AI</span>
-              <span className="ml-1 rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-primary">
+              <span className="ml-1 rounded-md bg-brand-subtle px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brand-solid">
                 Prompt included
               </span>
               <ChevronDown
@@ -358,14 +359,14 @@ export function DeckImportSection({
                   file and import it above.
                 </p>
                 {promptVersion !== null ? (
-                  <span className="text-muted-foreground shrink-0 rounded-md bg-ink/5 px-1.5 py-0.5 font-mono text-[10px]">
+                  <span className="text-muted-foreground shrink-0 rounded-md bg-foreground/5 px-1.5 py-0.5 font-mono text-[10px]">
                     v{promptVersion}
                   </span>
                 ) : null}
               </div>
               {activePromptQuery.isLoading ? (
                 <div className="text-muted-foreground flex items-center gap-2 rounded-md border bg-background p-3 text-xs">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" />
                   Loading latest prompt…
                 </div>
               ) : (
@@ -385,12 +386,9 @@ export function DeckImportSection({
       )}
 
       {parseError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-        >
-          {parseError}
-        </div>
+        <Alert tone="danger">
+          <AlertDescription>{parseError}</AlertDescription>
+        </Alert>
       )}
 
       {parsed && (
@@ -416,7 +414,7 @@ export function DeckImportSection({
               )}
             </div>
             {parsed.cards.length === 0 && (
-              <div className="mt-2 text-xs text-amber-600">
+              <div className="mt-2 text-xs text-warning">
                 This file contains no cards. The new deck will be empty.
               </div>
             )}
@@ -470,11 +468,8 @@ export function DeckImportSection({
                   </p>
                 ) : (
                   <Select
-                    items={Object.fromEntries(
-                      compatibleDecks.map((d) => [d.id, d.title])
-                    )}
-                    value={selectedDeckId}
-                    onValueChange={(v) => setSelectedDeckId(v ?? null)}
+                    value={selectedDeckId ?? undefined}
+                    onValueChange={setSelectedDeckId}
                   >
                     <SelectTrigger className="w-full">
                       <SelectValue placeholder="Choose a deck" />
@@ -493,26 +488,24 @@ export function DeckImportSection({
           </div>
 
           {parsed.cards.length > DECK_EXPORT.MAX_IMPORT_CARDS && (
-            <div
-              role="alert"
-              className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-            >
-              File contains {parsed.cards.length} cards (max{" "}
-              {DECK_EXPORT.MAX_IMPORT_CARDS}).
-            </div>
+            <Alert tone="danger">
+              <AlertDescription>
+                File contains {parsed.cards.length} cards (max{" "}
+                {DECK_EXPORT.MAX_IMPORT_CARDS}).
+              </AlertDescription>
+            </Alert>
           )}
         </div>
       )}
 
       {importMutation.isError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-        >
-          {importMutation.error instanceof Error
-            ? importMutation.error.message
-            : "Import failed. Try again."}
-        </div>
+        <Alert tone="danger">
+          <AlertDescription>
+            {importMutation.error instanceof Error
+              ? importMutation.error.message
+              : "Import failed. Try again."}
+          </AlertDescription>
+        </Alert>
       )}
 
       <Button

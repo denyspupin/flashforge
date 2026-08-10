@@ -9,13 +9,13 @@ import {
   Trash2,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/garn/dropdown-menu"
 import { cn } from "@/lib/utils"
 import type { Deck } from "@/types/deck"
 
@@ -49,17 +49,15 @@ export function DeckActionsMenu({
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label="Deck actions"
-            className={cn("h-11 w-11 sm:h-8 sm:w-8", triggerClassName)}
-          />
-        }
-      >
-        <MoreHorizontal className="h-4 w-4" />
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label="Deck actions"
+          className={cn("h-11 w-11 sm:h-8 sm:w-8", triggerClassName)}
+        >
+          <MoreHorizontal className="h-4 w-4" />
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end">
         <DropdownMenuItem onClick={onEdit}>
