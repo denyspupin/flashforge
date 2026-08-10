@@ -4,7 +4,7 @@ import { ClerkProvider } from "@clerk/nextjs"
 import Providers from "@/components/providers"
 import { ThemeInitScript } from "@/components/theme/theme-init-script"
 import { clerkAppearance } from "@/lib/clerk/appearance"
-import { fontSerif, fontMono } from "@/lib/fonts"
+import { fontMono } from "@/lib/fonts"
 import { readThemeCookie } from "@/lib/theme/server"
 import { cn } from "@/lib/utils"
 import "./globals.css"
@@ -86,7 +86,6 @@ export default async function RootLayout({
         className={cn(
           "font-sans",
           geist.variable,
-          fontSerif.variable,
           fontMono.variable,
         )}
         suppressHydrationWarning
@@ -94,7 +93,7 @@ export default async function RootLayout({
         <head>
           <ThemeInitScript initialTheme={initialTheme} />
         </head>
-        <body className="grain antialiased">
+        <body className="antialiased">
           <Providers initialTheme={initialTheme}>{children}</Providers>
         </body>
       </html>

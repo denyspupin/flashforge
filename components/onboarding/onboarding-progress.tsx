@@ -21,10 +21,10 @@ export function OnboardingProgress({
           className={cn(
             "h-1.5 rounded-full transition-all duration-300",
             i === current
-              ? "w-6 bg-ember"
+              ? "w-6 bg-brand-solid"
               : i < current
-                ? "w-1.5 bg-ember/40"
-                : "w-1.5 bg-ink/15"
+                ? "w-1.5 bg-brand-solid/40"
+                : "w-1.5 bg-foreground/15"
           )}
         />
       ))}

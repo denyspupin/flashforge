@@ -8,7 +8,6 @@ import {
   Layers,
   GraduationCap,
   Rocket,
-  Loader2,
 } from "lucide-react"
 import type { LucideIcon } from "lucide-react"
 
@@ -19,8 +18,9 @@ import {
   DialogTitle,
   DialogDescription,
   DialogFooter,
-} from "@/components/ui/dialog"
-import { Button } from "@/components/ui/button"
+} from "@/components/garn/dialog"
+import { Button } from "@/components/garn/button"
+import { Spinner } from "@/components/garn/spinner"
 import { OnboardingStep } from "./onboarding-step"
 import { OnboardingProgress } from "./onboarding-progress"
 import { useOnboardingStore } from "@/stores/onboarding-store"
@@ -157,7 +157,7 @@ export function OnboardingDialog() {
         {error ? (
           <p
             role="alert"
-            className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-center text-xs text-destructive"
+            className="rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-center text-xs text-danger"
           >
             {error}
           </p>
@@ -187,9 +187,7 @@ export function OnboardingDialog() {
             ) : null}
             {isLast ? (
               <Button onClick={handleMarkOnboarded} disabled={isSubmitting}>
-                {isSubmitting ? (
-                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                ) : null}
+                {isSubmitting ? <Spinner size="sm" className="mr-2" /> : null}
                 Get started
               </Button>
             ) : (
