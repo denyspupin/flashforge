@@ -82,7 +82,7 @@ export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
               : unpublishMutation.mutate(deck.id)
           }
           onDelete={() => deleteMutation.mutate(deck.id)}
-          triggerClassName="text-ink/60 hover:text-ink"
+          triggerClassName="text-muted-foreground hover:text-foreground"
         />
       }
     />

@@ -3,14 +3,14 @@
 import { useRouter } from "next/navigation"
 import { Flame, Play } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/garn/card"
 
 type ContinueStudyingCardProps = {
   deckId: string
@@ -33,13 +33,13 @@ export function ContinueStudyingCard({
     <Card className="overflow-hidden">
       <CardHeader className="flex flex-row items-start justify-between gap-3 space-y-0">
         <div className="space-y-1">
-          <CardDescription className="font-mono-tag text-[10px] uppercase tracking-widest">
+          <CardDescription className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Continue studying
           </CardDescription>
           <CardTitle className="line-clamp-1 text-xl">{deckTitle}</CardTitle>
         </div>
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember/12">
-          <Flame className="h-5 w-5 text-ember" />
+        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-subtle">
+          <Flame className="h-5 w-5 text-brand-solid" />
         </div>
       </CardHeader>
       <CardContent className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">

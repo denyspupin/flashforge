@@ -4,14 +4,9 @@ import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
 import { BookOpen, Flame, Library, Plus, Star } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
+import { Button } from "@/components/garn/button"
+import { Card, CardContent } from "@/components/garn/card"
+import { Stat } from "@/components/garn/stat"
 import { ContinueStudyingCard } from "@/components/dashboard/continue-studying-card"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
@@ -88,54 +83,53 @@ export function DashboardView() {
 
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Current Streak</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <Flame
-                className={
-                  streakFresh
-                    ? "h-6 w-6 text-orange-500"
-                    : "h-6 w-6 text-muted-foreground"
-                }
-              />
-              {user.streak} {user.streak === 1 ? "day" : "days"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{streakSubtitle}</p>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              label="Current Streak"
+              value={user.streak}
+              suffix={user.streak === 1 ? "day" : "days"}
+              icon={
+                <Flame
+                  className={
+                    streakFresh
+                      ? "text-brand-solid"
+                      : "text-muted-foreground"
+                  }
+                />
+              }
+              description={streakSubtitle}
+            />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total XP</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <Star className="h-6 w-6 text-yellow-500" />
-              {user.xp.toLocaleString()}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {user.xp === 0
-                ? "Complete a session to earn your first XP"
-                : "Earned by reviewing cards and completing decks"}
-            </p>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              label="Total XP"
+              value={user.xp}
+              icon={<Star className="text-warning" />}
+              description={
+                user.xp === 0
+                  ? "Complete a session to earn your first XP"
+                  : "Earned by reviewing cards and completing decks"
+              }
+            />
           </CardContent>
         </Card>
         <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Decks</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <BookOpen className="h-6 w-6 text-primary" />
-              {deckCount}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link href="/decks">
-              <Button size="sm" variant="outline">
-                <Library className="mr-2 h-4 w-4" />
-                Manage decks
-              </Button>
-            </Link>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              label="Decks"
+              value={deckCount}
+              icon={<BookOpen className="text-brand-solid" />}
+              description={
+                <Link href="/decks">
+                  <Button size="sm" variant="outline">
+                    <Library className="mr-2 h-4 w-4" />
+                    Manage decks
+                  </Button>
+                </Link>
+              }
+            />
           </CardContent>
         </Card>
       </div>
