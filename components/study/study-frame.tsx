@@ -4,8 +4,8 @@ import { ArrowLeft, X } from "lucide-react"
 import { AnimatePresence, motion } from "framer-motion"
 import type { ReactNode } from "react"
 
-import { Button } from "@/components/ui/button"
-import { Kbd } from "@/components/ui/kbd"
+import { Button } from "@/components/garn/button"
+import { Kbd } from "@/components/garn/kbd"
 import { CardFront, CardBack, FlipCard } from "@/components/card"
 import { StudyProgress } from "@/components/study/study-progress"
 import { StudyControls } from "@/components/study/study-controls"
@@ -33,11 +33,11 @@ export function StudyHeader() {
           size="icon"
           onClick={handleBack}
           aria-label="Go back"
-          className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-ink/60 hover:bg-ink/5 hover:text-ink"
+          className="h-11 w-11 sm:h-9 sm:w-9 shrink-0 text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
         >
           <ArrowLeft className="h-4 w-4" />
         </Button>
-        <h1 className="truncate font-display text-base font-medium tracking-tight text-ink sm:text-lg">
+        <h1 className="truncate text-base font-semibold tracking-tight text-foreground sm:text-lg">
           {deck.title}
         </h1>
       </div>
@@ -45,7 +45,7 @@ export function StudyHeader() {
         variant="ghost"
         size="sm"
         onClick={handleExit}
-        className="text-ink/60 hover:bg-ink/5 hover:text-ink"
+        className="text-muted-foreground hover:bg-foreground/5 hover:text-foreground"
       >
         <X className="mr-1.5 h-4 w-4" />
         <span className="hidden sm:inline">Exit</span>
@@ -129,7 +129,7 @@ export function StudyActionControls() {
 
 export function StudyHint() {
   return (
-    <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono-tag text-[10px] uppercase tracking-widest text-ink/40 pointer-fine:flex">
+    <div className="hidden flex-wrap items-center justify-center gap-x-3 gap-y-2 font-mono text-[10px] uppercase tracking-widest text-muted-foreground/60 pointer-fine:flex">
       <Shortcut keys={["Space"]} label="flip" />
       <Dot />
       <Shortcut keys={["1"]} label="miss" />
@@ -152,5 +152,5 @@ function Shortcut({ keys, label }: { keys: string[]; label: string }) {
 }
 
 function Dot() {
-  return <span aria-hidden className="h-1 w-1 rounded-full bg-ink/20" />
+  return <span aria-hidden className="h-1 w-1 rounded-full bg-foreground/20" />
 }

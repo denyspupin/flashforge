@@ -1,8 +1,8 @@
 "use client"
 
 import { Check, X } from "lucide-react"
-import { Button } from "@/components/ui/button"
-import { Kbd } from "@/components/ui/kbd"
+import { Button } from "@/components/garn/button"
+import { Kbd } from "@/components/garn/kbd"
 
 type StudyControlsProps = {
   flipped: boolean
@@ -23,11 +23,11 @@ export function StudyControls({
         <Button
           onClick={onFlip}
           size="lg"
-          className="h-14 sm:h-14 rounded-full bg-ink px-8 sm:px-8 text-[15px] text-paper shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)] transition-all hover:bg-ink/90"
+          className="h-14 rounded-full px-8 text-[15px] shadow-[0_8px_30px_-12px_rgba(0,0,0,0.5)]"
         >
           Reveal answer
           <span className="ml-2.5 hidden pointer-fine:inline-flex">
-            <Kbd className="border-paper/20 bg-paper/10 text-paper/85">Space</Kbd>
+            <Kbd className="border-background/20 bg-background/10 text-background/85">Space</Kbd>
           </span>
         </Button>
       </div>
@@ -41,23 +41,25 @@ export function StudyControls({
       <Button
         onClick={() => onAnswer(false)}
         size="lg"
-        className="h-14 sm:h-14 rounded-full bg-brick text-[15px] text-paper hover:bg-brick/90"
+        tone="danger"
+        className="h-14 rounded-full text-[15px]"
       >
         <X className="mr-2 h-4 w-4" strokeWidth={2.5} />
         Missed it
         <span className="ml-2.5 hidden pointer-fine:inline-flex">
-          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">1</Kbd>
+          <Kbd className="border-background/20 bg-background/10 text-background/85">1</Kbd>
         </span>
       </Button>
       <Button
         onClick={() => onAnswer(true)}
         size="lg"
-        className="h-14 sm:h-14 rounded-full bg-forest text-[15px] text-paper hover:bg-forest/90"
+        tone="success"
+        className="h-14 rounded-full text-[15px]"
       >
         <Check className="mr-2 h-4 w-4" strokeWidth={2.5} />
         {nextLabel}
         <span className="ml-2.5 hidden pointer-fine:inline-flex">
-          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">2</Kbd>
+          <Kbd className="border-background/20 bg-background/10 text-background/85">2</Kbd>
         </span>
       </Button>
     </div>

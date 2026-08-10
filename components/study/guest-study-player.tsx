@@ -2,9 +2,9 @@
 
 import { useCallback, useEffect, useMemo } from "react"
 import { useRouter } from "next/navigation"
-import { Loader2 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
+import { Spinner } from "@/components/garn/spinner"
 import {
   Study,
   StudyProvider,
@@ -32,15 +32,15 @@ function EmptyState() {
   const { state } = useStudyContext()
   return (
     <div className="mx-auto flex max-w-md flex-col items-center text-center">
-      <h1 className="font-display text-3xl font-medium tracking-tight text-ink">
+      <h1 className="text-3xl font-semibold tracking-tight text-foreground">
         Nothing to study yet
       </h1>
-      <p className="mt-2 text-ink/65">
+      <p className="mt-2 text-foreground/65">
         “{state.deck.title}” doesn&rsquo;t have any cards yet.
       </p>
       <Button
         onClick={() => router.push(`/explore/decks/${state.deck.id}`)}
-        className="mt-6 h-11 rounded-full bg-ink px-6 text-paper"
+        className="mt-6 h-11 rounded-full px-6"
       >
         Back to deck
       </Button>
@@ -110,9 +110,9 @@ function SummaryView() {
 function SummaryLoading() {
   const { state } = useStudyContext()
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 py-24 text-ink/60">
-      <Loader2 className="h-6 w-6 animate-spin text-ember" aria-hidden />
-      <p className="font-mono-tag text-[11px] uppercase tracking-widest">
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 py-24 text-muted-foreground">
+      <Spinner size="md" aria-hidden />
+      <p className="font-mono text-[11px] uppercase tracking-widest">
         Wrapping up “{state.deck.title}”…
       </p>
     </div>

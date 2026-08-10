@@ -5,6 +5,7 @@ import { useParams } from "next/navigation"
 import { motion } from "framer-motion"
 
 import { StudyPlayer } from "@/components/study"
+import { Skeleton } from "@/components/garn/skeleton"
 import { queryKeys } from "@/hooks"
 
 type StudyCard = {
@@ -66,15 +67,17 @@ export default function StudySessionPage() {
   if (sessionQuery.isLoading || userQuery.isLoading) {
     return (
       <div className="mx-auto flex w-full max-w-2xl flex-col gap-8">
-        <div className="h-6 w-48 animate-pulse rounded bg-ink/8" />
-        <div className="h-1.5 w-full animate-pulse rounded-full bg-ink/8" />
+        <Skeleton className="h-6 w-48" />
+        <Skeleton className="h-1.5 w-full" />
         <motion.div
-          className="aspect-[5/6] w-full animate-pulse rounded-[2rem] bg-ink/8"
+          className="aspect-[5/6] w-full"
           initial={{ opacity: 0.5 }}
           animate={{ opacity: 1 }}
           transition={{ duration: 0.6, ease: "easeOut" }}
-        />
-        <div className="h-14 w-full animate-pulse rounded-2xl bg-ink/8" />
+        >
+          <Skeleton className="h-full w-full rounded-[2rem]" />
+        </motion.div>
+        <Skeleton className="h-14 w-full rounded-2xl" />
       </div>
     )
   }
@@ -82,10 +85,10 @@ export default function StudySessionPage() {
   if (sessionQuery.error || !sessionQuery.data) {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="font-display text-2xl font-medium text-ink">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           Session not found
         </h1>
-        <p className="mt-2 text-ink/65">
+        <p className="mt-2 text-foreground/65">
           We couldn’t load this study session. It may have expired or been
           removed.
         </p>
@@ -99,10 +102,10 @@ export default function StudySessionPage() {
   if (session.status !== "active") {
     return (
       <div className="mx-auto max-w-md text-center">
-        <h1 className="font-display text-2xl font-medium text-ink">
+        <h1 className="text-2xl font-semibold tracking-tight text-foreground">
           This session is closed
         </h1>
-        <p className="mt-2 text-ink/65">
+        <p className="mt-2 text-foreground/65">
           This study session is {session.status}. Start a new one from your
           deck.
         </p>

@@ -26,23 +26,23 @@ export function StudyProgress({
         <div className="flex items-center gap-2">
           <span
             className={cn(
-              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono-tag uppercase tracking-wider",
+              "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 font-mono uppercase tracking-wider",
               isDone
-                ? "bg-forest/12 text-forest"
-                : "bg-ember/12 text-ember"
+                ? "bg-success-subtle text-success"
+                : "bg-brand-subtle text-brand-solid"
             )}
           >
             <Play className="h-3 w-3" strokeWidth={2.25} />
             {isDone ? "Session complete" : "Studying"}
           </span>
-          <span className="font-mono-tag text-ink/55">
+          <span className="font-mono text-muted-foreground">
             {String(position).padStart(2, "0")} / {String(total).padStart(2, "0")}
           </span>
         </div>
         {typeof streak === "number" && (
-          <div className="flex items-center gap-1.5 font-mono-tag text-ink/55">
+          <div className="flex items-center gap-1.5 font-mono text-muted-foreground">
             <Flame
-              className="h-3.5 w-3.5 text-ember"
+              className="h-3.5 w-3.5 text-brand-solid"
               strokeWidth={2.25}
               fill="currentColor"
             />
@@ -50,11 +50,11 @@ export function StudyProgress({
           </div>
         )}
       </div>
-      <div className="relative h-1 w-full overflow-hidden rounded-full bg-ink/8">
+      <div className="relative h-1 w-full overflow-hidden rounded-full bg-foreground/8">
         <motion.div
           className={cn(
             "absolute inset-y-0 left-0 rounded-full",
-            isDone ? "bg-forest" : "bg-ember"
+            isDone ? "bg-success" : "bg-brand-solid"
           )}
           initial={false}
           animate={{ width: `${percent}%` }}
