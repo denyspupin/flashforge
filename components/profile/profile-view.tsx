@@ -14,15 +14,16 @@ import {
 } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/garn/card"
+import { Stat } from "@/components/garn/stat"
 import { AvatarEditor } from "@/components/profile/avatar-editor"
 import { ProfileSettingsForm } from "@/components/profile/profile-settings-form"
 import { ProfileSkeleton } from "@/components/profile/profile-skeleton"
@@ -86,8 +87,7 @@ export function ProfileView() {
 
   return (
     <div className="space-y-6">
-      <section className="relative overflow-hidden rounded-2xl border border-ink/8 bg-card/60 p-6 sm:p-8">
-        <div className="ember-glow pointer-events-none absolute -right-24 -top-24 h-72 w-72 rounded-full" />
+      <section className="relative overflow-hidden rounded-2xl border border-border bg-card/60 p-6 sm:p-8">
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
           <AvatarEditor
             avatarUrl={dbUser.avatarUrl}
@@ -96,33 +96,33 @@ export function ProfileView() {
             email={dbUser.email}
           />
           <div className="min-w-0 flex-1 space-y-1">
-            <p className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/50">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Your account
             </p>
-            <h1 className="font-display text-3xl font-medium tracking-tight sm:text-4xl">
+            <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
               {displayName}
             </h1>
             <div className="flex flex-wrap items-center gap-2 pt-1">
               {dbUser.role === "admin" ? (
-                <Badge variant="highlight">
+                <Badge tone="brand" appearance="soft">
                   <Shield className="h-3 w-3" />
                   Admin
                 </Badge>
               ) : dbUser.role === "curator" ? (
-                <Badge variant="highlight">
+                <Badge tone="brand" appearance="soft">
                   <Award className="h-3 w-3" />
                   Curator
                 </Badge>
               ) : null}
               {nativeLanguage ? (
-                <Badge variant="outline" className="font-normal">
-                  <span className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/50">
+                <Badge tone="neutral" appearance="outline" className="font-normal">
+                  <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                     {nativeLanguage.code}
                   </span>
                   Native · {nativeLanguage.name}
                 </Badge>
               ) : (
-                <Badge variant="outline" className="text-ink/60">
+                <Badge tone="neutral" appearance="outline" className="text-muted-foreground">
                   No native language set
                 </Badge>
               )}
@@ -136,34 +136,50 @@ export function ProfileView() {
       </section>
 
       <section className="grid grid-cols-2 gap-4 md:grid-cols-4">
-        <StatTile
-          icon={<Flame className={streakFresh ? "h-5 w-5 text-orange-500" : "h-5 w-5 text-muted-foreground"} />}
-          label="Current streak"
-          value={`${dbUser.streak}`}
-          suffix={dbUser.streak === 1 ? "day" : "days"}
-        />
-        <StatTile
-          icon={<Star className="h-5 w-5 text-yellow-500" />}
-          label="Total XP"
-          value={dbUser.xp.toLocaleString()}
-        />
-        <StatTile
-          icon={<BookOpen className="h-5 w-5 text-primary" />}
-          label="Decks"
-          value={stats.deckCount.toLocaleString()}
-        />
-        <StatTile
-          icon={<Layers className="h-5 w-5 text-primary" />}
-          label="Cards"
-          value={stats.cardCount.toLocaleString()}
-        />
+        <Card>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              icon={<Flame className={streakFresh ? "h-5 w-5 text-warning" : "h-5 w-5 text-muted-foreground"} />}
+              label="Current streak"
+              value={dbUser.streak}
+              suffix={dbUser.streak === 1 ? "day" : "days"}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              icon={<Star className="h-5 w-5 text-warning" />}
+              label="Total XP"
+              value={dbUser.xp.toLocaleString()}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              icon={<BookOpen className="h-5 w-5 text-brand-solid" />}
+              label="Decks"
+              value={stats.deckCount.toLocaleString()}
+            />
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="pt-[var(--garn-pad-surface)]">
+            <Stat
+              icon={<Layers className="h-5 w-5 text-brand-solid" />}
+              label="Cards"
+              value={stats.cardCount.toLocaleString()}
+            />
+          </CardContent>
+        </Card>
       </section>
 
       <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
         <Card className="lg:col-span-2">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-ember" />
+              <Trophy className="h-4 w-4 text-brand-solid" />
               Account details
             </CardTitle>
             <CardDescription>
@@ -172,7 +188,7 @@ export function ProfileView() {
             </CardDescription>
           </CardHeader>
           <CardContent>
-            <dl className="divide-y divide-ink/8 text-sm">
+            <dl className="divide-y divide-border text-sm">
               <DetailRow label="Email" value={dbUser.email ?? "—"} />
               <DetailRow
                 label="Display name"
@@ -215,7 +231,7 @@ export function ProfileView() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <Award className="h-4 w-4 text-ember" />
+              <Award className="h-4 w-4 text-brand-solid" />
               Recognition
             </CardTitle>
             <CardDescription>
@@ -255,41 +271,6 @@ export function ProfileView() {
         </Card>
       </section>
     </div>
-  )
-}
-
-function StatTile({
-  icon,
-  label,
-  value,
-  suffix,
-}: {
-  icon: React.ReactNode
-  label: string
-  value: string
-  suffix?: string
-}) {
-  return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink/5">
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
-            {label}
-          </p>
-          <p className="mt-0.5 truncate text-xl font-semibold">
-            {value}
-            {suffix ? (
-              <span className="text-muted-foreground ml-1 text-sm font-normal">
-                {suffix}
-              </span>
-            ) : null}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
   )
 }
 

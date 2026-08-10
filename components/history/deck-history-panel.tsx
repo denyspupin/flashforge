@@ -4,12 +4,12 @@ import { useQuery } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { ChevronRight, History } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardHeader,
-} from "@/components/ui/card"
+} from "@/components/garn/card"
 import { SessionRow } from "@/components/history/session-row"
 import { HistoryRowSkeleton } from "@/components/history/history-skeleton"
 import { queryKeys, fetchStudyHistory } from "@/hooks"
@@ -38,7 +38,7 @@ export function DeckHistoryPanel({ deckId }: DeckHistoryPanelProps) {
         <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-4 pb-2">
           <div className="flex items-center gap-2">
             <History className="text-muted-foreground h-4 w-4" />
-            <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
               Recent sessions
             </p>
           </div>
@@ -63,17 +63,17 @@ export function DeckHistoryPanel({ deckId }: DeckHistoryPanelProps) {
     <Card>
       <CardHeader className="flex flex-row items-center justify-between gap-3 space-y-0 px-4 pb-2">
         <div className="flex items-center gap-2">
-          <History className="text-ember h-4 w-4" />
-          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+          <History className="text-brand-solid h-4 w-4" />
+          <p className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
             Recent sessions
-            <span className="text-ink/40 ml-1.5">· {total}</span>
+            <span className="text-muted-foreground/40 ml-1.5">· {total}</span>
           </p>
         </div>
         <Button
           size="xs"
           variant="ghost"
           onClick={() => router.push(`/history?deckId=${deckId}`)}
-          className="text-ink/70 hover:text-ink"
+          className="text-muted-foreground hover:text-foreground"
         >
           View all
           <ChevronRight className="h-3.5 w-3.5" />

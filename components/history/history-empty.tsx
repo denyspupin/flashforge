@@ -2,16 +2,16 @@
 
 import { useMemo } from "react"
 
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/garn/card"
 import { History, Library } from "lucide-react"
 import Link from "next/link"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 
 export function HistoryEmpty() {
   return (
     <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-      <div className="bg-ember/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
-        <History className="text-ember h-6 w-6" strokeWidth={1.75} />
+      <div className="bg-brand-subtle mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+        <History className="text-brand-solid h-6 w-6" strokeWidth={1.75} />
       </div>
       <h3 className="text-lg font-semibold">No study sessions yet</h3>
       <p className="text-muted-foreground mt-1 mb-4 max-w-sm text-sm">

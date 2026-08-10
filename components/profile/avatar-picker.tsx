@@ -5,8 +5,9 @@ import Image from "next/image"
 import { useQueryClient } from "@tanstack/react-query"
 import { Check, Link2, RefreshCw, RotateCcw } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/garn/button"
+import { Input } from "@/components/garn/input"
+import { Spinner } from "@/components/garn/spinner"
 import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
 
@@ -152,8 +153,8 @@ export function AvatarPicker({
               aria-label={`Use ${option.style} avatar ${option.seed}`}
               aria-pressed={isSelected}
               className={cn(
-                "group relative aspect-square overflow-hidden rounded-lg bg-muted/40 ring-1 ring-ink/10 transition-all hover:ring-2 hover:ring-ember/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
-                isSelected && "ring-2 ring-ember",
+                "group relative aspect-square overflow-hidden rounded-lg bg-muted/40 ring-1 ring-foreground/10 transition-all hover:ring-2 hover:ring-brand-solid/50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring disabled:opacity-50",
+                isSelected && "ring-2 ring-brand-solid",
               )}
             >
               <Image
@@ -164,13 +165,13 @@ export function AvatarPicker({
                 className="object-cover"
               />
               {isSelected ? (
-                <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-ember text-paper shadow-sm">
+                <span className="absolute right-1 top-1 flex h-5 w-5 items-center justify-center rounded-full bg-brand-solid text-background shadow-sm">
                   <Check className="h-3 w-3" strokeWidth={3} />
                 </span>
               ) : null}
               {isSaving ? (
-                <span className="absolute inset-0 flex items-center justify-center bg-paper/60">
-                  <span className="h-4 w-4 animate-spin rounded-full border-2 border-ember border-t-transparent" />
+                <span className="absolute inset-0 flex items-center justify-center bg-background/60">
+                  <Spinner size="sm" />
                 </span>
               ) : null}
             </button>
@@ -181,7 +182,7 @@ export function AvatarPicker({
       {error ? (
         <p
           role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+          className="rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-sm text-danger"
         >
           {error}
         </p>
@@ -256,9 +257,9 @@ export function AvatarPicker({
 
       {currentDicebear ? (
         <p className="text-muted-foreground text-xs">
-          Selected: <span className="font-mono-tag">{currentDicebear.style}</span>{" "}
+          Selected: <span className="font-mono">{currentDicebear.style}</span>{" "}
           · seed{" "}
-          <span className="font-mono-tag">{currentDicebear.seed}</span>
+          <span className="font-mono">{currentDicebear.seed}</span>
         </p>
       ) : null}
     </div>

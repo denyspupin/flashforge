@@ -12,13 +12,13 @@ import {
   BookOpen,
   Copy,
   Play,
-  Loader2,
   User,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
+import { Button } from "@/components/garn/button"
+import { Card, CardContent } from "@/components/garn/card"
+import { Badge } from "@/components/garn/badge"
+import { Spinner } from "@/components/garn/spinner"
 import { queryKeys } from "@/hooks"
 
 interface PublicCard {
@@ -199,12 +199,12 @@ export default function PublicDeckPage() {
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          <Badge variant="default">
+          <Badge tone="neutral" appearance="outline">
             <Globe className="h-3 w-3" />
             Public
           </Badge>
           {deck.isCurated && (
-            <Badge variant="highlight">
+            <Badge tone="brand" appearance="soft">
               <Award className="h-3 w-3" />
               Curated
             </Badge>
@@ -216,7 +216,7 @@ export default function PublicDeckPage() {
         <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="inline-flex items-center gap-1.5">
             <User className="h-3.5 w-3.5" />
-            <span className="font-medium text-ink/80">{deck.creatorName}</span>
+            <span className="font-medium text-foreground/80">{deck.creatorName}</span>
           </span>
           <span className="hidden sm:inline">·</span>
           <span>{deck.cards?.length || 0} cards</span>
@@ -251,7 +251,7 @@ export default function PublicDeckPage() {
                   className="w-full sm:w-auto"
                 >
                   {pendingAction === "fork" ? (
-                    <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                    <Spinner size="sm" className="mr-1.5" />
                   ) : (
                     <Copy className="mr-1.5 h-4 w-4" />
                   )}
@@ -260,10 +260,10 @@ export default function PublicDeckPage() {
                 <Button
                   onClick={onStudy}
                   disabled={pendingAction !== null}
-                  className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
+                  className="w-full gap-1.5 sm:w-auto"
                 >
                   {pendingAction === "study" ? (
-                    <Loader2 className="h-4 w-4 animate-spin" />
+                    <Spinner size="sm" />
                   ) : (
                     <Play className="h-4 w-4" />
                   )}
@@ -278,7 +278,7 @@ export default function PublicDeckPage() {
               href={`/explore/decks/${deck.id}/study`}
               className="w-full sm:w-auto"
             >
-              <Button className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto">
+              <Button className="w-full gap-1.5 sm:w-auto">
                 <Play className="h-4 w-4" />
                 Study as guest
               </Button>
@@ -303,7 +303,7 @@ export default function PublicDeckPage() {
       {deck.topics.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-1.5">
           {deck.topics.map((topic) => (
-            <Badge key={topic.id} variant="outline" className="font-normal">
+            <Badge key={topic.id} tone="neutral" appearance="outline" className="font-normal">
               {topic.name}
             </Badge>
           ))}
@@ -313,7 +313,7 @@ export default function PublicDeckPage() {
       {actionError && isSignedIn && (
         <div
           role="alert"
-          className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+          className="mb-4 rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-sm text-danger"
         >
           {actionError}
         </div>

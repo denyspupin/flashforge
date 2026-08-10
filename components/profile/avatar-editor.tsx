@@ -6,13 +6,12 @@ import { Pencil } from "lucide-react"
 
 import {
   Dialog,
-  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/garn/dialog"
 import { AvatarPicker } from "@/components/profile/avatar-picker"
 
 type AvatarEditorProps = {
@@ -52,38 +51,35 @@ export function AvatarEditor({
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
-      <DialogTrigger
-        render={
-          <button
-            type="button"
-            aria-label="Change avatar"
-            className={
-              "group relative h-20 w-20 shrink-0 overflow-hidden rounded-full ring-2 ring-paper transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper disabled:opacity-50" +
-              (className ? ` ${className}` : "")
-            }
-          />
-        }
-      >
-        {avatarUrl ? (
-          <Image
-            src={avatarUrl}
-            alt={alt}
-            width={80}
-            height={80}
-            unoptimized
-            className="h-full w-full object-cover"
-          />
-        ) : (
-          <span className="flex h-full w-full items-center justify-center bg-ember/12 font-display text-2xl text-ember">
-            {initials}
+      <DialogTrigger asChild>
+        <button
+          type="button"
+          aria-label="Change avatar"
+          className={
+            "group relative h-20 w-20 shrink-0 overflow-hidden rounded-full ring-2 ring-background transition-opacity hover:opacity-90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background disabled:opacity-50" +
+            (className ? ` ${className}` : "")
+          }
+        >
+          {avatarUrl ? (
+            <Image
+              src={avatarUrl}
+              alt={alt}
+              width={80}
+              height={80}
+              unoptimized
+              className="h-full w-full object-cover"
+            />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center bg-brand-subtle text-2xl font-semibold text-brand-solid">
+              {initials}
+            </span>
+          )}
+          <span className="absolute inset-0 flex items-center justify-center bg-foreground/0 transition-colors group-hover:bg-foreground/50 group-focus-visible:bg-foreground/50">
+            <Pencil className="h-5 w-5 text-background opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
           </span>
-        )}
-        <span className="absolute inset-0 flex items-center justify-center bg-ink/0 transition-colors group-hover:bg-ink/50 group-focus-visible:bg-ink/50">
-          <Pencil className="h-5 w-5 text-paper opacity-0 transition-opacity group-hover:opacity-100 group-focus-visible:opacity-100" />
-        </span>
+        </button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-2xl">
-        <DialogCloseButton />
         <DialogHeader>
           <DialogTitle>Change your avatar</DialogTitle>
           <DialogDescription>

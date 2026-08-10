@@ -5,10 +5,17 @@ import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ArrowDownNarrowWide, ArrowUpNarrowWide, History } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
 import { HistoryEmpty, HistoryNoMatches } from "@/components/history/history-empty"
 import { HistorySkeleton } from "@/components/history/history-skeleton"
 import { SessionRow } from "@/components/history/session-row"
+import {
+  Pagination,
+  PaginationContent,
+  PaginationItem,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/garn/pagination"
+import { Tabs, TabsList, TabsTrigger } from "@/components/garn/tabs"
 import { queryKeys, fetchStudyHistory } from "@/hooks"
 import { PAGINATION } from "@/lib/constants"
 import { cn } from "@/lib/utils"
@@ -26,8 +33,8 @@ function HistoryHeader({
   return (
     <div className="flex flex-wrap items-end justify-between gap-3">
       <div className="flex items-center gap-2.5">
-        <div className="bg-ember/10 flex h-9 w-9 items-center justify-center rounded-full">
-          <History className="text-ember h-5 w-5" strokeWidth={1.75} />
+        <div className="bg-brand-subtle flex h-9 w-9 items-center justify-center rounded-full">
+          <History className="text-brand-solid h-5 w-5" strokeWidth={1.75} />
         </div>
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -51,48 +58,37 @@ function SortToggle({
   onChange: (next: SortOrder) => void
 }) {
   return (
-    <div
-      className="bg-ink/4 inline-flex h-7 items-center gap-0.5 rounded-lg p-0.5 ring-1 ring-foreground/10"
-      role="tablist"
-      aria-label="Sort by date"
+    <Tabs
+      value={value}
+      onValueChange={(next) => onChange(next as SortOrder)}
+      variant="pill"
+      size="sm"
     >
-      <button
-        type="button"
-        role="tab"
-        aria-selected={value === "desc"}
-        onClick={() => onChange("desc")}
-        className={cn(
-          "inline-flex h-6 items-center gap-1 rounded-md px-2.5 font-mono-tag text-[10px] uppercase tracking-widest transition-colors",
-          value === "desc"
-            ? "bg-paper text-ink shadow-sm"
-            : "text-ink/55 hover:text-ink/80",
-        )}
-      >
-        <ArrowDownNarrowWide className="h-3 w-3" strokeWidth={2} />
-        Newest
-      </button>
-      <button
-        type="button"
-        role="tab"
-        aria-selected={value === "asc"}
-        onClick={() => onChange("asc")}
-        className={cn(
-          "inline-flex h-6 items-center gap-1 rounded-md px-2.5 font-mono-tag text-[10px] uppercase tracking-widest transition-colors",
-          value === "asc"
-            ? "bg-paper text-ink shadow-sm"
-            : "text-ink/55 hover:text-ink/80",
-        )}
-      >
-        <ArrowUpNarrowWide className="h-3 w-3" strokeWidth={2} />
-        Oldest
-      </button>
-    </div>
+      <TabsList>
+        <TabsTrigger value="desc" icon={<ArrowDownNarrowWide className="h-3 w-3" strokeWidth={2} />}>
+          Newest
+        </TabsTrigger>
+        <TabsTrigger value="asc" icon={<ArrowUpNarrowWide className="h-3 w-3" strokeWidth={2} />}>
+          Oldest
+        </TabsTrigger>
+      </TabsList>
+    </Tabs>
   )
 }
 
 function buildQueryString(params: URLSearchParams): string {
   const qs = params.toString()
   return qs ? `?${qs}` : ""
+}
+
+function pageHref(params: URLSearchParams, next: number): string {
+  const p = new URLSearchParams(params.toString())
+  if (next <= 1) {
+    p.delete("page")
+  } else {
+    p.set("page", String(next))
+  }
+  return `/history${buildQueryString(p)}`
 }
 
 export function HistoryView() {
@@ -108,19 +104,6 @@ export function HistoryView() {
   const filters = useMemo(
     () => ({ sort, page, limit: PAGE_SIZE }),
     [sort, page],
-  )
-
-  const setPage = useCallback(
-    (next: number) => {
-      const params = new URLSearchParams(searchParams.toString())
-      if (next <= 1) {
-        params.delete("page")
-      } else {
-        params.set("page", String(next))
-      }
-      router.push(`/history${buildQueryString(params)}`)
-    },
-    [router, searchParams],
   )
 
   const setSort = useCallback(
@@ -193,24 +176,28 @@ export function HistoryView() {
               </span>
             ) : null}
           </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!hasPrev || isFetching}
-              onClick={() => setPage(page - 1)}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={!hasNext || isFetching}
-              onClick={() => setPage(page + 1)}
-            >
-              Next
-            </Button>
-          </div>
+          <Pagination className="w-auto justify-end">
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  href={pageHref(searchParams, page - 1)}
+                  aria-disabled={!hasPrev || isFetching}
+                  className={cn(
+                    (!hasPrev || isFetching) && "pointer-events-none opacity-50",
+                  )}
+                />
+              </PaginationItem>
+              <PaginationItem>
+                <PaginationNext
+                  href={pageHref(searchParams, page + 1)}
+                  aria-disabled={!hasNext || isFetching}
+                  className={cn(
+                    (!hasNext || isFetching) && "pointer-events-none opacity-50",
+                  )}
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
         </div>
       ) : null}
     </div>

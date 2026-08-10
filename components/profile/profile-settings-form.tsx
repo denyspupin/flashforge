@@ -5,9 +5,9 @@ import { useQueryClient } from "@tanstack/react-query"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Check, Languages, Loader2, Moon, Save, Sun } from "lucide-react"
+import { Check, Languages, Moon, Save, Sun } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import {
   Form,
   FormControl,
@@ -16,15 +16,16 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
+} from "@/components/garn/form"
+import { Input } from "@/components/garn/input"
+import { Spinner } from "@/components/garn/spinner"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/garn/select"
 import { queryKeys, useTheme } from "@/hooks"
 import { THEME_OPTIONS, type Theme } from "@/lib/constants"
 import { formatRelative } from "@/lib/format/date"
@@ -57,10 +58,6 @@ type ProfileSettingsFormProps = {
 
 const languageItems = (languages: Language[]) =>
   Object.fromEntries(languages.map((l) => [l.id, l.name]))
-
-const themeItems = Object.fromEntries(
-  THEME_OPTIONS.map((t) => [t, THEME_LABELS[t]])
-) as Record<Theme, string>
 
 export function ProfileSettingsForm({
   initialName,
@@ -165,7 +162,7 @@ export function ProfileSettingsForm({
         {submitError ? (
           <div
             role="alert"
-            className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+            className="rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-sm text-danger"
           >
             {submitError}
           </div>
@@ -202,8 +199,7 @@ export function ProfileSettingsForm({
                 Native / primary language
               </FormLabel>
               <Select
-                items={languageItems(languages)}
-                value={field.value || null}
+                value={field.value || undefined}
                 onValueChange={(v) => field.onChange(v ?? "")}
               >
                 <FormControl>
@@ -215,7 +211,7 @@ export function ProfileSettingsForm({
                   {languages.map((lang) => (
                     <SelectItem key={lang.id} value={lang.id}>
                       <span className="flex items-center gap-2">
-                        <span className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/50">
+                        <span className="font-mono text-[10px] uppercase tracking-widest text-muted-foreground">
                           {lang.code}
                         </span>
                         <span>{lang.name}</span>
@@ -242,7 +238,6 @@ export function ProfileSettingsForm({
                 Appearance
               </FormLabel>
               <Select
-                items={themeItems}
                 value={field.value}
                 onValueChange={(v) =>
                   field.onChange((v ?? "system") as Theme)
@@ -278,7 +273,7 @@ export function ProfileSettingsForm({
           )}
         />
 
-        <div className="flex flex-col-reverse items-stretch gap-3 border-t border-ink/8 pt-4 sm:flex-row sm:items-center sm:justify-between">
+        <div className="flex flex-col-reverse items-stretch gap-3 border-t border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
           <SaveStatus savedAt={savedAt} />
           <Button
             type="submit"
@@ -286,7 +281,7 @@ export function ProfileSettingsForm({
             className="sm:w-auto"
           >
             {form.formState.isSubmitting ? (
-              <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+              <Spinner size="sm" className="mr-2" />
             ) : (
               <Save className="mr-2 h-4 w-4" />
             )}
@@ -316,7 +311,7 @@ function SaveStatus({ savedAt }: { savedAt: Date | null }) {
   }
 
   return (
-    <p className="flex items-center gap-1.5 text-xs text-ember">
+    <p className="flex items-center gap-1.5 text-xs text-brand-solid">
       <Check className="h-3.5 w-3.5" />
       Saved {formatRelative(savedAt)}
     </p>

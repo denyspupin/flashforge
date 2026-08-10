@@ -9,13 +9,14 @@ import {
   Zap,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
+import { Badge } from "@/components/garn/badge"
 import {
   Card,
   CardContent,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/garn/card"
 import { formatSmartRelative } from "@/lib/format/date"
 import { cn } from "@/lib/utils"
 
@@ -54,23 +55,20 @@ export function SessionRow({
       ? onStudy(session.deckId)
       : router.push(`/study?deckId=${session.deckId}`)
 
-  const toneClasses = {
-    high: "bg-forest/10 text-forest ring-forest/20",
-    mid: "bg-honey/15 text-rust ring-honey/30",
-    low: "bg-destructive/10 text-destructive ring-destructive/20",
+  const toneMap = {
+    high: { tone: "success" as const, appearance: "soft" as const },
+    mid: { tone: "warning" as const, appearance: "soft" as const },
+    low: { tone: "danger" as const, appearance: "soft" as const },
   } as const
 
   return (
-    <Card
-      size="sm"
-      className={cn(compact && "ring-foreground/8")}
-    >
+    <Card className={cn(compact && "ring-foreground/8")}>
       <CardHeader className="px-4 pb-2">
         <div className="flex items-start justify-between gap-3">
           <div className="min-w-0 flex-1 space-y-1">
             {showDeck ? (
               <p
-                className="text-muted-foreground font-mono-tag truncate text-[10px] uppercase tracking-widest"
+                className="text-muted-foreground font-mono truncate text-[10px] uppercase tracking-widest"
                 title={session.deck.title}
               >
                 {session.deck.sourceLanguageFlag && (
@@ -108,33 +106,33 @@ export function SessionRow({
         <div className="flex flex-wrap items-center justify-between gap-3">
           <div className="flex flex-wrap items-center gap-1.5">
             {session.cardsReviewed > 0 ? (
-              <span
-                className={cn(
-                  "inline-flex h-6 items-center gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest ring-1 ring-inset",
-                  toneClasses[tone],
-                )}
+              <Badge
+                tone={toneMap[tone].tone}
+                appearance={toneMap[tone].appearance}
+                size="sm"
+                mono
                 title={`${session.cardsCorrect} of ${session.cardsReviewed} correct`}
               >
                 <Target className="h-3 w-3" />
                 {accuracy}% accuracy
-              </span>
+              </Badge>
             ) : null}
-            <span className="bg-ink/5 text-ink/70 ring-ink/10 inline-flex h-6 items-center gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest ring-1 ring-inset">
+            <Badge tone="neutral" appearance="subtle" size="sm" mono>
               <Check className="h-3 w-3" />
               {session.cardsCorrect}{" "}
               {session.cardsCorrect === 1 ? "card" : "cards"} correct
-            </span>
+            </Badge>
             {failedCount > 0 ? (
-              <span className="bg-destructive/8 text-destructive ring-destructive/15 inline-flex h-6 items-center gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest ring-1 ring-inset">
+              <Badge tone="danger" appearance="subtle" size="sm" mono>
                 <XIcon className="h-3 w-3" />
                 {failedCount} {failedCount === 1 ? "miss" : "misses"}
-              </span>
+              </Badge>
             ) : null}
             {session.xpAwarded > 0 ? (
-              <span className="bg-ember/10 text-ember ring-ember/25 inline-flex h-6 items-center gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest ring-1 ring-inset">
+              <Badge tone="brand" appearance="subtle" size="sm" mono>
                 <Zap className="h-3 w-3" />
                 +{session.xpAwarded} XP
-              </span>
+              </Badge>
             ) : null}
           </div>
 
@@ -142,7 +140,7 @@ export function SessionRow({
             size="xs"
             variant="ghost"
             onClick={study}
-            className="text-ink/70 hover:text-ink"
+            className="text-muted-foreground hover:text-foreground"
           >
             Study again
             <ChevronRight className="h-3.5 w-3.5" />

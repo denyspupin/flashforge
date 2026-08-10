@@ -4,10 +4,11 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Copy, Globe, Layers, Loader2 } from "lucide-react"
+import { Copy, Globe, Layers } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Input } from "@/components/ui/input"
+import { Button } from "@/components/garn/button"
+import { Input } from "@/components/garn/input"
+import { Spinner } from "@/components/garn/spinner"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -18,7 +19,7 @@ import {
   CollectionCardEmptyState,
   CollectionCardSkeleton,
 } from "@/components/collection/collection-card"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/garn/tabs"
 import { queryKeys } from "@/hooks"
 import type { Collection } from "@/types/collection"
 import type { Deck, Language } from "@/types/deck"
@@ -238,12 +239,10 @@ export default function ExplorePage() {
         className="mb-6"
       >
         <TabsList>
-          <TabsTrigger value="decks">
-            <Copy className="mr-1.5 h-3.5 w-3.5" />
+          <TabsTrigger value="decks" icon={<Copy className="h-3.5 w-3.5" />}>
             Decks
           </TabsTrigger>
-          <TabsTrigger value="collections">
-            <Layers className="mr-1.5 h-3.5 w-3.5" />
+          <TabsTrigger value="collections" icon={<Layers className="h-3.5 w-3.5" />}>
             Collections
           </TabsTrigger>
         </TabsList>
@@ -252,7 +251,7 @@ export default function ExplorePage() {
           {forkError && isSignedIn ? (
             <div
               role="alert"
-              className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="mb-4 rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-sm text-danger"
             >
               {forkError}
             </div>
@@ -294,7 +293,7 @@ export default function ExplorePage() {
                     }}
                     footerLeft={
                       <span>
-                        <span className="font-medium text-ink/80">
+                        <span className="font-medium text-foreground/80">
                           {deck.creatorName ?? "Unknown"}
                         </span>
                         <span className="mx-1.5">·</span>
@@ -329,7 +328,7 @@ export default function ExplorePage() {
                           }}
                         >
                           {isForking ? (
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                            <Spinner size="sm" className="mr-1.5" />
                           ) : isMine ? (
                             <Globe className="mr-1.5 h-3.5 w-3.5" />
                           ) : (
@@ -350,7 +349,7 @@ export default function ExplorePage() {
           {forkError && isSignedIn ? (
             <div
               role="alert"
-              className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
+              className="mb-4 rounded-lg border border-danger/30 bg-danger/8 px-3 py-2 text-sm text-danger"
             >
               {forkError}
             </div>
@@ -391,7 +390,7 @@ export default function ExplorePage() {
                     }
                     footerLeft={
                       <span>
-                        <span className="font-medium text-ink/80">
+                        <span className="font-medium text-foreground/80">
                           {collection.creatorName ?? "Unknown"}
                         </span>
                       </span>
@@ -415,7 +414,7 @@ export default function ExplorePage() {
                           }}
                         >
                           {isForking ? (
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                            <Spinner size="sm" className="mr-1.5" />
                           ) : isMine ? (
                             <Globe className="mr-1.5 h-3.5 w-3.5" />
                           ) : (
