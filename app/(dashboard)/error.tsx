@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { AlertTriangle, RefreshCw } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 
 export default function DashboardLayoutError({
   error,
@@ -18,8 +18,8 @@ export default function DashboardLayoutError({
 
   return (
     <div className="mx-auto flex max-w-md flex-col items-center py-16 text-center">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-        <AlertTriangle className="h-6 w-6 text-destructive" />
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
+        <AlertTriangle className="h-6 w-6 text-danger" />
       </div>
       <h1 className="text-2xl font-semibold tracking-tight">
         Something went wrong

@@ -20,8 +20,8 @@ export default function GlobalError({
           fontFamily:
             "ui-sans-serif, system-ui, -apple-system, 'Segoe UI', sans-serif",
           margin: 0,
-          background: "#fafaf7",
-          color: "#171717",
+          background: "#fafafa",
+          color: "#16181c",
         }}
       >
         <div
@@ -40,7 +40,7 @@ export default function GlobalError({
               fontSize: 10,
               letterSpacing: "0.2em",
               textTransform: "uppercase",
-              color: "#737373",
+              color: "#4a505b",
             }}
           >
             Error · 500
@@ -48,7 +48,7 @@ export default function GlobalError({
           <h1
             style={{
               fontSize: "clamp(2rem, 5vw, 3rem)",
-              fontWeight: 500,
+              fontWeight: 600,
               lineHeight: 1.05,
               letterSpacing: "-0.04em",
               margin: "1rem 0 0",
@@ -62,7 +62,7 @@ export default function GlobalError({
               maxWidth: 420,
               fontSize: 16,
               lineHeight: 1.6,
-              color: "#525252",
+              color: "#4a505b",
             }}
           >
             An unexpected error occurred. Try again in a moment.
@@ -76,8 +76,8 @@ export default function GlobalError({
               padding: "0 1.5rem",
               borderRadius: 9999,
               border: 0,
-              background: "#171717",
-              color: "#fafaf7",
+              background: "#16181c",
+              color: "#fafafa",
               fontSize: 15,
               cursor: "pointer",
             }}

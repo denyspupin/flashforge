@@ -3,7 +3,7 @@
 import { useEffect } from "react"
 import { AlertTriangle, RefreshCw } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 
 export default function GlobalError({
   error,
@@ -18,19 +18,16 @@ export default function GlobalError({
 
   return (
     <div className="mx-auto flex min-h-[60vh] max-w-md flex-col items-center justify-center px-6 py-24 text-center">
-      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-destructive/10">
-        <AlertTriangle className="h-6 w-6 text-destructive" />
+      <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-danger/10">
+        <AlertTriangle className="h-6 w-6 text-danger" />
       </div>
-      <span className="font-mono-tag text-[10px] uppercase tracking-widest text-ink/45">
+      <span className="font-mono text-[10px] uppercase tracking-widest text-foreground/45">
         Error · 500
       </span>
-      <h1
-        className="mt-4 font-display text-[clamp(2rem,5vw,3rem)] font-medium leading-[0.95] tracking-[-0.04em] text-ink"
-        style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
-      >
-        The forge <span className="text-ember">stuttered.</span>
+      <h1 className="mt-4 text-[clamp(2rem,5vw,3rem)] font-semibold leading-[1.05] tracking-[-0.04em] text-foreground">
+        The forge <span className="text-brand-solid">stuttered.</span>
       </h1>
-      <p className="mt-4 text-pretty text-base leading-relaxed text-ink/65">
+      <p className="mt-4 text-pretty text-base leading-relaxed text-foreground/65">
         An unexpected error occurred. Try again in a moment. If it keeps
         happening, the team has been notified.
       </p>
