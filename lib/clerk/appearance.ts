@@ -1,6 +1,6 @@
 export const clerkAppearance = {
   variables: {
-    colorPrimary: "hsl(14 78% 55%)",
+    colorPrimary: "var(--garn-brand-solid)",
     fontFamily: "var(--font-sans), ui-sans-serif, system-ui, sans-serif",
   },
   options: {
