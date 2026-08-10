@@ -32,9 +32,11 @@ Full documentation: `docs/PROJECT.md` · `docs/DEPLOYMENT.md`
 
 - **Never edit or "fix" anything inside `node_modules/`** — it is managed by the package manager and changes are wiped on every install. If a 3rd-party dependency has a bug, use `pnpm` overrides, `pnpm patch`, or fork/upstream PRs — never patch the installed copy directly.
 - No comments in code unless required
+- Before writing any UI, read `.garn/rules.md` and follow it
 - ESLint flat config in `eslint.config.mjs` (replaces legacy `.eslintrc`); `pnpm lint` runs `eslint .`
 - Tailwind 4 (CSS-first config) — no `tailwind.config.ts`; theme tokens live in `app/globals.css`
-- shadcn/ui components in `components/ui/`
+- shadcn/ui components in `components/ui/` (legacy, being migrated to garn-ui)
+- garn-ui components in `components/garn/` (new — Radix + Tailwind v4)
 - Custom hooks in `hooks/`
 - Zustand stores in `stores/`
 - Drizzle schema in `lib/db/schema.ts`

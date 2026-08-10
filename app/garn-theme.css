@@ -1,0 +1,1314 @@
+/* ------------------------------------------------------------------ *
+ * garn design tokens — 3-tier, mode-based architecture
+ *
+ *   Tier 1  primitives  — the raw locked palette (mode-agnostic ramps)
+ *   Tier 2  semantic     — roles, grouped into "collections" with modes
+ *   @theme  exposes Tier 2 to Tailwind utilities (bg-brand-solid, etc.)
+ *
+ * Modes are PER-COLLECTION and orthogonal (Figma-style), never a global
+ * cross-product:
+ *   • Color       → modes: Light / Dark            (.dark)
+ *   • Elevation   → modes: Light / Dark            (.dark)
+ *   • Sizing & Spacing → modes: Compact / Default / Spacious  ([data-density])
+ *   • Identity geometry (box, radius, border) → NO modes (single value)
+ *   • Motion (duration, easing, enter/exit) → NO modes — "Glide" vibe,
+ *       globally softened by prefers-reduced-motion (guard at end of file)
+ * "Density scales air, never identity." Color never gets a density mode;
+ * sizing never gets a light/dark mode. Components consume ONLY Tier 2,
+ * never a raw ramp. Re-theme = remap Tier 2; re-palette = edit Tier 1.
+ * ------------------------------------------------------------------ */
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ===== Tier 1 — primitives ===================================== */
+
+  /* neutral — one cool-gray family: a single OKLCH hue (262°) with a chroma
+     envelope that peaks mid-ramp and fades to zero at both ends, so the light
+     surfaces stay untinted white and only the mid/dark stops carry the cool
+     cast. Lightness is distributed so no two adjacent stops collapse into one
+     color and none of them cliff: the light end is deliberately dense (0…150
+     are the surface steps), the middle carries the widest jumps (200…400 is the
+     one span with few stops), and 600…1000 opens back out so dark mode has four
+     separable ink steps rather than three near-identical ones. */
+  --garn-neutral-0: #ffffff;
+  --garn-neutral-25: #fafafa;
+  --garn-neutral-50: #f3f4f5;
+  --garn-neutral-100: #eaebed;
+  --garn-neutral-150: #d9dbde;
+  --garn-neutral-200: #babec4;
+  --garn-neutral-300: #959aa3;
+  --garn-neutral-400: #737a86;
+  --garn-neutral-500: #5b626f;
+  --garn-neutral-600: #4a505b;
+  --garn-neutral-700: #3d424b;
+  --garn-neutral-800: #32363d;
+  --garn-neutral-900: #25282e;
+  --garn-neutral-1000: #16181c;
+  --garn-neutral-100A: rgba(80, 82, 88, 0.03);
+  --garn-neutral-200A: rgba(80, 82, 88, 0.06);
+  --garn-neutral-250A: rgba(80, 82, 88, 0.1); /* hairline border step — between the ·06 fill-hint and the ·14 divider */
+  --garn-neutral-300A: rgba(80, 82, 88, 0.14);
+  --garn-neutral-400A: rgba(80, 82, 88, 0.28);
+  --garn-neutral-500A: rgba(80, 82, 88, 0.46);
+
+  /* darkneutral — the same hue + chroma envelope inverted for dark mode. Its
+     700…1000 band is the dark-mode ink ramp, so it is spaced wider than the
+     surface band below it (0…200): text steps need to separate, surface steps
+     need to stay close enough to read as one sheet. */
+  --garn-darkneutral-0: #0f1114;
+  --garn-darkneutral-25: #16181c;
+  --garn-darkneutral-50: #1d1f24;
+  --garn-darkneutral-100: #292d33;
+  --garn-darkneutral-200: #363b42;
+  --garn-darkneutral-300: #414750;
+  --garn-darkneutral-400: #4e545f;
+  --garn-darkneutral-500: #5b626f;
+  --garn-darkneutral-600: #6e7582;
+  --garn-darkneutral-700: #8b919b;
+  --garn-darkneutral-800: #adb1b8;
+  --garn-darkneutral-900: #d1d4d7;
+  --garn-darkneutral-1000: #f7f7f8;
+  --garn-darkneutral-100A: rgba(247, 247, 248, 0.03);
+  --garn-darkneutral-200A: rgba(247, 247, 248, 0.06);
+  --garn-darkneutral-250A: rgba(247, 247, 248, 0.1); /* hairline border step — between the ·06 fill-hint and the ·14 divider */
+  --garn-darkneutral-300A: rgba(247, 247, 248, 0.14);
+  --garn-darkneutral-400A: rgba(247, 247, 248, 0.28);
+  --garn-darkneutral-500A: rgba(247, 247, 248, 0.46);
+
+  /* Chromatic ramps. Each keeps its own hue and chroma curve; the lightness of
+     every stop is tuned against the SAME per-stop target across all nine, so a
+     semantic rule like "600 is the tonal fill, 400 is the dark-mode fill" lands
+     with comparable weight whichever tone it is applied to. Yellow, orange and
+     lime are held deliberately looser: those hues cannot reach the shared
+     lightness at their chroma without going muddy, which is also why warning
+     is the one status solid that takes dark text. */
+
+  /* brand (primary blue) */
+  --garn-brand-50: #f2f8fe;
+  --garn-brand-100: #e1f0fc;
+  --garn-brand-200: #c8e3f9;
+  --garn-brand-300: #9ecff2;
+  --garn-brand-400: #70b4ea;
+  --garn-brand-500: #5097e3;
+  --garn-brand-600: #3a7bd6;
+  --garn-brand-700: #3066c2;
+  --garn-brand-800: #2e539e;
+  --garn-brand-900: #28477c;
+  --garn-brand-1000: #1b2b49;
+
+  /* blueblegum (info) */
+  --garn-blueblegum-50: #f2f9ff;
+  --garn-blueblegum-100: #e3f0fb;
+  --garn-blueblegum-200: #c2e3fa;
+  --garn-blueblegum-300: #8ccdf6;
+  --garn-blueblegum-400: #4fb3ed;
+  --garn-blueblegum-500: #2a98da;
+  --garn-blueblegum-600: #1682ca;
+  --garn-blueblegum-700: #1d659c;
+  --garn-blueblegum-800: #195680;
+  --garn-blueblegum-900: #194769;
+  --garn-blueblegum-1000: #0d2a42;
+
+  /* greengrass (success) */
+  --garn-greengrass-50: #f2fdf5;
+  --garn-greengrass-100: #dcf8e7;
+  --garn-greengrass-200: #bdf1d1;
+  --garn-greengrass-300: #89e4ad;
+  --garn-greengrass-400: #4ecf83;
+  --garn-greengrass-500: #25b561;
+  --garn-greengrass-600: #1f934e;
+  --garn-greengrass-700: #1e7a43;
+  --garn-greengrass-800: #1f633b;
+  --garn-greengrass-900: #195031;
+  --garn-greengrass-1000: #0c2e1a;
+
+  /* rosa (danger) */
+  --garn-rosa-50: #fff5f5;
+  --garn-rosa-100: #fdeae9;
+  --garn-rosa-200: #ffd5d2;
+  --garn-rosa-300: #ffa49d;
+  --garn-rosa-400: #ff776e;
+  --garn-rosa-500: #f15b50;
+  --garn-rosa-600: #dc4238;
+  --garn-rosa-700: #c23026;
+  --garn-rosa-800: #a6261d;
+  --garn-rosa-900: #672822;
+  --garn-rosa-1000: #40201d;
+
+  /* yellow (warning) */
+  --garn-yellow-50: #fffaeb;
+  --garn-yellow-100: #fef0c5;
+  --garn-yellow-200: #fee187;
+  --garn-yellow-300: #fbc843;
+  --garn-yellow-400: #f6ae04;
+  --garn-yellow-500: #ec8b00;
+  --garn-yellow-600: #d36700;
+  --garn-yellow-700: #b44800;
+  --garn-yellow-800: #93380a;
+  --garn-yellow-900: #772d08;
+  --garn-yellow-1000: #481903;
+
+  /* orange */
+  --garn-orange-50: #fff7ec;
+  --garn-orange-100: #ffecd2;
+  --garn-orange-200: #ffd6a7;
+  --garn-orange-300: #ffb76b;
+  --garn-orange-400: #ff8c2e;
+  --garn-orange-500: #fa6700;
+  --garn-orange-600: #ed4900;
+  --garn-orange-700: #d23800;
+  --garn-orange-800: #a12905;
+  --garn-orange-900: #7e2204;
+  --garn-orange-1000: #4b1406;
+
+  /* violet (purple) */
+  --garn-violet-50: #fbf6fe;
+  --garn-violet-100: #f5ebfc;
+  --garn-violet-200: #ecd9f9;
+  --garn-violet-300: #ddbbf3;
+  --garn-violet-400: #cb92ee;
+  --garn-violet-500: #b560e8;
+  --garn-violet-600: #a44ad5;
+  --garn-violet-700: #8d36ba;
+  --garn-violet-800: #753198;
+  --garn-violet-900: #60297a;
+  --garn-violet-1000: #400e55;
+
+  /* pink */
+  --garn-pink-50: #fdf6fb;
+  --garn-pink-100: #f8e9f4;
+  --garn-pink-200: #f4d6eb;
+  --garn-pink-300: #ecb5da;
+  --garn-pink-400: #e289c2;
+  --garn-pink-500: #d558a4;
+  --garn-pink-600: #c0468b;
+  --garn-pink-700: #a63471;
+  --garn-pink-800: #8a2e5d;
+  --garn-pink-900: #70284e;
+  --garn-pink-1000: #45142d;
+
+  /* lime */
+  --garn-lime-50: #f8fde8;
+  --garn-lime-100: #edf7cc;
+  --garn-lime-200: #dcf0a0;
+  --garn-lime-300: #c2e367;
+  --garn-lime-400: #a0d01f;
+  --garn-lime-500: #88b809;
+  --garn-lime-600: #6b950a;
+  --garn-lime-700: #557516;
+  --garn-lime-800: #465e18;
+  --garn-lime-900: #3a4e16;
+  --garn-lime-1000: #202e09;
+
+  /* black / white alphas (overlays, scrims) — #000000 lives ONLY here:
+     pure black is reserved for scrims, never a surface or ink stop */
+  --garn-alpha-black-90: rgba(0, 0, 0, 0.9);
+  --garn-alpha-black-70: rgba(0, 0, 0, 0.7);
+  --garn-alpha-black-50: rgba(0, 0, 0, 0.5);
+  --garn-alpha-black-30: rgba(0, 0, 0, 0.3);
+  --garn-alpha-black-10: rgba(0, 0, 0, 0.1);
+  --garn-alpha-white-90: rgba(255, 255, 255, 0.9);
+  --garn-alpha-white-70: rgba(255, 255, 255, 0.7);
+  --garn-alpha-white-50: rgba(255, 255, 255, 0.5);
+  --garn-alpha-white-10: rgba(255, 255, 255, 0.1);
+
+  /* space ramp — Tier-1 primitive sizing scale (px-named, mode-agnostic).
+     The semantic sizing/air tokens below ALIAS these; no semantic token holds
+     a raw length. 2px grid up to 24, then 4px grid to 48. */
+  --garn-space-0: 0;
+  --garn-space-2: 0.125rem; /* 2  */
+  --garn-space-3: 0.1875rem; /* 3 — off the even ramp on purpose: a hairline gap for framed surfaces (the glass frame strip) */
+  --garn-space-4: 0.25rem; /* 4  */
+  --garn-space-6: 0.375rem; /* 6  */
+  --garn-space-8: 0.5rem; /* 8  */
+  --garn-space-10: 0.625rem; /* 10 */
+  --garn-space-12: 0.75rem; /* 12 */
+  --garn-space-14: 0.875rem; /* 14 */
+  --garn-space-16: 1rem; /* 16 */
+  --garn-space-18: 1.125rem; /* 18 */
+  --garn-space-20: 1.25rem; /* 20 */
+  --garn-space-22: 1.375rem; /* 22 */
+  --garn-space-24: 1.5rem; /* 24 */
+  --garn-space-28: 1.75rem; /* 28 */
+  --garn-space-32: 2rem; /* 32 */
+  --garn-space-36: 2.25rem; /* 36 */
+  --garn-space-40: 2.5rem; /* 40 */
+  --garn-space-44: 2.75rem; /* 44 */
+  --garn-space-48: 3rem; /* 48 */
+
+  /* duration ramp — Tier-1 primitive timing scale (ms-named, mode-agnostic),
+     the time analogue of the space ramp. The semantic --garn-motion-* roles
+     below ALIAS these; no semantic motion token holds a raw ms value. */
+  --garn-duration-0: 0ms;
+  --garn-duration-50: 50ms;
+  --garn-duration-100: 100ms;
+  --garn-duration-150: 150ms;
+  --garn-duration-200: 200ms;
+  --garn-duration-300: 300ms;
+  --garn-duration-400: 400ms;
+  --garn-duration-500: 500ms;
+  --garn-duration-700: 700ms;
+
+  /* ===== sizing / shape ========================================== *
+   * Control heights snap to a locked 5-rung ladder: 24·28·32·40·44px
+   * at default density. Density modes (compact / spacious) re-declare
+   * these same tokens — see the [data-density] blocks below — so any
+   * subtree carrying data-density re-sizes every control inside it,
+   * exactly the way .dark re-colors a subtree. The :root values here
+   * ARE the default density. */
+  --garn-radius: 0.5rem; /* 8px — md control radius */
+
+  /* type family — IDENTITY, NO modes. garn keeps Tailwind's default size /
+     weight / leading scale; only the FACE is tokenised. Exposed to Tailwind as
+     --font-sans / --font-mono in @theme inline (drives both the font-sans /
+     font-mono utilities and the default document font). These name the family;
+     they do NOT load it — the app must load the webfont itself (docs app does
+     via next/font). Registry consumers copying this file must load IBM Plex
+     (Sans + Mono) or remap these two tokens to a face they already ship. */
+  --garn-font-sans: "IBM Plex Sans", ui-sans-serif, system-ui, sans-serif,
+    "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+  --garn-font-mono: "IBM Plex Mono", ui-monospace, "SF Mono", "Cascadia Code",
+    "Roboto Mono", Menlo, Consolas, monospace;
+
+  --garn-control-h-xs: var(--garn-space-24);
+  --garn-control-h-sm: var(--garn-space-28);
+  --garn-control-h-md: var(--garn-space-32);
+  --garn-control-h-lg: var(--garn-space-40);
+  --garn-control-h-xl: var(--garn-space-44);
+
+  --garn-control-px-xs: var(--garn-space-8);
+  --garn-control-px-sm: var(--garn-space-10);
+  --garn-control-px-md: var(--garn-space-12);
+  --garn-control-px-lg: var(--garn-space-16);
+  --garn-control-px-xl: var(--garn-space-20);
+
+  /* fixed control-glyph geometry — IDENTITY, NOT air. A checkbox box, radio
+     dot, switch track and slider thumb are drawn shapes / hit targets, so they
+     are sized by the component's `size` prop and are deliberately NOT
+     re-declared in the [data-density] blocks: density never resizes them. */
+  --garn-box-sm: var(--garn-space-14);
+  --garn-box-md: var(--garn-space-16);
+  --garn-box-lg: var(--garn-space-20);
+
+  /* box corner radius — IDENTITY, and CAPPED. A checkbox box tracks the small
+     control radius but is clamped so a large global --garn-radius can never
+     round a ~14-16px box into a circle. 0.375rem is the ceiling (below half of
+     the 14px sm box); under it the box follows the theme. */
+  --garn-box-radius: min(var(--radius-sm), 0.375rem);
+
+  /* optical inset — IDENTITY. The amount a control trims its padding on the
+     side that holds an icon/slot, to compensate for the glyph's own internal
+     whitespace (a leading icon otherwise reads as over-padded next to text).
+     Fixed, not air: the glyph's optical inset is ~constant px regardless of
+     density, so the trim is subtracted from the (density-scaled) control-px. */
+  --garn-control-icon-inset: var(--garn-space-2); /* 2px */
+
+  /* scheduler (event-grid) geometry — IDENTITY, not air. The hour-band height is
+     the ruler the whole time canvas measures against (event top/height are
+     fractions of it via calc), and the axis column is a fixed gutter for the
+     hour labels. Density never rescales the timeline, so these are NOT
+     re-declared per density. */
+  --garn-scheduler-hour: var(--garn-space-48); /* height of one 60-min band (48px) */
+  --garn-scheduler-axis: 3.5rem; /* hour-axis column width (56px) */
+
+  /* gantt (roadmap / time-bars) geometry — IDENTITY, not air. The per-day column
+     width is the ruler every bar + header tick measures against (bar left/width
+     are integer-day multiples of it via calc); the `scale` axis scales the
+     EFFECTIVE day width by a unitless factor set inline, so a day/week/month/
+     quarter/year view all ride this one base. Row height, rail width and the
+     header-tier height are fixed structure. Density never rescales a timeline,
+     so these are NOT re-declared per density. */
+  --garn-gantt-day-base: 2.5rem; /* per-day column width at "day" scale (40px) */
+  --garn-gantt-day: var(--garn-gantt-day-base); /* EFFECTIVE per-day width; the
+     root overrides this inline to (scale-factor × base) so every bar + tick
+     calc()s off one var. */
+  --garn-gantt-row: 2.5rem; /* gantt row height (40px) */
+  --garn-gantt-rail: 15rem; /* left row-rail width (240px) — the name column */
+  --garn-gantt-col: 5.5rem; /* default width of one extra rail column (88px) */
+  --garn-gantt-tier: 1.5rem; /* one header-tier height (24px); header = 2 tiers */
+  --garn-gantt-viewport: 32rem; /* default max-height of the scroll region */
+
+  /* ===== air — density-scaled container padding + layout gaps ======= *
+     "Density scales air, never identity." These ARE re-declared per density
+     below. Each family has its own step (gentler on big surfaces than on
+     gaps) — density is not one global delta. */
+  --garn-pad-surface: var(--garn-space-24); /* card / dialog / sheet / drawer body */
+  --garn-pad-panel: var(--garn-space-16); /* popover / hover-card / drawer header */
+  --garn-gap-inline: var(--garn-space-4); /* adjacent controls: toolbar/menubar/nav/pagination/breadcrumb */
+  --garn-gap-field: var(--garn-space-6); /* label ↔ control */
+  --garn-gap-stack: var(--garn-space-16); /* control ↔ control / header ↔ body */
+  --garn-gap-section: var(--garn-space-24); /* section ↔ section */
+  --garn-row-h: var(--garn-space-28); /* dense selectable row: menu / option / list item (density-scaled below) */
+
+  /* ===== Tier 2 — semantic (light) =============================== */
+  --garn-background: var(--garn-neutral-25);
+  --garn-foreground: var(--garn-neutral-1000);
+  /* surface roles — named elevation intents (sunken → canvas/background →
+     raised → overlay), each raised step paired with the shadow that carries
+     its lift. Light rides to the white end of the ramp — raised (card) and
+     overlay (popover) both land on pure white, their paired shadows (sm vs
+     lg) doing the separating; canvas sits one step below on neutral-25. Dark
+     climbs lighter surfaces. card and popover ALIAS raised / overlay, so no
+     component bindings change. Re-declared in .dark (nested var()
+     substitutes at the declaring scope). */
+  --garn-surface-sunken: var(--garn-neutral-100);
+  --garn-surface-raised: var(--garn-neutral-0);
+  --garn-surface-overlay: var(--garn-neutral-0);
+  --garn-surface-raised-shadow: var(--garn-shadow-sm);
+  --garn-surface-overlay-shadow: var(--garn-shadow-lg);
+  /* A gentle filled surface — the lightest-touch tint off the base surface, for a
+     "soft" card fill that reads without the heavier `muted` (neutral-50). Light: one
+     step off white (neutral-25); dark: one step up from the page (darkneutral-25), so it
+     stays a visible raised tile rather than collapsing into muted. Distinct from `muted`
+     (a stronger utility fill) and from `card`/`raised` (the elevated card surface). */
+  --garn-surface-soft: var(--garn-neutral-25);
+  /* Framed-surface signature: opacity of the frosted strip fill (surface-overlay
+     mixed toward transparent). Default suits an in-flow surface over content
+     (Card); surfaces over a dim backdrop (Dialog / overlays) raise it locally so
+     the strip stays light, not muddy. Mode-independent. */
+  --garn-frame-strip-alpha: 40%;
+  --garn-card: var(--garn-surface-raised);
+  --garn-card-foreground: var(--garn-neutral-1000);
+  --garn-popover: var(--garn-surface-overlay);
+  --garn-popover-foreground: var(--garn-neutral-1000);
+  /* brand — Tier-2 semantic. Shares the `brand` prefix with the Tier-1 ramp
+     (--garn-brand-50…1000) by decision (audit S2): the tone vocabulary is
+     brand/danger everywhere (tone="brand", --garn-badge-brand-*), so the
+     semantic tier follows it. Suffixed names (-solid/-subtle/-strong) never
+     collide with the numeric ramp steps. */
+  --garn-brand-solid: var(--garn-brand-700);
+  --garn-brand-solid-foreground: var(--garn-neutral-0);
+  --garn-brand-strong: var(--garn-brand-800); /* one step darker than the solid — solid-fill edge/border */
+  --garn-secondary: var(--garn-neutral-50);
+  --garn-secondary-foreground: var(--garn-neutral-1000);
+  --garn-muted: var(--garn-neutral-50);
+  --garn-muted-foreground: var(--garn-neutral-600); /* 600, not 500 — 500 lands under 4.5:1 on the canvas, so it is icon/large-text only */
+  --garn-accent: var(--garn-neutral-50);
+  --garn-accent-foreground: var(--garn-neutral-1000);
+  /* interaction state layers — translucent slices of the surface's OWN
+     foreground (Material 3 on-surface state-layer model). Because each is a
+     fraction of --garn-foreground, it darkens light surfaces and lightens dark
+     ones — so a hover / active / selection reads on ANY surface shade (card,
+     muted bar, popover) and can never collapse to the surface colour the way an
+     absolute neutral fill (bg-muted / bg-accent) does on a tinted base. rest <
+     hover < active is the Radix A3/A4/A5 escalation; exposed as bg-state-* below.
+     These are RE-DECLARED in .dark (see below): a :root custom property that
+     nests var(--garn-foreground) substitutes it at :root scope and inherits the
+     resolved colour, so it would not flip on its own. */
+  --garn-state-rest: color-mix(in srgb, var(--garn-foreground) 5%, transparent);
+  --garn-state-hover: color-mix(in srgb, var(--garn-foreground) 8%, transparent);
+  --garn-state-active: color-mix(in srgb, var(--garn-foreground) 12%, transparent);
+  --garn-state-selected: color-mix(in srgb, var(--garn-foreground) 12%, transparent);
+  /* interaction EDGE layers — the stroke twin of the state layers above. Same
+     on-surface model (a fraction of the surface's own foreground, so an edge
+     reads on any surface shade), but the edge ramp sits higher than the fill
+     ramp because a 1px stroke needs more alpha than a filled area to carry the
+     same weight: 15 / 25 / 40 vs the fills' 5 / 8 / 12.
+       rest   — a resting stroke on a tinted surface
+       hover  — the edge darkening under the cursor
+       strong — the pressed / active edge
+     These are the adaptive alternative to `--garn-border`, for a stroke that has
+     to survive on a surface whose shade is not known up front; a control that
+     sits on a known surface should keep using `border` / `input`. Neither is the
+     focus indicator — that is `--garn-ring`. Exposed in @theme as
+     border-edge-* / ring-edge-* below.
+     RE-DECLARED in .dark for exactly the reason the state layers are — a :root
+     custom property nesting var(--garn-foreground) substitutes at its declaring
+     scope, so these would otherwise stay light-foreground on dark surfaces. */
+  --garn-edge-rest: color-mix(in srgb, var(--garn-foreground) 15%, transparent);
+  --garn-edge-hover: color-mix(in srgb, var(--garn-foreground) 25%, transparent);
+  --garn-edge-strong: color-mix(in srgb, var(--garn-foreground) 40%, transparent);
+  /* elevated-selected contract — a selected/on control reads its fill + lift
+     from these two vars, so ONE recipe covers both contexts (WCAG 1.4.11). The
+     default is the adaptive translucent layer (visible on any surface); a tinted
+     TRACK (a soft toolbar bar, a segmented control) sets [data-elevated] below to
+     lift the selected control to an opaque card "thumb" + shadow, the way tabs'
+     active trigger cuts out of its muted list. */
+  --garn-selected-surface: var(--garn-state-selected);
+  --garn-selected-shadow: none;
+  --garn-danger-solid: var(--garn-rosa-700); /* destructive fill (darker than tonal --garn-danger) */
+  --garn-danger-solid-foreground: var(--garn-neutral-0);
+  --garn-border: var(--garn-neutral-250A);
+  --garn-input: var(--garn-neutral-250A);
+  /* The focus ring is a non-text UI indicator, so it owes ≥3:1 against BOTH
+     surfaces it can land on (WCAG 1.4.11) — and the canvas, not the white card,
+     is the harder of the two. brand-500 clears the card but not the canvas, so
+     light takes brand-600; dark keeps the brighter 400 against its near-black. */
+  --garn-ring: var(--garn-brand-600);
+  /* named roles previously improvised per-component (all re-declared in .dark):
+       disabled  — fill + text pair (replaces ad-hoc opacity-50 over time)
+       link      — inline link color, decoupled from the button's brand fill
+       inverse   — the opposite-mode surface (tooltip / dark toast on light)
+       skeleton  — alias of muted today; named so shimmer can tint independently */
+  --garn-disabled: var(--garn-neutral-50);
+  --garn-disabled-foreground: var(--garn-neutral-300);
+  --garn-link: var(--garn-brand-700);
+  --garn-link-hover: var(--garn-brand-800);
+  --garn-inverse: var(--garn-neutral-900);
+  --garn-inverse-foreground: var(--garn-neutral-0);
+  --garn-skeleton: var(--garn-muted);
+
+  /* button bodies + solid fills. The neutral default is the DARKEST neutral
+      (inverts per mode); status solids are contrast-tuned (success needs white
+     text → darker green; warning is amber → dark text). primary-subtle is the
+     low-emphasis "soft" brand. The filled-button edge/bevel are derived
+     from each fill via --btn-edge, so no per-variant border tokens. */
+  --garn-neutral-solid: var(--garn-neutral-900); /* near-black neutral default */
+  --garn-neutral-solid-foreground: var(--garn-neutral-0);
+  --garn-brand-subtle: var(--garn-brand-100); /* soft brand (low emphasis) */
+  --garn-brand-subtle-foreground: var(--garn-brand-700);
+
+  --garn-success-solid: var(--garn-greengrass-700); /* darker → AA with white text */
+  --garn-success-solid-foreground: var(--garn-neutral-0);
+  --garn-warning-solid: var(--garn-yellow-500); /* amber → dark text */
+  --garn-warning-solid-foreground: var(--garn-yellow-1000);
+  --garn-info-solid: var(--garn-blueblegum-700); /* darker → AA with white text */
+  --garn-info-solid-foreground: var(--garn-neutral-0);
+
+  /* status: solid / subtle (bg) / foreground (text on subtle) */
+  --garn-info: var(--garn-blueblegum-600);
+  --garn-info-subtle: var(--garn-blueblegum-100);
+  --garn-info-foreground: var(--garn-blueblegum-800);
+  --garn-success: var(--garn-greengrass-600);
+  --garn-success-subtle: var(--garn-greengrass-100);
+  --garn-success-foreground: var(--garn-greengrass-800);
+  /* warning's tonal role takes 600 like every other tone, NOT the 500 its solid
+     fill uses. This token is a graphic — a Progress bar, a Tracker cell, a Gantt
+     bar, the Gauge arc, an Alert icon — so it owes 3:1 against the surface it
+     draws on (WCAG 1.4.11), and amber at 500 only reaches 2.5:1 on a white card.
+     The cost is that warning reads more burnt-amber than the 500; the ramp's hue
+     turns toward orange as it darkens, which is why `warning-solid` stays at 500
+     and inverts to dark text instead of following the 700 the other solids take. */
+  --garn-warning: var(--garn-yellow-600);
+  --garn-warning-subtle: var(--garn-yellow-100);
+  --garn-warning-foreground: var(--garn-yellow-800);
+  --garn-danger: var(--garn-rosa-600);
+  --garn-danger-subtle: var(--garn-rosa-100);
+  --garn-danger-foreground: var(--garn-rosa-800);
+  --garn-orange: var(--garn-orange-600);
+  --garn-orange-subtle: var(--garn-orange-100);
+  --garn-orange-foreground: var(--garn-orange-800);
+  --garn-violet: var(--garn-violet-600);
+  --garn-violet-subtle: var(--garn-violet-100);
+  --garn-violet-foreground: var(--garn-violet-800);
+
+  /* ===== Chart / data-viz — categorical + structural (light) ===== *
+     The series palette for charts & sparklines. Eight categorical hues that
+     ALIAS the Tier-1 ramps (no raw values), ORDERED for maximum perceptual
+     separation + CVD-safety (Okabe-Ito style): the first 3–4 are maximally
+     distinct, similar hues never sit adjacent (blue↔orange lead the ramp;
+     green and red are kept far apart). Light uses the 600 step — each clears
+     ≥3:1 against the light card surface (WCAG 1.4.11 non-text contrast); the
+     .dark block below re-declares to the brighter 400 step for ≥3:1 on dark,
+     the same light/dark convention the status tones use. Structural (grid /
+     axis) + signed (positive / negative) tokens ALIAS semantic roles, but a
+     var() nested in a custom property substitutes at the DECLARING scope
+     (:root = light), so they are re-declared in .dark like every other alias —
+     inheritance alone only flips them when .dark sits on :root itself, not on
+     a subtree container. Exposed in
+     @theme as fill-chart-1 / stroke-chart-1 / text-chart-1 utilities AND
+     consumable as var(--color-chart-1) inside a Recharts ChartConfig. Color is
+     never the only channel — the Chart a11y contract also requires a marker /
+     dash / direct-label cue (see docs/notes/chart.md). */
+  --garn-chart-1: var(--garn-brand-600);
+  --garn-chart-2: var(--garn-orange-600);
+  --garn-chart-3: var(--garn-violet-600);
+  --garn-chart-4: var(--garn-greengrass-600);
+  --garn-chart-5: var(--garn-pink-600);
+  --garn-chart-6: var(--garn-yellow-600);
+  --garn-chart-7: var(--garn-blueblegum-600);
+  --garn-chart-8: var(--garn-rosa-600);
+  --garn-chart-grid: var(--garn-border); /* gridlines — subtle, flips w/ border */
+  --garn-chart-axis: var(--garn-muted-foreground); /* axis lines + tick labels */
+  --garn-chart-positive: var(--garn-success); /* signed series — gain / over */
+  --garn-chart-negative: var(--garn-danger); /* signed series — loss / under */
+
+  /* ===== Badge — component tokens ================================ *
+     The Badge consumes ONLY these --garn-badge-* tokens (never a raw ramp),
+     so the whole dark-mode treatment is adjusted here in the token layer.
+     Light aliases the semantic ramps; the .dark block deepens the soft/framed
+     fill to the 1000 tint with colored 400-level text (Atlassian bold-lozenge
+     style), keeps `solid` a brighter 700 fill, and turns neutral into a visible
+     elevated gray. Every dark pair clears WCAG AA. */
+  --garn-badge-neutral-bg: var(--garn-secondary);
+  --garn-badge-neutral-fg: var(--garn-secondary-foreground);
+  --garn-badge-neutral-bold: var(--garn-neutral-solid);
+  --garn-badge-neutral-bold-fg: var(--garn-neutral-solid-foreground);
+  --garn-badge-neutral-edge: var(--garn-border);
+  --garn-badge-brand-bg: var(--garn-brand-subtle);
+  --garn-badge-brand-fg: var(--garn-brand-subtle-foreground);
+  --garn-badge-brand-bold: var(--garn-brand-solid);
+  --garn-badge-brand-bold-fg: var(--garn-brand-solid-foreground);
+  --garn-badge-brand-edge: var(--garn-brand-solid);
+  --garn-badge-info-bg: var(--garn-info-subtle);
+  --garn-badge-info-fg: var(--garn-info-foreground);
+  --garn-badge-info-bold: var(--garn-info-solid);
+  --garn-badge-info-bold-fg: var(--garn-info-solid-foreground);
+  --garn-badge-info-edge: var(--garn-info);
+  --garn-badge-success-bg: var(--garn-success-subtle);
+  --garn-badge-success-fg: var(--garn-success-foreground);
+  --garn-badge-success-bold: var(--garn-success-solid);
+  --garn-badge-success-bold-fg: var(--garn-success-solid-foreground);
+  --garn-badge-success-edge: var(--garn-success);
+  --garn-badge-warning-bg: var(--garn-warning-subtle);
+  --garn-badge-warning-fg: var(--garn-warning-foreground);
+  --garn-badge-warning-bold: var(--garn-warning-solid);
+  --garn-badge-warning-bold-fg: var(--garn-warning-solid-foreground);
+  --garn-badge-warning-edge: var(--garn-warning);
+  --garn-badge-danger-bg: var(--garn-danger-subtle);
+  --garn-badge-danger-fg: var(--garn-danger-foreground);
+  --garn-badge-danger-bold: var(--garn-danger-solid);
+  --garn-badge-danger-bold-fg: var(--garn-danger-solid-foreground);
+  --garn-badge-danger-edge: var(--garn-danger);
+  --garn-badge-discovery-bg: var(--garn-violet-subtle);
+  --garn-badge-discovery-fg: var(--garn-violet-foreground);
+  --garn-badge-discovery-bold: var(--garn-violet-700);
+  --garn-badge-discovery-bold-fg: var(--garn-neutral-0);
+  --garn-badge-discovery-edge: var(--garn-violet);
+
+  /* ===== Avatar — presence / status component tokens ============= *
+     The Avatar binds ONLY these (exposed as bg-avatar-* / text-avatar-* /
+     border-avatar-* / ring-avatar-* utilities in @theme inline below), never a
+     raw ramp (audit S2). Each ALIASES a semantic role, and each is re-declared
+     in the .dark block below: nested var() substitutes at the declaring scope,
+     so without the re-declare a subtree .dark would keep the light colours. */
+  --garn-avatar-online: var(--garn-success); /* presence online · status approved */
+  --garn-avatar-busy: var(--garn-danger); /* presence busy · status declined */
+  --garn-avatar-focus: var(--garn-violet); /* presence focus */
+  --garn-avatar-offline: var(--garn-muted-foreground); /* presence offline (hollow ring) */
+  --garn-avatar-locked: var(--garn-muted-foreground); /* status locked */
+
+  /* ===== Gallery — masonry / justified / uniform grid tokens ===== *
+     The Gallery binds ONLY these for its geometry + placeholder surface (never a
+     raw px/rem in the component). Gaps + radius ALIAS the shared ramps, so they
+     track density and the corner language for free (lengths are mode-invariant);
+     the placeholder base aliases the semantic `muted` role and is re-declared in
+     the .dark block below so its LQIP/skeleton fill also flips under a subtree
+     .dark container. `min-tile` / `row-height` are layout defaults the
+     consumer overrides per instance (raw lengths live in the token layer). */
+  --garn-gallery-gap-sm: var(--garn-space-8); /* 8px — dense DAM contact sheet */
+  --garn-gallery-gap-md: var(--garn-space-12); /* 12px — default */
+  --garn-gallery-gap-lg: var(--garn-space-20); /* 20px — airy moodboard */
+  --garn-gallery-radius: var(--garn-radius); /* tile corner — tracks control radius */
+  --garn-gallery-row-unit: 1px; /* masonry fallback grid-auto-rows quantum */
+  --garn-gallery-min-tile: 15rem; /* 240px — uniform auto-fill floor */
+  --garn-gallery-row-height: 14rem; /* 224px — justified target row height */
+  --garn-gallery-placeholder: var(--garn-muted); /* LQIP / skeleton base fill */
+
+  /* ===== Board (Kanban) geometry ================================== *
+     Column width is a layout dimension (not density spacing), so it lives in the
+     token layer as a raw length; `size` picks the sm/md width via --garn-board-col.
+     Card + column gaps ride the shared --garn-space-* scale (density), not here. */
+  --garn-board-col-w: 18rem; /* 288px — default column width (Trello ≈ 272, Linear ≈ 300) */
+  --garn-board-col-w-sm: 15rem; /* 240px — dense board */
+  --garn-board-col: var(--garn-board-col-w); /* EFFECTIVE column width; the `size`
+      variant reassigns this to -w / -w-sm, and columns read it for their width */
+  --garn-board-rail-w: 3rem; /* 48px — collapsed-column rail width */
+
+  /* ===== Calendar geometry ======================================= *
+     The day/weekday cell edge is a layout dimension (a square grid unit), not
+     density spacing — so, like --garn-board-col-w, it lives in the token layer
+     as a raw length; the `size` axis picks sm/md/lg via --garn-calendar-cell.
+     md (32px) matches the previous hard-wired --garn-control-h-md cell so the
+     embedded pickers keep their footprint. Row/caption gaps ride --garn-space-*. */
+  --garn-calendar-cell-sm: 1.75rem; /* 28px — dense popover calendar */
+  --garn-calendar-cell-md: 2rem; /* 32px — default */
+  --garn-calendar-cell-lg: 2.5rem; /* 40px — airy inline calendar */
+  --garn-calendar-cell: var(--garn-calendar-cell-md); /* EFFECTIVE cell edge; the
+      `size` variant reassigns this to -sm / -md / -lg, and cells read it */
+
+  /* modal scrim (semantic color) */
+  --garn-overlay: var(--garn-alpha-black-70);
+
+  /* ===== Elevation — semantic shadows (light) ===================== *
+     A Light/Dark collection (NOT density). Mapped onto Tailwind's
+     --shadow-* below so `shadow-sm|md|lg` are tokenized + mode-aware. */
+  --garn-shadow-sm: 0 1px 2px 0 rgba(23, 24, 27, 0.06);
+  --garn-shadow-md:
+    0 4px 12px -2px rgba(23, 24, 27, 0.1), 0 2px 6px -2px rgba(23, 24, 27, 0.06);
+  --garn-shadow-lg:
+    0 12px 32px -8px rgba(23, 24, 27, 0.16),
+    0 4px 10px -4px rgba(23, 24, 27, 0.08);
+  /* Directional seam shadows for a pinned table column / sticky header / sticky
+     footer — a tight one-edge cast (negative spread keeps it off the perpendicular
+     edges), shown only while content is scrolled under the frozen edge. */
+  --garn-shadow-pin-start: 8px 0 8px -8px rgba(23, 24, 27, 0.22);
+  --garn-shadow-pin-end: -8px 0 8px -8px rgba(23, 24, 27, 0.22);
+  --garn-shadow-pin-bottom: 0 8px 8px -8px rgba(23, 24, 27, 0.22);
+  --garn-shadow-pin-top: 0 -8px 8px -8px rgba(23, 24, 27, 0.22);
+  /* filled-button shadows are composed inline per-variant on the button
+     via --btn-edge; no standalone token needed. */
+
+  /* ===== Motion — semantic ("Glide" vibe) ======================== *
+     Mode-agnostic, like identity geometry: no light/dark or density modes.
+     "Glide" = a confident cubic-out (easeOutCubic) at a 300ms base. Durations
+     ALIAS the ramp above; easings + enter geometry are the Glide curve set.
+     Wired into Tailwind below as the DEFAULT transition timing, so every
+     existing `transition-*` utility adopts Glide with zero component edits. */
+  --garn-motion-instant: var(--garn-duration-100); /* color / opacity hovers, focus rings */
+  --garn-motion-fast: var(--garn-duration-200); /* controls, toggles, switches, accordions */
+  --garn-motion-base: var(--garn-duration-300); /* DEFAULT — content, menus, overlays */
+  --garn-motion-slow: var(--garn-duration-400); /* large overlays: dialog / sheet / drawer */
+  --garn-motion-slower: var(--garn-duration-500); /* page-level, route transitions */
+  --garn-motion-spin: var(--garn-duration-700); /* continuous loop — spinner rotation */
+
+  /* easing — the Glide cubic family (decelerate-led). */
+  --garn-ease-standard: cubic-bezier(0.22, 0.61, 0.36, 1); /* easeOutCubic — default + entrances */
+  --garn-ease-exit: cubic-bezier(0.55, 0.06, 0.68, 0.19); /* easeInCubic — exits accelerate away */
+  --garn-ease-in-out: cubic-bezier(0.65, 0, 0.35, 1); /* easeInOutCubic — moves that return */
+  --garn-ease-out-back: cubic-bezier(0.34, 1.3, 0.64, 1); /* gentle overshoot — a settle that "lands" (drop-to-place) */
+  --garn-ease-linear: linear; /* progress fills, spinners, carets */
+
+  /* enter geometry — how far/much things travel (aliases the space ramp). */
+  --garn-enter-slide: var(--garn-space-12); /* 12px — panel / menu / content rise */
+  --garn-enter-slide-sm: var(--garn-space-8); /* 8px — popover / tooltip nudge */
+  --garn-enter-zoom: 0.96; /* scale origin for zoom-in entrances */
+}
+
+/* ===== density modes (re-declare the size tokens) =============== *
+ * Apply on <html> for a global default, or on any container to scope
+ * density to a region (e.g. a dense data table inside a roomy page).
+ * Each block re-declares the control tokens directly so descendants
+ * inherit the new heights — default density needs no attribute. */
+[data-density="compact"] {
+  /* −4px per rung: 20·24·28·36·40 */
+  --garn-control-h-xs: var(--garn-space-20);
+  --garn-control-h-sm: var(--garn-space-24);
+  --garn-control-h-md: var(--garn-space-28);
+  --garn-control-h-lg: var(--garn-space-36);
+  --garn-control-h-xl: var(--garn-space-40);
+  /* −2px padding */
+  --garn-control-px-xs: var(--garn-space-6);
+  --garn-control-px-sm: var(--garn-space-8);
+  --garn-control-px-md: var(--garn-space-10);
+  --garn-control-px-lg: var(--garn-space-14);
+  --garn-control-px-xl: var(--garn-space-18);
+  /* air − */
+  --garn-pad-surface: var(--garn-space-20);
+  --garn-pad-panel: var(--garn-space-12);
+  --garn-gap-inline: var(--garn-space-2);
+  --garn-gap-field: var(--garn-space-4);
+  --garn-gap-stack: var(--garn-space-12);
+  --garn-gap-section: var(--garn-space-20);
+  --garn-row-h: var(--garn-space-24);
+}
+[data-density="spacious"] {
+  /* +4px per rung: 28·32·36·44·48 */
+  --garn-control-h-xs: var(--garn-space-28);
+  --garn-control-h-sm: var(--garn-space-32);
+  --garn-control-h-md: var(--garn-space-36);
+  --garn-control-h-lg: var(--garn-space-44);
+  --garn-control-h-xl: var(--garn-space-48);
+  /* +2px padding */
+  --garn-control-px-xs: var(--garn-space-10);
+  --garn-control-px-sm: var(--garn-space-12);
+  --garn-control-px-md: var(--garn-space-14);
+  --garn-control-px-lg: var(--garn-space-18);
+  --garn-control-px-xl: var(--garn-space-22);
+  /* air + */
+  --garn-pad-surface: var(--garn-space-28);
+  --garn-pad-panel: var(--garn-space-20);
+  --garn-gap-inline: var(--garn-space-6);
+  --garn-gap-field: var(--garn-space-8);
+  --garn-gap-stack: var(--garn-space-20);
+  --garn-gap-section: var(--garn-space-32);
+  --garn-row-h: var(--garn-space-32);
+}
+
+/* ===== Tier 2 — semantic (dark) ================================= */
+.dark {
+  --garn-background: var(--garn-darkneutral-0);
+  --garn-foreground: var(--garn-darkneutral-1000);
+  /* surface roles (dark) — lift comes from lighter surfaces where shadows
+     can't carry it: raised = the card step, overlay a step lighter still.
+     sunken dips below the canvas via a scrim-black mix (pure #000000 itself
+     stays reserved for the alpha-black scrims). */
+  --garn-surface-sunken: color-mix(in srgb, var(--garn-darkneutral-0), #000000 50%);
+  --garn-surface-raised: var(--garn-darkneutral-25);
+  --garn-surface-overlay: var(--garn-darkneutral-50);
+  --garn-surface-raised-shadow: var(--garn-shadow-sm);
+  --garn-surface-overlay-shadow: var(--garn-shadow-lg);
+  /* Soft fill in dark: one step up from the page (darkneutral-25) so it stays a
+     visible raised tile instead of collapsing into muted / overlay (darkneutral-50). */
+  --garn-surface-soft: var(--garn-darkneutral-25);
+  --garn-card: var(--garn-surface-raised);
+  --garn-card-foreground: var(--garn-darkneutral-1000);
+  --garn-popover: var(--garn-surface-overlay);
+  --garn-popover-foreground: var(--garn-darkneutral-1000);
+  --garn-brand-solid: var(--garn-brand-500);
+  --garn-brand-solid-foreground: #0b1626;
+  --garn-brand-strong: var(--garn-brand-600); /* one step darker than the solid — solid-fill edge/border */
+  --garn-secondary: var(--garn-darkneutral-50);
+  --garn-secondary-foreground: var(--garn-darkneutral-1000);
+  --garn-muted: var(--garn-darkneutral-50);
+  --garn-muted-foreground: var(--garn-darkneutral-700);
+  --garn-accent: var(--garn-darkneutral-100);
+  --garn-accent-foreground: var(--garn-darkneutral-1000);
+  /* interaction state layers — MUST be re-declared here, not inherited: a custom
+     property that nests var(--garn-foreground) has that var substituted at its
+     DECLARING scope (:root = light) and then inherits the resolved colour
+     unchanged, so the :root copies would stay light-foreground on dark surfaces.
+     Re-declaring in .dark re-substitutes the dark foreground (near-white), so the
+     layers correctly lighten dark surfaces instead of darkening them. Same
+     opacities as light (M3 uses one set); revisit if dark needs more lift. */
+  --garn-state-rest: color-mix(in srgb, var(--garn-foreground) 5%, transparent);
+  --garn-state-hover: color-mix(in srgb, var(--garn-foreground) 8%, transparent);
+  --garn-state-active: color-mix(in srgb, var(--garn-foreground) 12%, transparent);
+  --garn-state-selected: color-mix(in srgb, var(--garn-foreground) 12%, transparent);
+  /* edge layers — re-declared for the same reason as the state layers directly
+     above: they nest var(--garn-foreground), which substitutes at the DECLARING
+     scope, so the :root copies would keep a light-foreground edge on dark
+     surfaces. Same opacities as light. */
+  --garn-edge-rest: color-mix(in srgb, var(--garn-foreground) 15%, transparent);
+  --garn-edge-hover: color-mix(in srgb, var(--garn-foreground) 25%, transparent);
+  --garn-edge-strong: color-mix(in srgb, var(--garn-foreground) 40%, transparent);
+  /* re-point the default selected surface at the (now dark-correct) layer — it
+     nests --garn-state-selected, so it needs the same re-declaration. The
+     [data-elevated] cutout override resolves var(--garn-card) at element scope, so
+     it already flips for free and is not repeated here. */
+  --garn-selected-surface: var(--garn-state-selected);
+  /* Destructive keeps white text in both modes — the alarm reads from a
+     saturated red, not from an inverted-text lozenge — so the fill has to stay
+     dark enough to carry it. rosa-600 leaves white at 4.3:1; 700 is the same
+     step light mode already uses and clears AA on both surfaces. */
+  --garn-danger-solid: var(--garn-rosa-700);
+  --garn-danger-solid-foreground: var(--garn-neutral-0);
+  --garn-border: var(--garn-darkneutral-250A);
+  --garn-input: var(--garn-darkneutral-250A);
+  --garn-ring: var(--garn-brand-400);
+  /* named roles (dark) — alias re-declares, same rationale as the light set */
+  --garn-disabled: var(--garn-darkneutral-50);
+  --garn-disabled-foreground: var(--garn-darkneutral-400);
+  --garn-link: var(--garn-brand-400);
+  --garn-link-hover: var(--garn-brand-300);
+  --garn-inverse: var(--garn-darkneutral-900);
+  --garn-inverse-foreground: var(--garn-darkneutral-0);
+  --garn-skeleton: var(--garn-muted);
+
+  /* button bodies + solid fills (dark). Edge/bevel/glow derive from --btn-fill,
+     so they need no dark-specific shadow — the fill tokens below already flip. */
+  --garn-neutral-solid: var(--garn-darkneutral-900); /* inverts → light neutral in dark */
+  --garn-neutral-solid-foreground: var(--garn-darkneutral-0);
+  --garn-brand-subtle: var(--garn-brand-1000); /* deep brand */
+  --garn-brand-subtle-foreground: var(--garn-brand-300);
+  --garn-success-solid: var(--garn-greengrass-400); /* brighter → dark text */
+  --garn-success-solid-foreground: var(--garn-greengrass-1000);
+  --garn-warning-solid: var(--garn-yellow-400);
+  --garn-warning-solid-foreground: var(--garn-yellow-1000);
+  --garn-info-solid: var(--garn-blueblegum-400); /* brighter → dark text */
+  --garn-info-solid-foreground: var(--garn-blueblegum-1000);
+
+  --garn-info: var(--garn-blueblegum-400);
+  --garn-info-subtle: var(--garn-blueblegum-1000);
+  --garn-info-foreground: var(--garn-blueblegum-300);
+  --garn-success: var(--garn-greengrass-400);
+  --garn-success-subtle: var(--garn-greengrass-1000);
+  --garn-success-foreground: var(--garn-greengrass-300);
+  --garn-warning: var(--garn-yellow-400);
+  --garn-warning-subtle: var(--garn-yellow-1000);
+  --garn-warning-foreground: var(--garn-yellow-300);
+  --garn-danger: var(--garn-rosa-400);
+  --garn-danger-subtle: var(--garn-rosa-1000);
+  --garn-danger-foreground: var(--garn-rosa-300);
+  --garn-orange: var(--garn-orange-400);
+  --garn-orange-subtle: var(--garn-orange-1000);
+  --garn-orange-foreground: var(--garn-orange-300);
+  --garn-violet: var(--garn-violet-400);
+  --garn-violet-subtle: var(--garn-violet-1000);
+  --garn-violet-foreground: var(--garn-violet-300);
+
+  /* chart categorical (dark) — brighter 400 step for ≥3:1 on the dark card
+     surface. grid / axis / positive / negative alias semantic roles, but the
+     nested var() substitutes at the declaring scope, so they are re-declared
+     here too — otherwise a subtree .dark keeps the light values (B2). */
+  --garn-chart-1: var(--garn-brand-400);
+  --garn-chart-2: var(--garn-orange-400);
+  --garn-chart-3: var(--garn-violet-400);
+  --garn-chart-4: var(--garn-greengrass-400);
+  --garn-chart-5: var(--garn-pink-400);
+  --garn-chart-6: var(--garn-yellow-400);
+  --garn-chart-7: var(--garn-blueblegum-400);
+  --garn-chart-8: var(--garn-rosa-400);
+  --garn-chart-grid: var(--garn-border);
+  --garn-chart-axis: var(--garn-muted-foreground);
+  --garn-chart-positive: var(--garn-success);
+  --garn-chart-negative: var(--garn-danger);
+
+  /* badge (dark) — deepest 1000 tint + colored 400 text; solid stays a brighter
+     700; neutral becomes a visible elevated gray (darkneutral-200) with light
+     text. neutral `bold`/`edge` are re-declared like the rest: their semantic
+     refs substitute at the declaring scope, so without the re-declare a subtree
+     .dark would render the solid neutral Badge near-black-on-near-black (B2).
+     Measured text-on-fill in dark, soft appearance: success 7.4 · warning 7.8 ·
+     danger 5.6 · info 6.3 · brand 6.3 · discovery 6.3 · neutral 6.0 — all ≥ AA. */
+  --garn-badge-neutral-bg: var(--garn-darkneutral-200);
+  --garn-badge-neutral-fg: var(--garn-neutral-200);
+  --garn-badge-neutral-bold: var(--garn-neutral-solid);
+  --garn-badge-neutral-bold-fg: var(--garn-neutral-solid-foreground);
+  --garn-badge-neutral-edge: var(--garn-border);
+  --garn-badge-brand-bg: var(--garn-brand-1000);
+  --garn-badge-brand-fg: var(--garn-brand-400);
+  --garn-badge-brand-bold: var(--garn-brand-700);
+  --garn-badge-brand-bold-fg: var(--garn-brand-50);
+  --garn-badge-brand-edge: var(--garn-brand-600);
+  --garn-badge-info-bg: var(--garn-blueblegum-1000);
+  --garn-badge-info-fg: var(--garn-blueblegum-400);
+  --garn-badge-info-bold: var(--garn-blueblegum-700);
+  --garn-badge-info-bold-fg: var(--garn-blueblegum-50);
+  --garn-badge-info-edge: var(--garn-blueblegum-600);
+  --garn-badge-success-bg: var(--garn-greengrass-1000);
+  --garn-badge-success-fg: var(--garn-greengrass-400);
+  --garn-badge-success-bold: var(--garn-greengrass-700);
+  --garn-badge-success-bold-fg: var(--garn-greengrass-50);
+  --garn-badge-success-edge: var(--garn-greengrass-600);
+  --garn-badge-warning-bg: var(--garn-yellow-1000);
+  --garn-badge-warning-fg: var(--garn-yellow-400);
+  --garn-badge-warning-bold: var(--garn-yellow-700);
+  --garn-badge-warning-bold-fg: var(--garn-yellow-50);
+  --garn-badge-warning-edge: var(--garn-yellow-600);
+  --garn-badge-danger-bg: var(--garn-rosa-1000);
+  --garn-badge-danger-fg: var(--garn-rosa-400);
+  --garn-badge-danger-bold: var(--garn-rosa-700);
+  --garn-badge-danger-bold-fg: var(--garn-rosa-50);
+  --garn-badge-danger-edge: var(--garn-rosa-600);
+  --garn-badge-discovery-bg: var(--garn-violet-1000);
+  --garn-badge-discovery-fg: var(--garn-violet-400);
+  --garn-badge-discovery-bold: var(--garn-violet-700);
+  --garn-badge-discovery-bold-fg: var(--garn-violet-50);
+  --garn-badge-discovery-edge: var(--garn-violet-600);
+
+  /* avatar presence/status + gallery placeholder — alias re-declares for
+     subtree-.dark correctness (nested var() substitutes at declaring scope). */
+  --garn-avatar-online: var(--garn-success);
+  --garn-avatar-busy: var(--garn-danger);
+  --garn-avatar-focus: var(--garn-violet);
+  --garn-avatar-offline: var(--garn-muted-foreground);
+  --garn-avatar-locked: var(--garn-muted-foreground);
+  --garn-gallery-placeholder: var(--garn-muted);
+
+  /* deeper scrim + shadows so elevation reads on dark surfaces */
+  --garn-overlay: var(--garn-alpha-black-90);
+  --garn-shadow-sm: 0 1px 2px 0 rgba(0, 0, 0, 0.4);
+  --garn-shadow-md:
+    0 4px 12px -2px rgba(0, 0, 0, 0.5), 0 2px 6px -2px rgba(0, 0, 0, 0.4);
+  --garn-shadow-lg:
+    0 16px 40px -8px rgba(0, 0, 0, 0.6), 0 4px 10px -4px rgba(0, 0, 0, 0.45);
+  --garn-shadow-pin-start: 8px 0 8px -8px rgba(0, 0, 0, 0.5);
+  --garn-shadow-pin-end: -8px 0 8px -8px rgba(0, 0, 0, 0.5);
+  --garn-shadow-pin-bottom: 0 8px 8px -8px rgba(0, 0, 0, 0.5);
+  --garn-shadow-pin-top: 0 -8px 8px -8px rgba(0, 0, 0, 0.5);
+}
+
+/* ===== app-shell canvas ↔ variant ==============================
+ * The only tonal difference between the two shell looks is the step
+ * *under* the surfaces — surfaces (--garn-card) stay white; the canvas
+ * (--garn-background) is the variable.
+ *   · framed (default) → canvas keeps its tint (neutral-50 / darkneutral-0);
+ *     white panels float on the step.
+ *   · flush            → collapse the step: alias the canvas to the surface
+ *     color, so shell + panels merge into one sheet and hairlines do all
+ *     the dividing (the low-ornament "clean" look).
+ * Written as an alias (not a literal) so it holds in light AND dark for
+ * free: card resolves to neutral-0 in light, darkneutral-50 in dark. */
+[data-slot="app-shell"][data-variant="flush"] {
+  --garn-background: var(--garn-card);
+}
+
+/* ===== elevated-selected track contract ========================
+ * A tinted track (a soft toolbar bar, a segmented control) marks itself
+ * [data-elevated]; its selected descendants then read --garn-selected-surface as
+ * an opaque card "thumb" + a shadow (via --garn-selected-shadow) instead of the
+ * default translucent layer, so selection keeps a visible boundary on the tint
+ * (WCAG 1.4.11) exactly the way tabs' active trigger cuts out of its muted list.
+ * The reduced-transparency swap is declared FIRST so [data-elevated] (equal
+ * specificity, later in source) still wins for an elevated track. */
+@media (prefers-reduced-transparency: reduce) {
+  /* the default selected layer isn't transparency-critical (the ring carries the
+     boundary), but honour the OS setting — swap the translucent layer for an
+     opaque neutral fill so selection never depends on a see-through tint. Both
+     scopes are needed: var(--garn-secondary) substitutes at its declaring scope,
+     so .dark must re-declare to pick up the dark secondary. */
+  :root {
+    --garn-selected-surface: var(--garn-secondary);
+  }
+  .dark {
+    --garn-selected-surface: var(--garn-secondary);
+  }
+}
+[data-elevated] {
+  --garn-selected-surface: var(--garn-card);
+  --garn-selected-shadow: var(--garn-shadow-sm);
+}
+
+/* ===== expose Tier 2 to Tailwind utilities ====================== */
+@theme inline {
+  --radius-xs: calc(var(--garn-radius) - 4px); /* 4px — micro chips (kbd, tags) */
+  --radius-sm: calc(var(--garn-radius) - 2px);
+  --radius-md: var(--garn-radius);
+  --radius-lg: calc(var(--garn-radius) + 2px);
+  --radius-xl: calc(var(--garn-radius) + 4px);
+
+  /* type family → font-sans / font-mono utilities + the default document font
+     (Tailwind v4 derives --default-font-family from --font-sans). */
+  --font-sans: var(--garn-font-sans);
+  --font-mono: var(--garn-font-mono);
+
+  --color-background: var(--garn-background);
+  --color-foreground: var(--garn-foreground);
+  --color-card: var(--garn-card);
+  --color-card-foreground: var(--garn-card-foreground);
+  --color-popover: var(--garn-popover);
+  --color-popover-foreground: var(--garn-popover-foreground);
+  /* surface roles → bg-surface-sunken / -raised / -overlay / -soft; the paired lifts
+     land as shadow-surface-raised / shadow-surface-overlay utilities. */
+  --color-surface-sunken: var(--garn-surface-sunken);
+  --color-surface-raised: var(--garn-surface-raised);
+  --color-surface-overlay: var(--garn-surface-overlay);
+  --color-surface-soft: var(--garn-surface-soft);
+  --shadow-surface-raised: var(--garn-surface-raised-shadow);
+  --shadow-surface-overlay: var(--garn-surface-overlay-shadow);
+  /* brand fill + accent (bg-brand-solid / text-brand / border-brand …).
+     bare `brand` = the accent color (same value as the solid fill). */
+  --color-brand: var(--garn-brand-solid);
+  --color-brand-solid: var(--garn-brand-solid);
+  --color-brand-solid-foreground: var(--garn-brand-solid-foreground);
+  --color-brand-strong: var(--garn-brand-strong);
+  /* DEPRECATED (one release) — shadcn-era utility names */
+  --color-primary: var(--garn-brand-solid);
+  --color-primary-foreground: var(--garn-brand-solid-foreground);
+  --color-primary-strong: var(--garn-brand-strong);
+  --color-secondary: var(--garn-secondary);
+  --color-secondary-foreground: var(--garn-secondary-foreground);
+  --color-muted: var(--garn-muted);
+  --color-muted-foreground: var(--garn-muted-foreground);
+  --color-accent: var(--garn-accent);
+  --color-accent-foreground: var(--garn-accent-foreground);
+  /* interaction state layers → bg-state-rest / -hover / -active / -selected */
+  --color-state-rest: var(--garn-state-rest);
+  --color-state-hover: var(--garn-state-hover);
+  --color-state-active: var(--garn-state-active);
+  --color-state-selected: var(--garn-state-selected);
+  /* edge layers → border-edge-* / ring-edge-* / bg-edge-* */
+  --color-edge-rest: var(--garn-edge-rest);
+  --color-edge-hover: var(--garn-edge-hover);
+  --color-edge-strong: var(--garn-edge-strong);
+  --color-danger-solid: var(--garn-danger-solid);
+  --color-danger-solid-foreground: var(--garn-danger-solid-foreground);
+  /* DEPRECATED (one release) */
+  --color-destructive: var(--garn-danger-solid);
+  --color-destructive-foreground: var(--garn-danger-solid-foreground);
+  --color-border: var(--garn-border);
+  --color-input: var(--garn-input);
+  --color-ring: var(--garn-ring);
+  /* named roles → bg-disabled / text-disabled-foreground / text-link /
+     bg-inverse / text-inverse-foreground / bg-skeleton utilities */
+  --color-disabled: var(--garn-disabled);
+  --color-disabled-foreground: var(--garn-disabled-foreground);
+  --color-link: var(--garn-link);
+  --color-link-hover: var(--garn-link-hover);
+  --color-inverse: var(--garn-inverse);
+  --color-inverse-foreground: var(--garn-inverse-foreground);
+  --color-skeleton: var(--garn-skeleton);
+
+  /* button bodies + solid fills */
+  --color-neutral-solid: var(--garn-neutral-solid);
+  --color-neutral-solid-foreground: var(--garn-neutral-solid-foreground);
+  --color-brand-subtle: var(--garn-brand-subtle);
+  --color-brand-subtle-foreground: var(--garn-brand-subtle-foreground);
+  /* DEPRECATED (one release) */
+  --color-primary-subtle: var(--garn-brand-subtle);
+  --color-primary-subtle-foreground: var(--garn-brand-subtle-foreground);
+  --color-success-solid: var(--garn-success-solid);
+  --color-success-solid-foreground: var(--garn-success-solid-foreground);
+  --color-warning-solid: var(--garn-warning-solid);
+  --color-warning-solid-foreground: var(--garn-warning-solid-foreground);
+  --color-info-solid: var(--garn-info-solid);
+  --color-info-solid-foreground: var(--garn-info-solid-foreground);
+
+  --color-info: var(--garn-info);
+  --color-info-subtle: var(--garn-info-subtle);
+  --color-info-foreground: var(--garn-info-foreground);
+  --color-success: var(--garn-success);
+  --color-success-subtle: var(--garn-success-subtle);
+  --color-success-foreground: var(--garn-success-foreground);
+  --color-warning: var(--garn-warning);
+  --color-warning-subtle: var(--garn-warning-subtle);
+  --color-warning-foreground: var(--garn-warning-foreground);
+  --color-danger: var(--garn-danger);
+  --color-danger-subtle: var(--garn-danger-subtle);
+  --color-danger-foreground: var(--garn-danger-foreground);
+  --color-orange: var(--garn-orange);
+  --color-orange-subtle: var(--garn-orange-subtle);
+  --color-orange-foreground: var(--garn-orange-foreground);
+  --color-violet: var(--garn-violet);
+  --color-violet-subtle: var(--garn-violet-subtle);
+  --color-violet-foreground: var(--garn-violet-foreground);
+
+  /* chart / data-viz → fill-chart-1 / stroke-chart-N / text-chart-N utilities
+     (for the zero-dep sparkline SVG) and var(--color-chart-N) for a Recharts
+     ChartConfig. Structural + signed tokens exposed the same way. */
+  --color-chart-1: var(--garn-chart-1);
+  --color-chart-2: var(--garn-chart-2);
+  --color-chart-3: var(--garn-chart-3);
+  --color-chart-4: var(--garn-chart-4);
+  --color-chart-5: var(--garn-chart-5);
+  --color-chart-6: var(--garn-chart-6);
+  --color-chart-7: var(--garn-chart-7);
+  --color-chart-8: var(--garn-chart-8);
+  --color-chart-grid: var(--garn-chart-grid);
+  --color-chart-axis: var(--garn-chart-axis);
+  --color-chart-positive: var(--garn-chart-positive);
+  --color-chart-negative: var(--garn-chart-negative);
+
+  /* avatar presence/status → utilities (bg-avatar-online, border-avatar-offline, …) */
+  --color-avatar-online: var(--garn-avatar-online);
+  --color-avatar-busy: var(--garn-avatar-busy);
+  --color-avatar-focus: var(--garn-avatar-focus);
+  --color-avatar-offline: var(--garn-avatar-offline);
+  --color-avatar-locked: var(--garn-avatar-locked);
+
+  --color-overlay: var(--garn-overlay);
+
+  /* elevation → Tailwind shadow utilities now resolve to garn's
+     mode-aware tokens (shadow-sm/md/lg + bare shadow). */
+  --shadow-sm: var(--garn-shadow-sm);
+  --shadow: var(--garn-shadow-sm);
+  --shadow-md: var(--garn-shadow-md);
+  --shadow-lg: var(--garn-shadow-lg);
+
+  /* motion → Tailwind. Making Glide the DEFAULT transition timing means every
+     bare `transition` / `transition-colors` / `transition-all` already in the
+     44 components adopts the curve (and a 200ms base) with no edits — the same
+     zero-touch trick used for elevation. Components opt into other rungs with
+     `duration-[var(--garn-motion-slow)]` and curves with `ease-exit` etc. */
+  --default-transition-duration: var(--garn-motion-fast);
+  --default-transition-timing-function: var(--garn-ease-standard);
+
+  /* easing utilities: ease-standard / ease-exit / ease-in-out (ease-linear is built in) */
+  --ease-standard: var(--garn-ease-standard);
+  --ease-exit: var(--garn-ease-exit);
+  --ease-in-out: var(--garn-ease-in-out);
+
+  /* named animations, all tokenized to the Glide vibe.
+     enter/exit = composite fade + rise + zoom for overlays (data-[state=open]:animate-enter
+     / data-[state=closed]:animate-exit); fade-* for scrims. */
+  --animate-enter: garn-enter var(--garn-motion-base) var(--garn-ease-standard) both;
+  --animate-exit: garn-exit var(--garn-motion-fast) var(--garn-ease-exit) both;
+  --animate-fade-in: garn-fade-in var(--garn-motion-base) var(--garn-ease-standard) both;
+  --animate-fade-out: garn-fade-out var(--garn-motion-fast) var(--garn-ease-exit) both;
+  --animate-accordion-down: accordion-down var(--garn-motion-fast) var(--garn-ease-standard);
+  --animate-accordion-up: accordion-up var(--garn-motion-fast) var(--garn-ease-standard);
+  --animate-caret-blink: caret-blink 1.25s var(--garn-ease-linear) infinite;
+  /* Progress indeterminate — a partial fill sweeps the track left→right at a
+     steady pace (`--garn-ease-linear` is the designated progress-fill/spinner
+     curve, so the sweep reads as continuous "busy" rather than a move that
+     rests at each end). The library-wide prefers-reduced-motion guard (end of
+     file) collapses it. */
+  --animate-progress-indeterminate: progress-indeterminate 1.5s var(--garn-ease-linear) infinite;
+  /* Draw-in — a stroke traced from its start to its end, for status glyphs that
+     resolve in place (Button's success check / error cross). The path must set
+     `pathLength="1"` + `stroke-dasharray="1"` so the offset ramp is unit-based
+     and independent of the glyph's real length. `both` fill matters twice: it
+     holds the undrawn state before the first frame, and — because the
+     reduced-motion guard at the end of this file collapses the duration to
+     ~0ms — it leaves the glyph fully drawn for that audience too. */
+  --animate-draw-in: garn-draw-in var(--garn-motion-fast) var(--garn-ease-standard) both;
+}
+
+@keyframes accordion-down {
+  from {
+    height: 0;
+  }
+  to {
+    height: var(--radix-accordion-content-height);
+  }
+}
+
+@keyframes accordion-up {
+  from {
+    height: var(--radix-accordion-content-height);
+  }
+  to {
+    height: 0;
+  }
+}
+
+@keyframes garn-draw-in {
+  from {
+    stroke-dashoffset: 1;
+  }
+  to {
+    stroke-dashoffset: 0;
+  }
+}
+
+@keyframes caret-blink {
+  0%,
+  70%,
+  100% {
+    opacity: 1;
+  }
+  20%,
+  50% {
+    opacity: 0;
+  }
+}
+
+/* Progress indeterminate sweep — a 40%-wide fill (w-2/5, set in the component)
+   travels from just off the left edge to just off the right. The bounds are
+   tuned to the 40% width so a *linear* loop has minimal dead time at the wrap:
+   −100% = fully off left; 250% = 250%×40% = 100% offset = fully off right. The
+   track's overflow-hidden clips the entering/leaving edges. */
+@keyframes progress-indeterminate {
+  from {
+    transform: translateX(-100%);
+  }
+  to {
+    transform: translateX(250%);
+  }
+}
+
+/* Glide enter/exit — composite fade + rise + zoom. Geometry comes from the
+   --garn-enter-* tokens; timing from --animate-enter / --animate-exit. */
+@keyframes garn-enter {
+  from {
+    opacity: 0;
+    transform: translateY(var(--garn-enter-slide)) scale(var(--garn-enter-zoom));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+@keyframes garn-exit {
+  from {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(var(--garn-enter-slide-sm)) scale(var(--garn-enter-zoom));
+  }
+}
+@keyframes garn-fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes garn-fade-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+/* Calendar month-transition (opt-in `animate`) — a slide+fade in the nav
+   direction. `-end` = the trailing edge (forward / next month), `-start` = the
+   leading edge (backward / previous month). Travel rides --garn-enter-slide;
+   the global prefers-reduced-motion block below neutralizes them. */
+@keyframes garn-cal-in-end {
+  from {
+    opacity: 0;
+    transform: translateX(var(--garn-enter-slide));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes garn-cal-in-start {
+  from {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--garn-enter-slide)));
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+@keyframes garn-cal-out-start {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(calc(-1 * var(--garn-enter-slide)));
+  }
+}
+@keyframes garn-cal-out-end {
+  from {
+    opacity: 1;
+    transform: translateX(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateX(var(--garn-enter-slide));
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* Interactive controls get a pointer cursor. Browsers only default this for
+     links (`a:any-link`); buttons, menus, tabs, etc. otherwise show the arrow.
+     Kept in `@layer base` so a component's own cursor utility still wins:
+     disabled → `cursor-not-allowed`, drag handle → `cursor-grab`, gantt resizer
+     → `cursor-ew-resize`. Text fields are omitted (they keep their I-beam);
+     disabled controls are reset just below. */
+  button,
+  [role="button"],
+  [role="tab"],
+  [role="menuitem"],
+  [role="menuitemcheckbox"],
+  [role="menuitemradio"],
+  [role="option"],
+  [role="switch"],
+  [role="radio"],
+  [role="checkbox"],
+  [role="treeitem"],
+  a[href],
+  [role="link"],
+  label,
+  summary,
+  select,
+  input[type="checkbox"],
+  input[type="radio"],
+  input[type="range"],
+  input[type="file"],
+  input[type="color"],
+  input[type="submit"],
+  input[type="reset"],
+  input[type="button"] {
+    cursor: pointer;
+  }
+  :disabled,
+  [aria-disabled="true"],
+  [data-disabled]:not([data-disabled="false"]) {
+    cursor: not-allowed;
+  }
+}
+
+/* Accessibility — honour the OS "reduce motion" setting library-wide. Unlayered
+   + !important so it overrides every token-driven transition/animation above
+   (and any inline timing). Motion collapses to ~instant; content still arrives. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

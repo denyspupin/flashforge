@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "garn": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "garn-ui@0.4.2",
+        "mcp"
+      ]
+    }
+  }
+}
