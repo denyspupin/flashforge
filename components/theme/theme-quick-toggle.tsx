@@ -4,10 +4,9 @@ import { useSyncExternalStore } from "react"
 import { useQueryClient } from "@tanstack/react-query"
 import { Moon, Sun } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import { queryKeys, useTheme } from "@/hooks"
 import { useThemeStore } from "@/stores"
-import { cn } from "@/lib/utils"
 
 function useResolvedTheme() {
   return useSyncExternalStore(
@@ -49,10 +48,6 @@ export function ThemeQuickToggle() {
       onClick={toggle}
       aria-label={isDark ? "Switch to light theme" : "Switch to dark theme"}
       title={isDark ? "Switch to light theme" : "Switch to dark theme"}
-      className={cn(
-        "h-9 w-9 text-ink/70 hover:bg-ink/5 hover:text-ink",
-        "dark:hover:bg-muted/50"
-      )}
     >
       {isDark ? (
         <Sun className="h-4 w-4" aria-hidden />

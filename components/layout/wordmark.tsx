@@ -20,17 +20,11 @@ export function Wordmark({
       />
       <span
         className={cn(
-          "font-display text-[1.05em] font-medium leading-none tracking-tight",
+          "text-lg font-semibold leading-none tracking-tight",
           textClassName,
         )}
       >
-        Flash
-        <span
-          className="font-display-soft italic text-ember"
-          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-        >
-          forge
-        </span>
+        Flash<span>forge</span>
       </span>
     </span>
   );

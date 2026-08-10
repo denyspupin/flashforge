@@ -1,7 +1,6 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
 import {
@@ -14,12 +13,19 @@ import {
 } from "lucide-react"
 
 import {
+  Avatar,
+  AvatarFallback,
+  AvatarImage,
+  AvatarSkeleton,
+} from "@/components/garn/avatar"
+import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
+  DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/garn/dropdown-menu"
 import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
 
@@ -79,12 +85,7 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
   })
 
   if (!isLoaded) {
-    return (
-      <div
-        aria-hidden
-        className={cn("h-8 w-8 animate-pulse rounded-full bg-ink/10", className)}
-      />
-    )
+    return <AvatarSkeleton size="sm" className={className} />
   }
 
   if (!isSignedIn || !user) {
@@ -101,56 +102,36 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
 
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <button
-            type="button"
-            aria-label="Open user menu"
-            className={cn(
-              "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
-              className,
-            )}
-          />
-        }
-      >
-        <span className="hidden text-sm font-medium text-ink/80 sm:inline">
-          {displayName || "Learner"}
-        </span>
-        <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt=""
-              aria-hidden
-              width={32}
-              height={32}
-              unoptimized
-              className="h-full w-full object-cover"
-            />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center bg-ember/12 font-display text-xs text-ember">
-              {initials}
-            </span>
+      <DropdownMenuTrigger asChild>
+        <button
+          type="button"
+          aria-label="Open user menu"
+          className={cn(
+            "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-border transition-colors hover:bg-state-hover focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-background",
+            className,
           )}
-        </span>
+        >
+          <span className="hidden text-sm font-medium text-foreground sm:inline">
+            {displayName || "Learner"}
+          </span>
+          <Avatar size="sm">
+            {avatarUrl ? (
+              <AvatarImage src={avatarUrl} alt={displayName || "User"} />
+            ) : (
+              <AvatarFallback>{initials}</AvatarFallback>
+            )}
+          </Avatar>
+        </button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         <div className="flex items-center gap-3 px-2.5 py-2.5">
-          {avatarUrl ? (
-            <Image
-              src={avatarUrl}
-              alt=""
-              aria-hidden
-              width={36}
-              height={36}
-              unoptimized
-              className="h-9 w-9 shrink-0 rounded-full object-cover"
-            />
-          ) : (
-            <div className="flex h-9 w-9 shrink-0 items-center justify-center rounded-full bg-ember/12 font-display text-sm text-ember">
-              {initials}
-            </div>
-          )}
+          <Avatar size="md">
+            {avatarUrl ? (
+              <AvatarImage src={avatarUrl} alt={displayName || "User"} />
+            ) : (
+              <AvatarFallback>{initials}</AvatarFallback>
+            )}
+          </Avatar>
           <div className="min-w-0 flex-1">
             <p className="truncate text-sm font-medium">
               {displayName || "Learner"}
@@ -176,19 +157,17 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
         </DropdownMenuItem>
 
         {meData?.data?.role === "admin" ? (
-          <>
-            <DropdownMenuItem onClick={() => router.push("/admin")}>
-              <Shield className="h-4 w-4" />
-              Admin
-            </DropdownMenuItem>
-          </>
+          <DropdownMenuItem onClick={() => router.push("/admin")}>
+            <Shield className="h-4 w-4" />
+            Admin
+          </DropdownMenuItem>
         ) : null}
 
         <DropdownMenuSeparator />
 
-        <p className="px-2 pt-1.5 pb-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
+        <DropdownMenuLabel className="pt-1.5 pb-1 text-xs font-medium uppercase tracking-widest text-muted-foreground">
           Account
-        </p>
+        </DropdownMenuLabel>
         <DropdownMenuItem onClick={() => router.push("/profile")}>
           <UserIcon className="h-4 w-4" />
           Profile
@@ -201,7 +180,7 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
         <DropdownMenuSeparator />
 
         <DropdownMenuItem
-          variant="destructive"
+          className="text-danger focus:text-danger"
           onClick={() => signOut({ redirectUrl })}
         >
           <LogOut className="h-4 w-4" />

@@ -11,11 +11,9 @@ import {
 
 import { auth } from "@clerk/nextjs/server"
 
-import { AppHeader } from "@/components/layout/app-header"
 import { HeaderActions } from "@/components/layout/header-actions"
-import { MobileNav } from "@/components/layout/mobile-nav"
-import { MobileUserFooter } from "@/components/layout/mobile-user-footer"
-import { MobileAuthFooter } from "@/components/landing/mobile-auth-footer"
+import { Wordmark } from "@/components/layout/wordmark"
+import { SiteMobileNav } from "@/components/landing/site-mobile-nav"
 
 type NavItem = { href: string; label: string; icon: ReactNode }
 
@@ -67,34 +65,28 @@ const DASHBOARD_NAV_ITEMS: NavItem[] = [
 
 function PublicNav() {
   return (
-    <nav className="flex items-center gap-1">
+    <nav className="hidden items-center gap-1 md:flex">
       <Link
         href="/explore"
-        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
+        className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         Explore
       </Link>
       <Link
         href="/#process"
-        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
+        className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         How it works
       </Link>
       <Link
         href="/#library"
-        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
+        className="rounded-md px-3 py-1.5 text-sm text-muted-foreground transition-colors hover:text-foreground"
       >
         Library
       </Link>
     </nav>
   )
 }
-
-const BRAND = (
-  <span className="font-display text-lg font-medium tracking-tight text-ink">
-    Flash<span className="font-display-soft italic text-ember">forge</span>
-  </span>
-)
 
 export async function SiteHeader() {
   const { userId } = await auth()
@@ -105,17 +97,22 @@ export async function SiteHeader() {
     : PUBLIC_NAV_ITEMS
 
   return (
-    <AppHeader
-      brandHref={signedIn ? "/dashboard" : "/"}
-      nav={<PublicNav />}
-      actions={<HeaderActions />}
-      mobileNav={
-        <MobileNav
-          items={mobileItems}
-          brand={BRAND}
-          footer={signedIn ? <MobileUserFooter /> : <MobileAuthFooter />}
-        />
-      }
-    />
+    <header className="sticky top-0 z-50 border-b border-border bg-background/70 backdrop-blur-md">
+      <div className="mx-auto flex h-16 max-w-[1280px] items-center gap-4 px-5 sm:gap-6 sm:px-6 lg:gap-8 lg:px-10">
+        <Link
+          href={signedIn ? "/dashboard" : "/"}
+          className="group flex shrink-0 items-center text-foreground transition-opacity hover:opacity-80"
+        >
+          <Wordmark />
+        </Link>
+
+        <PublicNav />
+
+        <div className="ml-auto flex items-center gap-2">
+          <HeaderActions />
+          <SiteMobileNav items={mobileItems} signedIn={signedIn} />
+        </div>
+      </div>
+    </header>
   )
 }

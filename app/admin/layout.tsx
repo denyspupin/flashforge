@@ -1,5 +1,5 @@
 import { redirect } from "next/navigation"
-import { AdminShell } from "@/components/layout/admin-chrome"
+import { AdminAppShell } from "@/components/layout/admin-app-shell"
 import { requireAdmin } from "@/lib/auth/user"
 
 export default async function AdminLayout({
@@ -13,5 +13,5 @@ export default async function AdminLayout({
     redirect("/dashboard")
   }
 
-  return <AdminShell>{children}</AdminShell>
+  return <AdminAppShell>{children}</AdminAppShell>
 }

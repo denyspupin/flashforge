@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { Show } from "@clerk/nextjs"
 import { LayoutDashboard, Plus } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import { UserMenu } from "@/components/layout/user-menu"
 import { cn } from "@/lib/utils"
 
@@ -15,22 +15,14 @@ export function HeaderActions({ className }: { className?: string }) {
         fallback={
           <Show when="signed-in">
             <Link href="/dashboard" className="hidden sm:block">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
-              >
-                <LayoutDashboard className="mr-1.5 h-4 w-4" />
+              <Button variant="ghost" size="sm">
+                <LayoutDashboard />
                 Dashboard
               </Button>
             </Link>
             <Link href="/decks" className="hidden sm:block">
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
-              >
-                <Plus className="mr-1.5 h-4 w-4" />
+              <Button variant="ghost" size="sm">
+                <Plus />
                 New deck
               </Button>
             </Link>
@@ -41,21 +33,12 @@ export function HeaderActions({ className }: { className?: string }) {
         }
       >
         <Link href="/login" className="hidden sm:inline-flex">
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
-          >
+          <Button variant="ghost" size="sm">
             Sign in
           </Button>
         </Link>
         <Link href="/register" className="hidden sm:inline-flex">
-          <Button
-            size="sm"
-            className="h-9 sm:h-9 rounded-full bg-ink px-4 sm:px-4 text-paper hover:bg-ink/85"
-          >
-            Start forging
-          </Button>
+          <Button size="sm">Start forging</Button>
         </Link>
       </Show>
     </div>
