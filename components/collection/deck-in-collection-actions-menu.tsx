@@ -2,13 +2,13 @@
 
 import { Loader2, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Button } from "@/components/garn/button"
 import {
   DropdownMenu,
   DropdownMenuContent,
   DropdownMenuItem,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/garn/dropdown-menu"
 import { cn } from "@/lib/utils"
 
 type DeckInCollectionActionsMenuProps = {
@@ -28,22 +28,20 @@ export function DeckInCollectionActionsMenu({
 }: DeckInCollectionActionsMenuProps) {
   return (
     <DropdownMenu>
-      <DropdownMenuTrigger
-        render={
-          <Button
-            variant="ghost"
-            size="icon"
-            aria-label={`Actions for ${deckTitle}`}
-            className={cn("h-8 w-8", triggerClassName)}
-            disabled={removing}
-          />
-        }
-      >
-        {removing ? (
-          <Loader2 className="h-4 w-4 animate-spin" />
-        ) : (
-          <MoreHorizontal className="h-4 w-4" />
-        )}
+      <DropdownMenuTrigger asChild>
+        <Button
+          variant="ghost"
+          size="icon"
+          aria-label={`Actions for ${deckTitle}`}
+          className={cn("h-8 w-8", triggerClassName)}
+          disabled={removing}
+        >
+          {removing ? (
+            <Loader2 className="h-4 w-4 animate-spin" />
+          ) : (
+            <MoreHorizontal className="h-4 w-4" />
+          )}
+        </Button>
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" onClick={(e) => e.stopPropagation()}>
         {onEdit && (

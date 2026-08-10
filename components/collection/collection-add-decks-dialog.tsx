@@ -3,16 +3,16 @@
 import { useMemo, useState } from "react"
 import { Check, Plus, Search, X } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/garn/alert"
+import { Button } from "@/components/garn/button"
 import {
   Dialog,
-  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
+} from "@/components/garn/dialog"
+import { Input } from "@/components/garn/input"
 import { useAddDecksToCollection } from "@/hooks/use-add-decks-to-collection"
 import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
@@ -104,7 +104,6 @@ export function CollectionAddDecksDialog({
   return (
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent className="flex max-h-[calc(100vh-2rem)] flex-col sm:max-w-[560px]">
-        <DialogCloseButton />
         <DialogHeader>
           <DialogTitle>Add Decks to Collection</DialogTitle>
           <DialogDescription>
@@ -139,7 +138,7 @@ export function CollectionAddDecksDialog({
             role="status"
             className="flex items-center gap-2 border-b px-1 pb-2 text-sm text-muted-foreground"
           >
-            <Check className="h-3.5 w-3.5 text-primary" />
+            <Check className="h-3.5 w-3.5 text-brand-solid" />
             <span>
               Added {lastAddedCount}{" "}
               {lastAddedCount === 1 ? "deck" : "decks"} to the collection.
@@ -148,14 +147,13 @@ export function CollectionAddDecksDialog({
         )}
 
         {addMutation.isError && (
-          <div
-            role="alert"
-            className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-          >
-            {addMutation.error instanceof Error
-              ? addMutation.error.message
-              : "Couldn’t add decks. Try again."}
-          </div>
+          <Alert tone="danger">
+            <AlertDescription>
+              {addMutation.error instanceof Error
+                ? addMutation.error.message
+                : "Couldn’t add decks. Try again."}
+            </AlertDescription>
+          </Alert>
         )}
 
         <div className="flex items-center justify-between text-xs text-muted-foreground">
@@ -224,7 +222,7 @@ export function CollectionAddDecksDialog({
                       className={cn(
                         "flex w-full items-start gap-3 rounded-lg border p-3 text-left transition-colors",
                         isSelected
-                          ? "border-primary bg-primary/5"
+                          ? "border-brand bg-brand-subtle"
                           : "hover:border-foreground/20 hover:bg-muted/40"
                       )}
                     >
@@ -232,7 +230,7 @@ export function CollectionAddDecksDialog({
                         className={cn(
                           "mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded border transition-colors",
                           isSelected
-                            ? "border-primary bg-primary text-primary-foreground"
+                            ? "border-brand-solid bg-brand-solid text-brand-solid-foreground"
                             : "border-input bg-background"
                         )}
                         aria-hidden
@@ -250,7 +248,7 @@ export function CollectionAddDecksDialog({
                         )}
                         <span className="text-muted-foreground mt-1 flex flex-wrap items-center gap-x-2 gap-y-0.5 text-xs">
                           {source && target && (
-                            <span className="font-mono-tag uppercase tracking-widest">
+                            <span className="font-mono uppercase tracking-widest text-muted-foreground">
                               {source.flag && (
                                 <span
                                   className="mr-1 text-sm leading-none"
@@ -260,7 +258,7 @@ export function CollectionAddDecksDialog({
                                 </span>
                               )}
                               {source.name}
-                              <span className="px-1 text-ink/30">→</span>
+                              <span className="px-1 text-muted-foreground/50">→</span>
                               {target.flag && (
                                 <span
                                   className="mr-1 text-sm leading-none"

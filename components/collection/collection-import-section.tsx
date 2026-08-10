@@ -8,14 +8,15 @@ import {
   Copy,
   FileUp,
   Layers,
-  Loader2,
   Upload,
   Wand2,
   X,
 } from "lucide-react"
 
-import { Button } from "@/components/ui/button"
-import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription } from "@/components/garn/alert"
+import { Button } from "@/components/garn/button"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import { useCollectionImport } from "@/hooks/use-collection-import"
 import { COLLECTION_GENERATION_PROMPT } from "@/lib/ai-prompt"
 import {
@@ -297,7 +298,7 @@ export function CollectionImportSection({
       )}
 
       {!parsed && (
-        <div className="rounded-lg border border-primary/30 bg-primary/5">
+        <div className="rounded-lg border border-brand/30 bg-brand-subtle">
           <div className="flex items-center justify-between gap-2 px-3 py-2 text-sm font-medium">
             <button
               type="button"
@@ -305,11 +306,11 @@ export function CollectionImportSection({
               aria-expanded={promptOpen}
               className="flex min-w-0 flex-1 items-center gap-2 text-left"
             >
-              <Wand2 className="h-4 w-4 shrink-0 text-primary" />
+              <Wand2 className="h-4 w-4 shrink-0 text-brand-solid" />
               <span className="truncate">
                 Generate a collection with AI
               </span>
-              <span className="ml-1 rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-primary">
+              <span className="ml-1 rounded-md bg-brand-subtle px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-brand-solid">
                 Prompt included
               </span>
               <ChevronDown
@@ -332,7 +333,7 @@ export function CollectionImportSection({
             </Button>
           </div>
           {promptOpen && (
-            <div className="space-y-2 border-t border-primary/20 px-3 py-3">
+            <div className="space-y-2 border-t border-brand/20 px-3 py-3">
               <div className="flex items-start justify-between gap-2">
                 <p className="text-xs text-muted-foreground">
                   Paste this prompt into any AI chat (ChatGPT, Claude, Gemini…)
@@ -341,14 +342,14 @@ export function CollectionImportSection({
                   and import it above.
                 </p>
                 {promptVersion !== null ? (
-                  <span className="text-muted-foreground shrink-0 rounded-md bg-ink/5 px-1.5 py-0.5 font-mono text-[10px]">
+                  <span className="text-muted-foreground shrink-0 rounded-md bg-foreground/5 px-1.5 py-0.5 font-mono text-[10px]">
                     v{promptVersion}
                   </span>
                 ) : null}
               </div>
               {activePromptQuery.isLoading ? (
                 <div className="text-muted-foreground flex items-center gap-2 rounded-md border bg-background p-3 text-xs">
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" />
                   Loading latest prompt…
                 </div>
               ) : (
@@ -368,12 +369,9 @@ export function CollectionImportSection({
       )}
 
       {parseError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-        >
-          {parseError}
-        </div>
+        <Alert tone="danger">
+          <AlertDescription>{parseError}</AlertDescription>
+        </Alert>
       )}
 
       {parsed && (
@@ -410,35 +408,32 @@ export function CollectionImportSection({
           </div>
 
           {parsed.decks.length > COLLECTION_EXPORT.MAX_IMPORT_DECKS && (
-            <div
-              role="alert"
-              className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-            >
-              File contains {parsed.decks.length} decks (max{" "}
-              {COLLECTION_EXPORT.MAX_IMPORT_DECKS}).
-            </div>
+            <Alert tone="danger">
+              <AlertDescription>
+                File contains {parsed.decks.length} decks (max{" "}
+                {COLLECTION_EXPORT.MAX_IMPORT_DECKS}).
+              </AlertDescription>
+            </Alert>
           )}
           {totalCards > COLLECTION_EXPORT.MAX_IMPORT_CARDS && (
-            <div
-              role="alert"
-              className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-            >
-              File contains {totalCards} cards (max{" "}
-              {COLLECTION_EXPORT.MAX_IMPORT_CARDS}).
-            </div>
+            <Alert tone="danger">
+              <AlertDescription>
+                File contains {totalCards} cards (max{" "}
+                {COLLECTION_EXPORT.MAX_IMPORT_CARDS}).
+              </AlertDescription>
+            </Alert>
           )}
         </div>
       )}
 
       {importMutation.isError && (
-        <div
-          role="alert"
-          className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-        >
-          {importMutation.error instanceof Error
-            ? importMutation.error.message
-            : "Import failed. Try again."}
-        </div>
+        <Alert tone="danger">
+          <AlertDescription>
+            {importMutation.error instanceof Error
+              ? importMutation.error.message
+              : "Import failed. Try again."}
+          </AlertDescription>
+        </Alert>
       )}
 
       <Button

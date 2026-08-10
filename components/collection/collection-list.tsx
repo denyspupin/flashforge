@@ -7,18 +7,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
 import { Globe, Plus, Wand2 } from "lucide-react"
+import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
+import { Alert, AlertDescription } from "@/components/garn/alert"
+import { Button } from "@/components/garn/button"
 import {
   Dialog,
   DialogClose,
-  DialogCloseButton,
   DialogContent,
   DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
-} from "@/components/ui/dialog"
+} from "@/components/garn/dialog"
 import {
   Form,
   FormControl,
@@ -26,17 +27,17 @@ import {
   FormItem,
   FormLabel,
   FormMessage,
-} from "@/components/ui/form"
-import { Input } from "@/components/ui/input"
-import { Switch } from "@/components/ui/switch"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/garn/form"
+import { Input } from "@/components/garn/input"
+import { Switch } from "@/components/garn/switch"
+import { Textarea } from "@/components/garn/textarea"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/garn/select"
 import {
   CollectionCard,
   CollectionCardEmptyState,
@@ -60,9 +61,6 @@ const createCollectionSchema = z.object({
 })
 
 type CreateCollectionInput = z.infer<typeof createCollectionSchema>
-
-const languageItems = (languages: Language[]) =>
-  Object.fromEntries(languages.map((l) => [l.id, l.name]))
 
 async function fetchCollections(): Promise<{ data: Collection[] }> {
   const res = await fetch("/api/v1/collections")
@@ -133,6 +131,7 @@ export default function CollectionList() {
       setMode("create")
       form.reset()
       setSubmitError(null)
+      toast.success("Collection created")
     },
     onError: (error) => {
       setSubmitError(
@@ -146,6 +145,7 @@ export default function CollectionList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      toast.success("Collection deleted")
     },
   })
 
@@ -155,6 +155,7 @@ export default function CollectionList() {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       queryClient.invalidateQueries({ queryKey: ["community-collections"] })
+      toast.success("Collection published")
     },
   })
 
@@ -164,6 +165,7 @@ export default function CollectionList() {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
       queryClient.invalidateQueries({ queryKey: ["community-collections"] })
+      toast.success("Collection made private")
     },
   })
 
@@ -222,12 +224,13 @@ export default function CollectionList() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
-            <Plus className="mr-2 h-4 w-4" />
-            New Collection
+          <DialogTrigger asChild>
+            <Button className="w-full sm:w-auto">
+              <Plus className="mr-2 h-4 w-4" />
+              New Collection
+            </Button>
           </DialogTrigger>
           <DialogContent className="flex max-h-[calc(100vh-2rem)] flex-col sm:max-w-[560px]">
-            <DialogCloseButton />
             <DialogHeader>
               <DialogTitle>Create New Collection</DialogTitle>
               <DialogDescription>
@@ -281,12 +284,9 @@ export default function CollectionList() {
                     noValidate
                   >
                     {submitError && (
-                      <div
-                        role="alert"
-                        className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-                      >
-                        {submitError}
-                      </div>
+                      <Alert tone="danger">
+                        <AlertDescription>{submitError}</AlertDescription>
+                      </Alert>
                     )}
                     <FormField
                       control={form.control}
@@ -330,9 +330,8 @@ export default function CollectionList() {
                               </span>
                             </FormLabel>
                             <Select
-                              items={languageItems(languages)}
-                              value={field.value || null}
-                              onValueChange={(v) => field.onChange(v ?? "")}
+                              value={field.value || undefined}
+                              onValueChange={field.onChange}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -371,9 +370,8 @@ export default function CollectionList() {
                               </span>
                             </FormLabel>
                             <Select
-                              items={languageItems(languages)}
-                              value={field.value || null}
-                              onValueChange={(v) => field.onChange(v ?? "")}
+                              value={field.value || undefined}
+                              onValueChange={field.onChange}
                             >
                               <FormControl>
                                 <SelectTrigger>
@@ -418,7 +416,7 @@ export default function CollectionList() {
                               <Globe
                                 className={cn(
                                   "h-5 w-5 transition-colors",
-                                  isPublic ? "text-primary" : "text-muted-foreground/60"
+                                  isPublic ? "text-brand-solid" : "text-muted-foreground/60"
                                 )}
                                 aria-hidden
                               />
@@ -453,8 +451,10 @@ export default function CollectionList() {
             </div>
 
             <div className="flex justify-end border-t pt-3">
-              <DialogClose render={<Button type="button" variant="outline" />}>
-                Cancel
+              <DialogClose asChild>
+                <Button type="button" variant="outline">
+                  Cancel
+                </Button>
               </DialogClose>
             </div>
           </DialogContent>

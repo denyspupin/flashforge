@@ -4,14 +4,15 @@ import Link from "next/link";
 import { ArrowRight, Award, Copy, Globe, Layers, Library, Lock } from "lucide-react";
 import type { ReactNode } from "react";
 
-import { Badge } from "@/components/ui/badge";
+import { Badge } from "@/components/garn/badge";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
+} from "@/components/garn/card";
+import { Skeleton } from "@/components/garn/skeleton";
 import { cn } from "@/lib/utils";
 import type { Collection } from "@/types/collection";
 
@@ -55,14 +56,14 @@ function CollectionCard({
         <div className="flex items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             {hasLanguagePair ? (
-              <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70">
+              <div className="flex flex-wrap items-center gap-1.5 font-mono text-sm font-medium uppercase tracking-wider text-muted-foreground">
                 {languageNames!.sourceFlag && (
                   <span className="text-base leading-none" aria-hidden>
                     {languageNames!.sourceFlag}
                   </span>
                 )}
                 <span>{languageNames!.source}</span>
-                <span className="text-ink/30">→</span>
+                <span className="text-muted-foreground/50">→</span>
                 {languageNames!.targetFlag && (
                   <span className="text-base leading-none" aria-hidden>
                     {languageNames!.targetFlag}
@@ -71,14 +72,14 @@ function CollectionCard({
                 <span>{languageNames!.target}</span>
               </div>
             ) : (
-              <div className="font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70 opacity-0">
+              <div className="font-mono text-sm font-medium uppercase tracking-wider text-muted-foreground opacity-0">
                 placeholder
               </div>
             )}
             <CardTitle className="mt-1 line-clamp-1 text-lg">
               <Link
                 href={href}
-                className="rounded-sm outline-none transition-colors hover:text-ink/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+                className="rounded-sm outline-none transition-colors hover:text-foreground/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
               >
                 {collection.title}
               </Link>
@@ -125,7 +126,7 @@ function CollectionCard({
             href={href}
             aria-label={`Open ${collection.title}`}
             title="Open"
-            className="inline-flex h-11 w-11 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-ink text-paper scale-90 opacity-0 shadow-sm transition-[opacity,transform,background-color] duration-200 ease-out hover:bg-ink/90 group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-visible:scale-100 focus-visible:opacity-100 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100"
+            className="inline-flex h-11 w-11 sm:h-8 sm:w-8 shrink-0 items-center justify-center rounded-full bg-foreground text-background shadow-sm transition-colors hover:bg-foreground/90 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           >
             <ArrowRight className="h-4 w-4" />
           </Link>
@@ -137,17 +138,17 @@ function CollectionCard({
 
 function CollectionCardSkeleton() {
   return (
-    <Card className="animate-pulse py-5">
+    <Card className="py-5">
       <CardHeader className="px-5">
-        <div className="h-3 w-20 rounded bg-muted" />
-        <div className="mt-3 h-5 w-3/4 rounded bg-muted" />
-        <div className="mt-2 h-3 w-full rounded bg-muted" />
-        <div className="h-3 w-2/3 rounded bg-muted" />
+        <Skeleton className="h-3 w-20" />
+        <Skeleton className="mt-3 h-5 w-3/4" />
+        <Skeleton className="mt-2 h-3 w-full" />
+        <Skeleton className="h-3 w-2/3" />
       </CardHeader>
       <CardContent className="px-5">
         <div className="flex gap-2">
-          <div className="h-5 w-16 rounded-full bg-muted" />
-          <div className="h-5 w-12 rounded-full bg-muted" />
+          <Skeleton className="h-5 w-16 rounded-full" />
+          <Skeleton className="h-5 w-12 rounded-full" />
         </div>
       </CardContent>
     </Card>
@@ -179,7 +180,7 @@ function VisibilityBadge({
   visibility: Collection["visibility"];
 }) {
   return (
-    <Badge variant={visibility === "public" ? "default" : "secondary"}>
+    <Badge tone={visibility === "public" ? "brand" : "neutral"}>
       {visibility === "public" ? (
         <Globe className="h-3 w-3" />
       ) : (
@@ -192,7 +193,7 @@ function VisibilityBadge({
 
 function CuratedBadge() {
   return (
-    <Badge variant="highlight">
+    <Badge tone="brand" appearance="solid">
       <Award className="h-3 w-3" />
       Curated
     </Badge>
@@ -201,7 +202,7 @@ function CuratedBadge() {
 
 function ForkedBadge() {
   return (
-    <Badge variant="outline">
+    <Badge appearance="outline">
       <Copy className="h-3 w-3" />
       Forked
     </Badge>

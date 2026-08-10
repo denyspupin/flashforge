@@ -11,7 +11,6 @@ import {
   Globe,
   Layers,
   Copy,
-  Loader2,
   User,
   Library,
   Lock,
@@ -20,12 +19,26 @@ import {
   Save,
   X,
 } from "lucide-react"
+import { toast } from "sonner"
 
-import { Button } from "@/components/ui/button"
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { Input } from "@/components/ui/input"
-import { Textarea } from "@/components/ui/textarea"
+import { Alert, AlertDescription } from "@/components/garn/alert"
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/garn/alert-dialog"
+import { Badge } from "@/components/garn/badge"
+import { Button, buttonVariants } from "@/components/garn/button"
+import { Card } from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -248,6 +261,7 @@ export default function CollectionDetail({
   const [pendingAction, setPendingAction] =
     useState<"fork" | "study" | null>(null)
   const [removingDeckId, setRemovingDeckId] = useState<string | null>(null)
+  const [confirmDeleteOpen, setConfirmDeleteOpen] = useState(false)
 
   const publicQuery = useQuery({
     queryKey: queryKeys.publicCollection(collectionId),
@@ -321,6 +335,7 @@ export default function CollectionDetail({
     mutationFn: () => forkCollection(collectionId),
     onSuccess: (result) => {
       invalidateAll()
+      toast.success("Collection forked")
       startNavigate(() => router.push(`/collections/${result.data.id}`))
     },
     onError: (error) => {
@@ -358,6 +373,7 @@ export default function CollectionDetail({
     onSuccess: () => {
       invalidateAll()
       setEditing(false)
+      toast.success("Collection updated")
     },
   })
 
@@ -367,6 +383,7 @@ export default function CollectionDetail({
     onSuccess: () => {
       setRemovingDeckId(null)
       invalidateAll()
+      toast.success("Deck removed from collection")
     },
     onError: (error) => {
       setActionError(
@@ -380,6 +397,7 @@ export default function CollectionDetail({
     mutationFn: (publish: boolean) => togglePublish(collectionId, publish),
     onSuccess: () => {
       invalidateAll()
+      toast.success("Collection visibility updated")
     },
     onError: (error) => {
       setActionError(
@@ -395,6 +413,7 @@ export default function CollectionDetail({
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+      toast.success("Collection deleted")
       startNavigate(() => router.push(backHref))
     },
     onError: (error) => {
@@ -431,9 +450,6 @@ export default function CollectionDetail({
   }
 
   const onDelete = () => {
-    if (typeof window !== "undefined" && !window.confirm("Delete this collection? This can’t be undone.")) {
-      return
-    }
     setActionError(null)
     deleteMutation.mutate()
   }
@@ -441,8 +457,10 @@ export default function CollectionDetail({
   if (isLoading) {
     return (
       <main className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
-        <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
-        <div className="h-32 bg-muted animate-pulse rounded" />
+        <div className="mb-4 space-y-4" aria-hidden>
+          <Skeleton className="h-8 w-48" />
+          <Skeleton className="h-32 w-full" />
+        </div>
       </main>
     )
   }
@@ -509,7 +527,7 @@ export default function CollectionDetail({
           )}
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
-          <Badge variant={isPublic ? "default" : "secondary"}>
+          <Badge tone={isPublic ? "brand" : "neutral"}>
             {isPublic ? (
               <Globe className="h-3 w-3" />
             ) : (
@@ -518,7 +536,7 @@ export default function CollectionDetail({
             {isPublic ? "Public" : "Private"}
           </Badge>
           {collection.isCurated && (
-            <Badge variant="highlight">
+            <Badge tone="brand" appearance="solid">
               <Award className="h-3 w-3" />
               Curated
             </Badge>
@@ -541,7 +559,7 @@ export default function CollectionDetail({
         <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
           <span className="inline-flex items-center gap-1.5">
             <User className="h-3.5 w-3.5" />
-            <span className="font-medium text-ink/80">
+            <span className="font-medium text-foreground/80">
               {collection.creatorName}
             </span>
           </span>
@@ -585,7 +603,7 @@ export default function CollectionDetail({
               }}
               onEdit={() => setEditing(true)}
               onTogglePublish={onTogglePublish}
-              onDelete={onDelete}
+              onDelete={() => setConfirmDeleteOpen(true)}
               triggerClassName="h-8 w-8"
             />
           </div>
@@ -598,7 +616,7 @@ export default function CollectionDetail({
               className="w-full sm:w-auto"
             >
               {pendingAction === "fork" ? (
-                <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+                <Spinner size="sm" />
               ) : (
                 <Copy className="mr-1.5 h-4 w-4" />
               )}
@@ -619,12 +637,9 @@ export default function CollectionDetail({
       </div>
 
       {actionError && (
-        <div
-          role="alert"
-          className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-        >
-          {actionError}
-        </div>
+        <Alert tone="danger" className="mb-4">
+          <AlertDescription>{actionError}</AlertDescription>
+        </Alert>
       )}
 
       <h2 className="mb-3 text-lg font-semibold">Decks in this collection</h2>
@@ -742,6 +757,28 @@ export default function CollectionDetail({
           {pendingAction === "study" ? "Starting study session…" : "Forking…"}
         </span>
       )}
+
+      <AlertDialog open={confirmDeleteOpen} onOpenChange={setConfirmDeleteOpen}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Delete this collection?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This can’t be undone. All decks and study history in this
+              collection will be permanently removed.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className={buttonVariants({ tone: "danger" })}
+              onClick={onDelete}
+              disabled={deleteMutation.isPending}
+            >
+              {deleteMutation.isPending ? "Deleting..." : "Delete"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </main>
   )
 }
@@ -766,14 +803,14 @@ function CollectionEditForm({
         value={title}
         onChange={(e) => setTitle(e.target.value)}
         placeholder="Collection title"
-        className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
+        className="h-auto bg-background py-1 text-xl font-bold"
         autoFocus
       />
       <Textarea
         value={description}
         onChange={(e) => setDescription(e.target.value)}
         placeholder="Description"
-        className="min-h-[60px] bg-white dark:bg-input/30"
+        className="min-h-[60px] bg-background"
       />
       <div className="flex justify-end gap-2">
         <Button size="sm" onClick={() => onSave({ title, description })} disabled={saving}>
