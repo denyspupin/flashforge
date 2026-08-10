@@ -6,18 +6,27 @@ import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Award, Eye, EyeOff, Library, Search, Trash2 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
+import { Card, CardContent } from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/garn/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TablePagination,
+  TableRow,
+} from "@/components/garn/table"
 import { queryKeys, type AdminDeckFilters } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
 import type { AdminDeckListResult } from "@/lib/queries/admin-decks"
@@ -183,7 +192,7 @@ export function AdminDecksView() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-destructive p-6 text-sm">
+            <div className="text-danger p-6 text-sm">
               Failed to load decks
             </div>
           ) : !data || data.items.length === 0 ? (
@@ -191,125 +200,106 @@ export function AdminDecksView() {
               No decks match these filters
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-ink/8 text-muted-foreground border-b text-left font-mono-tag text-[10px] uppercase tracking-widest">
-                    <th className="px-4 py-2.5 font-medium">Deck</th>
-                    <th className="px-4 py-2.5 font-medium">Visibility</th>
-                    <th className="px-4 py-2.5 text-right font-medium">Cards</th>
-                    <th className="px-4 py-2.5 text-right font-medium">Sessions</th>
-                    <th className="px-4 py-2.5 font-medium">Creator</th>
-                    <th className="px-4 py-2.5 font-medium">Created</th>
-                    <th className="px-4 py-2.5" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((deck) => (
-                    <tr
-                      key={deck.id}
-                      className={cn(
-                        "border-ink/8 hover:bg-ink/3 border-b transition-colors",
-                        deck.deletedAt && "opacity-60"
+            <Table>
+              <TableHeader>
+                <TableRow className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">
+                  <TableHead>Deck</TableHead>
+                  <TableHead>Visibility</TableHead>
+                  <TableHead className="text-right">Cards</TableHead>
+                  <TableHead className="text-right">Sessions</TableHead>
+                  <TableHead>Creator</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((deck) => (
+                  <TableRow
+                    key={deck.id}
+                    className={cn(deck.deletedAt && "opacity-60")}
+                  >
+                    <TableCell>
+                      <Link
+                        href={`/admin/decks/${deck.id}`}
+                        className="flex items-center gap-2"
+                      >
+                        <span className="bg-foreground/5 text-foreground/70 flex h-7 w-7 items-center justify-center rounded-lg">
+                          <Library className="h-3.5 w-3.5" strokeWidth={1.75} />
+                        </span>
+                        <span className="min-w-0">
+                          <span className="text-foreground/90 flex items-center gap-1.5 truncate font-medium">
+                            {deck.title}
+                            {deck.isCurated ? (
+                              <Award
+                                className="text-brand-solid h-3.5 w-3.5 shrink-0"
+                                strokeWidth={1.75}
+                              />
+                            ) : null}
+                            {deck.deletedAt ? (
+                              <Trash2
+                                className="text-danger h-3.5 w-3.5 shrink-0"
+                                strokeWidth={1.75}
+                              />
+                            ) : null}
+                          </span>
+                          <span className="text-muted-foreground block truncate font-mono text-[10px]">
+                            {deck.slug}
+                          </span>
+                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      {deck.visibility === "public" ? (
+                        <Badge tone="neutral" appearance="soft">
+                          <Eye className="h-3 w-3" />
+                          Public
+                        </Badge>
+                      ) : (
+                        <Badge tone="neutral" appearance="outline">
+                          <EyeOff className="h-3 w-3" />
+                          Private
+                        </Badge>
                       )}
-                    >
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/admin/decks/${deck.id}`}
-                          className="flex items-center gap-2"
-                        >
-                          <span className="bg-ink/5 text-ink/70 flex h-7 w-7 items-center justify-center rounded-lg">
-                            <Library className="h-3.5 w-3.5" strokeWidth={1.75} />
-                          </span>
-                          <span className="min-w-0">
-                            <span className="text-ink/90 flex items-center gap-1.5 truncate font-medium">
-                              {deck.title}
-                              {deck.isCurated ? (
-                                <Award
-                                  className="text-ember h-3.5 w-3.5 shrink-0"
-                                  strokeWidth={1.75}
-                                />
-                              ) : null}
-                              {deck.deletedAt ? (
-                                <Trash2
-                                  className="text-destructive h-3.5 w-3.5 shrink-0"
-                                  strokeWidth={1.75}
-                                />
-                              ) : null}
-                            </span>
-                            <span className="text-muted-foreground block truncate font-mono text-[10px]">
-                              {deck.slug}
-                            </span>
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        {deck.visibility === "public" ? (
-                          <Badge variant="default">
-                            <Eye className="h-3 w-3" />
-                            Public
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary">
-                            <EyeOff className="h-3 w-3" />
-                            Private
-                          </Badge>
-                        )}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums">
-                        {deck.cardCount}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums">
-                        {deck.sessionCount}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground max-w-[180px] truncate">
-                        {deck.creatorName ?? "—"}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {formatDate(deck.createdAt)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          render={<Link href={`/admin/decks/${deck.id}`} />}
-                        >
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {deck.cardCount}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {deck.sessionCount}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground max-w-[180px] truncate">
+                      {deck.creatorName ?? "—"}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(deck.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        asChild
+                      >
+                        <Link href={`/admin/decks/${deck.id}`}>
                           Open
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
 
       {data && data.total > data.limit ? (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {data.total.toLocaleString()} total
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) === 1}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) - 1 })}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) * data.limit >= data.total}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) + 1 })}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          page={filters.page ?? 1}
+          pageCount={Math.ceil(data.total / data.limit)}
+          pageSize={data.limit}
+          total={data.total}
+          onPageChange={(page) => updateFilters({ page })}
+        />
       ) : null}
     </div>
   )

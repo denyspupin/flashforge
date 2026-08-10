@@ -7,7 +7,6 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowLeft,
   Check,
-  Loader2,
   Pencil,
   Power,
   RotateCcw,
@@ -15,18 +14,19 @@ import {
   Wand2,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -188,16 +188,18 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
         variant="ghost"
         size="sm"
         className="-ml-2"
-        render={<Link href="/admin/prompts" />}
+        asChild
       >
-        <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
-        Back to prompts
+        <Link href="/admin/prompts">
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
+          Back to prompts
+        </Link>
       </Button>
 
       <Card>
         <CardHeader className="space-y-2">
           <div className="flex items-start gap-3">
-            <span className="bg-ink/5 text-ink/70 flex h-10 w-10 items-center justify-center rounded-lg">
+            <span className="bg-foreground/5 text-foreground/70 flex h-10 w-10 items-center justify-center rounded-lg">
               <Wand2 className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 flex-1">
@@ -214,18 +216,18 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {data.isActive ? (
-              <Badge variant="default">
+              <Badge tone="success" appearance="soft">
                 <Check className="h-3 w-3" />
                 Active
               </Badge>
             ) : (
-              <Badge variant="secondary">
+              <Badge tone="neutral" appearance="soft">
                 <Power className="h-3 w-3" />
                 Inactive
               </Badge>
             )}
             {isDeleted ? (
-              <Badge variant="destructive">
+              <Badge tone="danger">
                 <Trash2 className="h-3 w-3" />
                 Soft-deleted
               </Badge>
@@ -281,7 +283,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
                 />
               </div>
               {updateMutation.isError ? (
-                <p className="text-destructive text-xs">
+                <p className="text-danger text-xs">
                   {updateMutation.error?.message}
                 </p>
               ) : null}
@@ -297,7 +299,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
                   }
                 >
                   {updatePending ? (
-                    <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                    <Spinner size="sm" />
                   ) : null}
                   Save
                 </Button>
@@ -381,7 +383,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
               onClick={() => activateMutation.mutate()}
             >
               {activateMutation.isPending ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
               ) : (
                 <Power className="mr-1.5 h-3.5 w-3.5" />
               )}
@@ -390,7 +392,7 @@ export function AdminPromptDetailView({ promptId }: { promptId: string }) {
           ) : null}
           {!isDeleted ? (
             <Button
-              variant="destructive"
+              tone="danger"
               disabled={deleteMutation.isPending || data.isActive}
               onClick={() => setConfirmDelete(true)}
             >

@@ -8,25 +8,26 @@ import {
   ArrowLeft,
   Layers,
   Library,
-  Loader2,
   Pencil,
   RotateCcw,
   Trash2,
   X,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Checkbox } from "@/components/garn/checkbox"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { useBulkSelection, queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -195,7 +196,7 @@ export function AdminCollectionDetailView({
   })
 
   const visibleDecks = (data?.decks ?? []).slice(0, DECK_LIST_LIMIT)
-  const [deckSelection, bindDeckHeaderCheckbox] = useBulkSelection(
+  const [deckSelection] = useBulkSelection(
     visibleDecks.map((d) => d.id),
   )
 
@@ -232,16 +233,18 @@ export function AdminCollectionDetailView({
         variant="ghost"
         size="sm"
         className="-ml-2"
-        render={<Link href="/admin/collections" />}
+        asChild
       >
-        <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
-        Back to collections
+        <Link href="/admin/collections">
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
+          Back to collections
+        </Link>
       </Button>
 
       <Card>
         <CardHeader className="space-y-2">
           <div className="flex items-start gap-3">
-            <span className="bg-ink/5 text-ink/70 flex h-10 w-10 items-center justify-center rounded-lg">
+            <span className="bg-foreground/5 text-foreground/70 flex h-10 w-10 items-center justify-center rounded-lg">
               <Layers className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 flex-1">
@@ -253,12 +256,12 @@ export function AdminCollectionDetailView({
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {data.sourceLanguageName && data.targetLanguageName ? (
-              <Badge variant="secondary">
+              <Badge tone="neutral" appearance="soft">
                 {data.sourceLanguageName} → {data.targetLanguageName}
               </Badge>
             ) : null}
             {isDeleted ? (
-              <Badge variant="destructive">
+              <Badge tone="danger">
                 <Trash2 className="h-3 w-3" />
                 Soft-deleted
               </Badge>
@@ -271,7 +274,7 @@ export function AdminCollectionDetailView({
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Active decks</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -279,7 +282,7 @@ export function AdminCollectionDetailView({
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Total cards</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -287,7 +290,7 @@ export function AdminCollectionDetailView({
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Creator</CardDescription>
             <CardTitle className="text-base">
@@ -336,7 +339,7 @@ export function AdminCollectionDetailView({
             />
           </div>
           {updateMutation.isError ? (
-            <p className="text-destructive text-xs">
+            <p className="text-danger text-xs">
               {updateMutation.error?.message ?? "Update failed"}
             </p>
           ) : null}
@@ -347,7 +350,7 @@ export function AdminCollectionDetailView({
               onClick={handleSave}
             >
               {updatePending ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
               ) : null}
               Save changes
             </Button>
@@ -398,8 +401,8 @@ export function AdminCollectionDetailView({
         </CardHeader>
         <CardContent className="space-y-3">
           {deckSelection.count > 0 ? (
-            <div className="bg-ink/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
-              <span className="text-ink/90">
+            <div className="bg-foreground/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
+              <span className="text-foreground/90">
                 <span className="tabular-nums font-medium">
                   {deckSelection.count}
                 </span>{" "}
@@ -422,12 +425,12 @@ export function AdminCollectionDetailView({
                 </Button>
                 <Button
                   size="xs"
-                  variant="destructive"
+                  tone="danger"
                   onClick={() => setConfirmBulkRemove(true)}
                   disabled={bulkRemovePending}
                 >
                   {bulkRemovePending ? (
-                    <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                    <Spinner size="sm" className="mr-1" />
                   ) : (
                     <Trash2 className="mr-1 h-3 w-3" />
                   )}
@@ -440,7 +443,7 @@ export function AdminCollectionDetailView({
           {data.decks.length === 0 ? (
             <p className="text-muted-foreground text-sm">No decks yet</p>
           ) : (
-            <ul className="divide-y divide-ink/8">
+            <ul className="divide-y divide-border">
               {visibleDecks.map((deck) => {
                 const isSelected = deckSelection.has(deck.id)
                 const isDeckDeleted = deck.deletedAt !== null
@@ -449,16 +452,15 @@ export function AdminCollectionDetailView({
                     key={deck.id}
                     className={cn(
                       "flex items-center gap-3 py-2 text-sm transition-colors",
-                      isSelected && "bg-ember/5",
+                      isSelected && "bg-brand-subtle",
                       isDeckDeleted && "opacity-60",
                     )}
                   >
-                    <input
-                      type="checkbox"
+                    <Checkbox
                       checked={isSelected}
-                      onChange={() => deckSelection.toggle(deck.id)}
+                      onCheckedChange={() => deckSelection.toggle(deck.id)}
                       aria-label={`Select ${deck.title}`}
-                      className="ml-1 h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30"
+                      className="ml-1"
                     />
                     <div className="min-w-0 flex-1">
                       <div className="flex items-center gap-2">
@@ -466,11 +468,11 @@ export function AdminCollectionDetailView({
                           className="text-muted-foreground h-3.5 w-3.5 shrink-0"
                           strokeWidth={1.75}
                         />
-                        <span className="text-ink/90 truncate font-medium">
+                        <span className="text-foreground/90 truncate font-medium">
                           {deck.title}
                         </span>
                         {isDeckDeleted ? (
-                          <Badge variant="destructive">Deleted</Badge>
+                          <Badge tone="danger">Deleted</Badge>
                         ) : null}
                       </div>
                       <div className="text-muted-foreground mt-0.5 text-xs">
@@ -482,16 +484,16 @@ export function AdminCollectionDetailView({
                       <Button
                         variant="ghost"
                         size="icon-xs"
-                        render={
-                          <Link href={`/admin/decks/${deck.id}`} />
-                        }
+                        asChild
                         aria-label={`Open ${deck.title}`}
                         title={`Open ${deck.title}`}
                       >
-                        <Pencil />
+                        <Link href={`/admin/decks/${deck.id}`}>
+                          <Pencil />
+                        </Link>
                       </Button>
                       <Button
-                        variant="destructive"
+                        tone="danger"
                         size="icon-xs"
                         onClick={() => setPendingRemoveDeckId(deck.id)}
                         disabled={singleRemovePending}
@@ -500,7 +502,7 @@ export function AdminCollectionDetailView({
                       >
                         {singleRemovePending &&
                         removeDeckMutation.variables === deck.id ? (
-                          <Loader2 className="animate-spin" />
+                          <Spinner size="sm" />
                         ) : (
                           <Trash2 />
                         )}
@@ -518,15 +520,18 @@ export function AdminCollectionDetailView({
           ) : null}
 
           {data.decks.length > 0 ? (
-            <div className="border-ink/8 text-muted-foreground flex items-center gap-2 border-t pt-2 text-xs">
-              <input
-                ref={bindDeckHeaderCheckbox}
-                type="checkbox"
-                checked={deckSelection.allSelected}
-                onChange={deckSelection.toggleAll}
+            <div className="border-border text-muted-foreground flex items-center gap-2 border-t pt-2 text-xs">
+              <Checkbox
+                checked={
+                  deckSelection.allSelected
+                    ? true
+                    : deckSelection.count > 0
+                      ? "indeterminate"
+                      : false
+                }
+                onCheckedChange={() => deckSelection.toggleAll()}
                 disabled={deckSelection.isEmpty}
                 aria-label="Select all visible decks"
-                className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
               />
               <span>
                 Select all {data.decks.length > DECK_LIST_LIMIT ? "visible " : ""}
@@ -553,7 +558,7 @@ export function AdminCollectionDetailView({
               onClick={() => setConfirmRestore(true)}
             >
               {restoreMutation.isPending ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
               ) : (
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               )}
@@ -561,7 +566,7 @@ export function AdminCollectionDetailView({
             </Button>
           ) : (
             <Button
-              variant="destructive"
+              tone="danger"
               disabled={deleteMutation.isPending}
               onClick={() => setConfirmDelete(true)}
             >

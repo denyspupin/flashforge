@@ -7,25 +7,25 @@ import {
   Check,
   Copy,
   History,
-  Loader2,
   Plus,
   Power,
   RotateCcw,
   Trash2,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
-import { Textarea } from "@/components/ui/textarea"
+} from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
+import { Textarea } from "@/components/garn/textarea"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { queryKeys, type AdminPromptFilters } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -125,30 +125,30 @@ function PromptRow({
   return (
     <div
       className={cn(
-        "flex flex-col gap-3 border-b border-ink/8 py-4 last:border-b-0 sm:flex-row sm:items-start sm:justify-between",
+        "flex flex-col gap-3 border-b border-border py-4 last:border-b-0 sm:flex-row sm:items-start sm:justify-between",
         isDeleted && "opacity-60",
       )}
     >
       <div className="min-w-0 flex-1 space-y-1.5">
         <div className="flex flex-wrap items-center gap-2">
           <span className="font-medium">{prompt.slug}</span>
-          <span className="text-muted-foreground rounded-md bg-ink/5 px-1.5 py-0.5 font-mono text-xs">
+          <span className="text-muted-foreground rounded-md bg-foreground/5 px-1.5 py-0.5 font-mono text-xs">
             v{prompt.version}
           </span>
           {prompt.isActive ? (
-            <Badge variant="default">
+            <Badge tone="success" appearance="soft">
               <Check className="h-3 w-3" />
               Active
             </Badge>
           ) : null}
           {isDeleted ? (
-            <Badge variant="destructive">
+            <Badge tone="danger" appearance="soft">
               <Trash2 className="h-3 w-3" />
               Deleted
             </Badge>
           ) : null}
           {activeSlug === prompt.slug && !prompt.isActive ? (
-            <Badge variant="secondary">
+            <Badge tone="neutral" appearance="soft">
               <History className="h-3 w-3" />
               Superseded
             </Badge>
@@ -172,9 +172,9 @@ function PromptRow({
         <Button
           size="xs"
           variant="outline"
-          render={<Link href={`/admin/prompts/${prompt.id}`} />}
+          asChild
         >
-          Open
+          <Link href={`/admin/prompts/${prompt.id}`}>Open</Link>
         </Button>
         {!isDeleted ? (
           <>
@@ -189,7 +189,7 @@ function PromptRow({
             </Button>
             <Button
               size="xs"
-              variant="destructive"
+              tone="danger"
               disabled={isPending || prompt.isActive}
               onClick={onDelete}
             >
@@ -332,7 +332,7 @@ export function AdminPromptsView() {
             type="checkbox"
             checked={showDeleted}
             onChange={(e) => setShowDeleted(e.target.checked)}
-            className="h-4 w-4 rounded border-ink/20"
+            className="h-4 w-4 rounded border-border"
           />
           Show deleted versions
         </label>
@@ -432,7 +432,7 @@ export function AdminPromptsView() {
                   type="checkbox"
                   checked={activate}
                   onChange={(e) => setActivate(e.target.checked)}
-                  className="h-4 w-4 rounded border-ink/20"
+                  className="h-4 w-4 rounded border-border"
                 />
                 <Check className="h-3.5 w-3.5" />
                 Activate immediately
@@ -443,7 +443,7 @@ export function AdminPromptsView() {
               <p className="text-muted-foreground text-xs">{prefillNotice}</p>
             ) : null}
             {createMutation.isError ? (
-              <p className="text-destructive text-xs">
+              <p className="text-danger text-xs">
                 {createMutation.error?.message}
               </p>
             ) : null}
@@ -457,7 +457,7 @@ export function AdminPromptsView() {
                 }
               >
                 {createMutation.isPending ? (
-                  <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" />
                 ) : (
                   <Plus className="h-3.5 w-3.5" />
                 )}
@@ -477,7 +477,7 @@ export function AdminPromptsView() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-destructive py-6 text-sm">
+            <div className="text-danger py-6 text-sm">
               Failed to load prompts
             </div>
           ) : !sortedData || sortedData.length === 0 ? (

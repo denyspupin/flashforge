@@ -19,8 +19,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/garn/card"
+import { Skeleton } from "@/components/garn/skeleton"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
 import type { AdminStats } from "@/lib/cache/admin-stats"
@@ -42,7 +42,7 @@ type StatTileProps = {
 
 function StatTile({ label, value, hint, icon: Icon }: StatTileProps) {
   return (
-    <Card size="sm">
+    <Card>
       <CardHeader className="pb-2">
         <CardDescription className="flex items-center gap-1.5">
           <Icon className="h-3.5 w-3.5" strokeWidth={1.75} />
@@ -90,7 +90,7 @@ export function AdminOverviewView() {
       </div>
 
       <section className="space-y-3">
-        <h2 className="text-mono-tag text-muted-foreground text-[10px] uppercase tracking-widest">
+        <h2 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest">
           Users
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -120,7 +120,7 @@ export function AdminOverviewView() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-mono-tag text-muted-foreground text-[10px] uppercase tracking-widest">
+        <h2 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest">
           Content
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -149,7 +149,7 @@ export function AdminOverviewView() {
       </section>
 
       <section className="space-y-3">
-        <h2 className="text-mono-tag text-muted-foreground text-[10px] uppercase tracking-widest">
+        <h2 className="font-mono text-muted-foreground text-[10px] uppercase tracking-widest">
           Activity
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
@@ -181,13 +181,13 @@ export function AdminOverviewView() {
             {data.taxonomy.topTopics.length === 0 ? (
               <p className="text-muted-foreground text-sm">No data yet</p>
             ) : (
-              <ul className="divide-y divide-ink/8">
+              <ul className="divide-y divide-border">
                 {data.taxonomy.topTopics.map((topic) => (
                   <li
                     key={topic.topicId}
                     className="flex items-center justify-between py-2 text-sm"
                   >
-                    <span className="text-ink/90">{topic.name}</span>
+                    <span className="text-foreground/90">{topic.name}</span>
                     <span className="text-muted-foreground tabular-nums">
                       {topic.deckCount.toLocaleString()}
                     </span>
@@ -210,13 +210,13 @@ export function AdminOverviewView() {
             {data.taxonomy.topLanguagePairs.length === 0 ? (
               <p className="text-muted-foreground text-sm">No data yet</p>
             ) : (
-              <ul className="divide-y divide-ink/8">
+              <ul className="divide-y divide-border">
                 {data.taxonomy.topLanguagePairs.map((pair) => (
                   <li
                     key={`${pair.sourceLanguageId}-${pair.targetLanguageId}`}
                     className="flex items-center justify-between py-2 text-sm"
                   >
-                    <span className="text-ink/90">
+                    <span className="text-foreground/90">
                       {pair.sourceName} → {pair.targetName}
                     </span>
                     <span className="text-muted-foreground tabular-nums">

@@ -7,21 +7,30 @@ import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Search, ShieldOff, UserX } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
-} from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/garn/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TablePagination,
+  TableRow,
+} from "@/components/garn/table"
 import { queryKeys, type AdminUserFilters } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
 import type { AdminUserListResult } from "@/lib/queries/admin-users"
@@ -54,10 +63,10 @@ async function fetchUsers(
 
 function roleVariant(
   role: "user" | "curator" | "admin"
-): "default" | "highlight" | "secondary" {
-  if (role === "admin") return "highlight"
-  if (role === "curator") return "secondary"
-  return "default"
+): { tone: "neutral" | "info" | "brand"; appearance: "soft" } {
+  if (role === "admin") return { tone: "brand", appearance: "soft" }
+  if (role === "curator") return { tone: "info", appearance: "soft" }
+  return { tone: "neutral", appearance: "soft" }
 }
 
 function formatDate(iso: string): string {
@@ -199,7 +208,7 @@ export function AdminUsersView() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-destructive p-6 text-sm">
+            <div className="text-danger p-6 text-sm">
               Failed to load users
             </div>
           ) : !data || data.items.length === 0 ? (
@@ -207,129 +216,110 @@ export function AdminUsersView() {
               No users match these filters
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-ink/8 text-muted-foreground border-b text-left font-mono-tag text-[10px] uppercase tracking-widest">
-                    <th className="px-4 py-2.5 font-medium">User</th>
-                    <th className="px-4 py-2.5 font-medium">Role</th>
-                    <th className="px-4 py-2.5 font-medium">Status</th>
-                    <th className="px-4 py-2.5 text-right font-medium">Decks</th>
-                    <th className="px-4 py-2.5 text-right font-medium">Sessions</th>
-                    <th className="px-4 py-2.5 font-medium">Joined</th>
-                    <th className="px-4 py-2.5" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((user) => (
-                    <tr
-                      key={user.id}
-                      className={cn(
-                        "border-ink/8 hover:bg-ink/3 border-b transition-colors",
-                        user.deletedAt && "opacity-60"
-                      )}
-                    >
-                      <td className="px-4 py-3">
-                        <Link
-                          href={`/admin/users/${user.id}`}
-                          className="flex items-center gap-2.5"
-                        >
-                          {user.avatarUrl ? (
-                            <Image
-                              src={user.avatarUrl}
-                              alt=""
-                              aria-hidden
-                              width={28}
-                              height={28}
-                              unoptimized
-                              className="h-7 w-7 rounded-full object-cover"
-                            />
-                          ) : (
-                            <span className="bg-ember/12 text-ember flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-medium">
-                              {initialsFor(user.name, user.clerkId)}
-                            </span>
-                          )}
-                          <span className="min-w-0">
-                            <span className="text-ink/90 block truncate font-medium">
-                              {user.name ?? "—"}
-                            </span>
-                            <span className="text-muted-foreground block truncate font-mono text-[10px]">
-                              {user.clerkId}
-                            </span>
-                          </span>
-                        </Link>
-                      </td>
-                      <td className="px-4 py-3">
-                        <Badge variant={roleVariant(user.role)}>
-                          {user.role}
-                        </Badge>
-                      </td>
-                      <td className="px-4 py-3">
-                        {user.deletedAt ? (
-                          <Badge variant="destructive">
-                            <UserX className="h-3 w-3" />
-                            Deleted
-                          </Badge>
-                        ) : user.isBanned ? (
-                          <Badge variant="destructive">
-                            <ShieldOff className="h-3 w-3" />
-                            Banned
-                          </Badge>
+            <Table>
+              <TableHeader>
+                <TableRow className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">
+                  <TableHead>User</TableHead>
+                  <TableHead>Role</TableHead>
+                  <TableHead>Status</TableHead>
+                  <TableHead className="text-right">Decks</TableHead>
+                  <TableHead className="text-right">Sessions</TableHead>
+                  <TableHead>Joined</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((user) => (
+                  <TableRow
+                    key={user.id}
+                    className={cn(user.deletedAt && "opacity-60")}
+                  >
+                    <TableCell>
+                      <Link
+                        href={`/admin/users/${user.id}`}
+                        className="flex items-center gap-2.5"
+                      >
+                        {user.avatarUrl ? (
+                          <Image
+                            src={user.avatarUrl}
+                            alt=""
+                            aria-hidden
+                            width={28}
+                            height={28}
+                            unoptimized
+                            className="h-7 w-7 rounded-full object-cover"
+                          />
                         ) : (
-                          <Badge variant="default">Active</Badge>
+                          <span className="bg-brand-subtle text-brand-solid flex h-7 w-7 items-center justify-center rounded-full text-[10px] font-medium">
+                            {initialsFor(user.name, user.clerkId)}
+                          </span>
                         )}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums">
-                        {user.deckCount}
-                      </td>
-                      <td className="px-4 py-3 text-right tabular-nums">
-                        {user.sessionCount}
-                      </td>
-                      <td className="px-4 py-3 text-muted-foreground">
-                        {formatDate(user.createdAt)}
-                      </td>
-                      <td className="px-4 py-3 text-right">
-                        <Button
-                          variant="ghost"
-                          size="xs"
-                          render={<Link href={`/admin/users/${user.id}`} />}
-                        >
+                        <span className="min-w-0">
+                          <span className="text-foreground/90 block truncate font-medium">
+                            {user.name ?? "—"}
+                          </span>
+                          <span className="text-muted-foreground block truncate font-mono text-[10px]">
+                            {user.clerkId}
+                          </span>
+                        </span>
+                      </Link>
+                    </TableCell>
+                    <TableCell>
+                      <Badge {...roleVariant(user.role)}>
+                        {user.role}
+                      </Badge>
+                    </TableCell>
+                    <TableCell>
+                      {user.deletedAt ? (
+                        <Badge tone="danger" appearance="soft">
+                          <UserX className="h-3 w-3" />
+                          Deleted
+                        </Badge>
+                      ) : user.isBanned ? (
+                        <Badge tone="danger" appearance="soft">
+                          <ShieldOff className="h-3 w-3" />
+                          Banned
+                        </Badge>
+                      ) : (
+                        <Badge tone="neutral" appearance="soft">Active</Badge>
+                      )}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {user.deckCount}
+                    </TableCell>
+                    <TableCell className="text-right tabular-nums">
+                      {user.sessionCount}
+                    </TableCell>
+                    <TableCell className="text-muted-foreground">
+                      {formatDate(user.createdAt)}
+                    </TableCell>
+                    <TableCell className="text-right">
+                      <Button
+                        variant="ghost"
+                        size="xs"
+                        asChild
+                      >
+                        <Link href={`/admin/users/${user.id}`}>
                           Open
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+                        </Link>
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
 
       {data && data.total > data.limit ? (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {data.total.toLocaleString()} total
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) === 1}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) - 1 })}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) * data.limit >= data.total}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) + 1 })}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          page={filters.page ?? 1}
+          pageCount={Math.ceil(data.total / data.limit)}
+          pageSize={data.limit}
+          total={data.total}
+          onPageChange={(page) => updateFilters({ page })}
+        />
       ) : null}
     </div>
   )

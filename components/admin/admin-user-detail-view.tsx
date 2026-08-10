@@ -8,29 +8,29 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowLeft,
   Ban,
-  Loader2,
   RotateCcw,
   Trash2,
   Undo2,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
+} from "@/components/garn/card"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/garn/select"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -156,10 +156,12 @@ export function AdminUserDetailView({
         variant="ghost"
         size="sm"
         className="-ml-2"
-        render={<Link href="/admin/users" />}
+        asChild
       >
-        <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
-        Back to users
+        <Link href="/admin/users">
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
+          Back to users
+        </Link>
       </Button>
 
       <Card>
@@ -175,7 +177,7 @@ export function AdminUserDetailView({
               className="h-16 w-16 rounded-full object-cover"
             />
           ) : (
-            <div className="bg-ember/12 text-ember flex h-16 w-16 items-center justify-center rounded-full text-lg font-medium">
+            <div className="bg-brand-subtle text-brand-solid flex h-16 w-16 items-center justify-center rounded-full text-lg font-medium">
               {data.name?.[0]?.toUpperCase() ?? "?"}
             </div>
           )}
@@ -187,21 +189,26 @@ export function AdminUserDetailView({
               {data.clerkId}
             </CardDescription>
             <div className="mt-2 flex flex-wrap items-center gap-2">
-              <Badge variant={data.role === "admin" ? "highlight" : "default"}>
+              <Badge
+                tone={data.role === "admin" ? "brand" : "neutral"}
+                appearance="soft"
+              >
                 {data.role}
               </Badge>
               {isDeleted ? (
-                <Badge variant="destructive">
+                <Badge tone="danger" appearance="soft">
                   <Trash2 className="h-3 w-3" />
                   Soft-deleted
                 </Badge>
               ) : data.isBanned ? (
-                <Badge variant="destructive">
+                <Badge tone="danger" appearance="soft">
                   <Ban className="h-3 w-3" />
                   Banned
                 </Badge>
               ) : (
-                <Badge variant="default">Active</Badge>
+                <Badge tone="success" appearance="soft">
+                  Active
+                </Badge>
               )}
             </div>
           </div>
@@ -209,7 +216,7 @@ export function AdminUserDetailView({
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-2">
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Decks</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -217,7 +224,7 @@ export function AdminUserDetailView({
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Study sessions</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -225,7 +232,7 @@ export function AdminUserDetailView({
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>XP</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -233,7 +240,7 @@ export function AdminUserDetailView({
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Streak</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -274,7 +281,7 @@ export function AdminUserDetailView({
               </p>
             ) : null}
             {updateMutation.isError ? (
-              <p className="text-destructive text-xs">
+              <p className="text-danger text-xs">
                 {updateMutation.error?.message ?? "Failed to update role"}
               </p>
             ) : null}
@@ -284,7 +291,8 @@ export function AdminUserDetailView({
             <label className="text-sm font-medium">Banned</label>
             <div>
               <Button
-                variant={data.isBanned ? "outline" : "destructive"}
+                variant={data.isBanned ? "outline" : "default"}
+                tone={data.isBanned ? undefined : "danger"}
                 size="sm"
                 disabled={isDeleted || updatePending}
                 onClick={() =>
@@ -292,7 +300,7 @@ export function AdminUserDetailView({
                 }
               >
                 {updatePending ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" className="mr-1.5" />
                 ) : data.isBanned ? (
                   <Undo2 className="mr-1.5 h-3.5 w-3.5" />
                 ) : (
@@ -347,7 +355,7 @@ export function AdminUserDetailView({
               onClick={() => setConfirmRestore(true)}
             >
               {restoreMutation.isPending ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
               ) : (
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               )}
@@ -355,7 +363,7 @@ export function AdminUserDetailView({
             </Button>
           ) : (
             <Button
-              variant="destructive"
+              tone="danger"
               disabled={deleteMutation.isPending || isSelf}
               onClick={() => setConfirmDelete(true)}
             >

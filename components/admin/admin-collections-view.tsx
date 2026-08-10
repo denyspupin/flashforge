@@ -4,20 +4,31 @@ import * as React from "react"
 import Link from "next/link"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Check, Layers, Loader2, Pencil, Search, Trash2, X } from "lucide-react"
+import { Layers, Pencil, Search, Trash2, X } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Button } from "@/components/garn/button"
+import { Card, CardContent } from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from "@/components/ui/select"
+} from "@/components/garn/select"
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TablePagination,
+  TableRow,
+  TableSelectAllCell,
+  TableSelectionCell,
+} from "@/components/garn/table"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { useBulkSelection, queryKeys, type AdminCollectionFilters } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -117,9 +128,7 @@ export function AdminCollectionsView() {
     [data],
   )
 
-  const [selection, bindHeaderCheckbox] = useBulkSelection(
-    visibleItems.map((c) => c.id),
-  )
+  const [selection] = useBulkSelection(visibleItems.map((c) => c.id))
 
   const deleteMutation = useMutation({
     mutationFn: deleteCollection,
@@ -190,8 +199,8 @@ export function AdminCollectionsView() {
       </div>
 
       {selection.count > 0 ? (
-        <div className="bg-ink/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
-          <span className="text-ink/90">
+        <div className="bg-foreground/5 flex items-center justify-between gap-3 rounded-lg border px-3 py-2 text-sm">
+          <span className="text-foreground/90">
             <span className="tabular-nums font-medium">{selection.count}</span>{" "}
             {selection.count === 1 ? "collection" : "collections"} selected
           </span>
@@ -207,12 +216,12 @@ export function AdminCollectionsView() {
             </Button>
             <Button
               size="xs"
-              variant="destructive"
+              tone="danger"
               onClick={() => setConfirmBulkDelete(true)}
               disabled={bulkPending}
             >
               {bulkPending ? (
-                <Loader2 className="mr-1 h-3 w-3 animate-spin" />
+                <Spinner size="sm" className="mr-1" />
               ) : (
                 <Trash2 className="mr-1 h-3 w-3" />
               )}
@@ -231,7 +240,7 @@ export function AdminCollectionsView() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-destructive p-6 text-sm">
+            <div className="text-danger p-6 text-sm">
               Failed to load collections
             </div>
           ) : !data || data.items.length === 0 ? (
@@ -239,165 +248,144 @@ export function AdminCollectionsView() {
               No collections match these filters
             </div>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-ink/8 text-muted-foreground border-b text-left font-mono-tag text-[10px] uppercase tracking-widest">
-                    <th className="w-10 px-4 py-2.5">
-                      <input
-                        ref={bindHeaderCheckbox}
-                        type="checkbox"
-                        checked={selection.allSelected}
-                        onChange={selection.toggleAll}
-                        disabled={selection.isEmpty}
-                        aria-label="Select all visible collections"
-                        className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
-                      />
-                    </th>
-                    <th className="px-4 py-2.5 font-medium">Collection</th>
-                    <th className="px-4 py-2.5 font-medium">Language pair</th>
-                    <th className="px-4 py-2.5 text-right font-medium">
-                      Decks
-                    </th>
-                    <th className="px-4 py-2.5 text-right font-medium">
-                      Cards
-                    </th>
-                    <th className="px-4 py-2.5 font-medium">Creator</th>
-                    <th className="px-4 py-2.5 font-medium">Created</th>
-                    <th className="px-4 py-2.5" />
-                  </tr>
-                </thead>
-                <tbody>
-                  {data.items.map((collection) => {
-                    const isSelected = selection.has(collection.id)
-                    const isDeleted = collection.deletedAt !== null
-                    return (
-                      <tr
-                        key={collection.id}
-                        className={cn(
-                          "border-ink/8 hover:bg-ink/3 border-b transition-colors",
-                          isSelected && "bg-ember/5",
-                          isDeleted && "opacity-60",
-                        )}
-                      >
-                        <td className="px-4 py-3">
-                          <input
-                            type="checkbox"
-                            checked={isSelected}
-                            onChange={() => selection.toggle(collection.id)}
-                            disabled={isDeleted}
-                            aria-label={`Select ${collection.title}`}
-                            className="h-4 w-4 cursor-pointer rounded border-ink/20 text-ember focus:ring-ember/30 disabled:cursor-not-allowed disabled:opacity-50"
-                          />
-                        </td>
-                        <td className="px-4 py-3">
-                          <Link
-                            href={`/admin/collections/${collection.id}`}
-                            className="flex items-center gap-2"
-                          >
-                            <span className="bg-ink/5 text-ink/70 flex h-7 w-7 items-center justify-center rounded-lg">
-                              <Layers
-                                className="h-3.5 w-3.5"
-                                strokeWidth={1.75}
-                              />
-                            </span>
-                            <span className="min-w-0">
-                              <span className="text-ink/90 flex items-center gap-1.5 truncate font-medium">
-                                {collection.title}
-                                {isDeleted ? (
-                                  <Trash2
-                                    className="text-destructive h-3.5 w-3.5 shrink-0"
-                                    strokeWidth={1.75}
-                                  />
-                                ) : null}
-                              </span>
-                              <span className="text-muted-foreground block truncate font-mono text-[10px]">
-                                {collection.slug}
-                              </span>
-                            </span>
-                          </Link>
-                        </td>
-                        <td className="text-muted-foreground max-w-[180px] truncate px-4 py-3">
-                          {collection.sourceLanguageName ?? "—"} →{" "}
-                          {collection.targetLanguageName ?? "—"}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums">
-                          {collection.deckCount}
-                        </td>
-                        <td className="px-4 py-3 text-right tabular-nums">
-                          {collection.totalCards}
-                        </td>
-                        <td className="text-muted-foreground max-w-[180px] truncate px-4 py-3">
-                          {collection.creatorName ?? "—"}
-                        </td>
-                        <td className="text-muted-foreground px-4 py-3">
-                          {formatDate(collection.createdAt)}
-                        </td>
-                        <td className="px-4 py-3 text-right">
-                          <div className="inline-flex items-center gap-1">
-                            <Button
-                              variant="ghost"
-                              size="icon-xs"
-                              render={
-                                <Link
-                                  href={`/admin/collections/${collection.id}`}
+            <Table>
+              <TableHeader>
+                <TableRow className="text-muted-foreground font-mono text-[10px] uppercase tracking-widest">
+                  <TableSelectAllCell
+                    checked={
+                      selection.allSelected
+                        ? true
+                        : selection.count > 0
+                          ? "indeterminate"
+                          : false
+                    }
+                    onCheckedChange={() => selection.toggleAll()}
+                    aria-label="Select all visible collections"
+                  />
+                  <TableHead>Collection</TableHead>
+                  <TableHead>Language pair</TableHead>
+                  <TableHead className="text-right">Decks</TableHead>
+                  <TableHead className="text-right">Cards</TableHead>
+                  <TableHead>Creator</TableHead>
+                  <TableHead>Created</TableHead>
+                  <TableHead />
+                </TableRow>
+              </TableHeader>
+              <TableBody>
+                {data.items.map((collection) => {
+                  const isSelected = selection.has(collection.id)
+                  const isDeleted = collection.deletedAt !== null
+                  return (
+                    <TableRow
+                      key={collection.id}
+                      className={cn(
+                        isSelected && "bg-brand-subtle",
+                        isDeleted && "opacity-60",
+                      )}
+                    >
+                      {isDeleted ? (
+                        <TableCell />
+                      ) : (
+                        <TableSelectionCell
+                          checked={isSelected}
+                          onCheckedChange={() =>
+                            selection.toggle(collection.id)
+                          }
+                          label={collection.title}
+                        />
+                      )}
+                      <TableCell>
+                        <Link
+                          href={`/admin/collections/${collection.id}`}
+                          className="flex items-center gap-2"
+                        >
+                          <span className="bg-foreground/5 text-foreground/70 flex h-7 w-7 items-center justify-center rounded-lg">
+                            <Layers
+                              className="h-3.5 w-3.5"
+                              strokeWidth={1.75}
+                            />
+                          </span>
+                          <span className="min-w-0">
+                            <span className="text-foreground/90 flex items-center gap-1.5 truncate font-medium">
+                              {collection.title}
+                              {isDeleted ? (
+                                <Trash2
+                                  className="text-danger h-3.5 w-3.5 shrink-0"
+                                  strokeWidth={1.75}
                                 />
-                              }
-                              aria-label={`Open ${collection.title}`}
-                              title={`Open ${collection.title}`}
+                              ) : null}
+                            </span>
+                            <span className="text-muted-foreground block truncate font-mono text-[10px]">
+                              {collection.slug}
+                            </span>
+                          </span>
+                        </Link>
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-[180px] truncate">
+                        {collection.sourceLanguageName ?? "—"} →{" "}
+                        {collection.targetLanguageName ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {collection.deckCount}
+                      </TableCell>
+                      <TableCell className="text-right tabular-nums">
+                        {collection.totalCards}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground max-w-[180px] truncate">
+                        {collection.creatorName ?? "—"}
+                      </TableCell>
+                      <TableCell className="text-muted-foreground">
+                        {formatDate(collection.createdAt)}
+                      </TableCell>
+                      <TableCell className="text-right">
+                        <div className="inline-flex items-center gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon-xs"
+                            asChild
+                            aria-label={`Open ${collection.title}`}
+                            title={`Open ${collection.title}`}
+                          >
+                            <Link
+                              href={`/admin/collections/${collection.id}`}
                             >
                               <Pencil />
-                            </Button>
-                            <Button
-                              variant="destructive"
-                              size="icon-xs"
-                              onClick={() => setPendingDeleteId(collection.id)}
-                              disabled={isDeleted || singlePending}
-                              aria-label={`Soft-delete ${collection.title}`}
-                              title={`Soft-delete ${collection.title}`}
-                            >
-                              {singlePending ? (
-                                <Loader2 className="animate-spin" />
-                              ) : (
-                                <Trash2 />
-                              )}
-                            </Button>
-                          </div>
-                        </td>
-                      </tr>
-                    )
-                  })}
-                </tbody>
-              </table>
-            </div>
+                            </Link>
+                          </Button>
+                          <Button
+                            tone="danger"
+                            variant="ghost"
+                            size="icon-xs"
+                            onClick={() => setPendingDeleteId(collection.id)}
+                            disabled={isDeleted || singlePending}
+                            aria-label={`Soft-delete ${collection.title}`}
+                            title={`Soft-delete ${collection.title}`}
+                          >
+                            {singlePending ? (
+                              <Spinner size="sm" />
+                            ) : (
+                              <Trash2 />
+                            )}
+                          </Button>
+                        </div>
+                      </TableCell>
+                    </TableRow>
+                  )
+                })}
+              </TableBody>
+            </Table>
           )}
         </CardContent>
       </Card>
 
       {data && data.total > data.limit ? (
-        <div className="flex items-center justify-between text-sm">
-          <span className="text-muted-foreground">
-            {data.total.toLocaleString()} total
-          </span>
-          <div className="flex gap-2">
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) === 1}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) - 1 })}
-            >
-              Previous
-            </Button>
-            <Button
-              variant="outline"
-              size="sm"
-              disabled={(filters.page ?? 1) * data.limit >= data.total}
-              onClick={() => updateFilters({ page: (filters.page ?? 1) + 1 })}
-            >
-              Next
-            </Button>
-          </div>
-        </div>
+        <TablePagination
+          page={filters.page ?? 1}
+          pageCount={Math.ceil(data.total / data.limit)}
+          pageSize={data.limit}
+          total={data.total}
+          onPageChange={(page) => updateFilters({ page })}
+        />
       ) : null}
 
       <ConfirmDialog

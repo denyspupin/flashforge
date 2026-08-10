@@ -10,21 +10,21 @@ import {
   Eye,
   EyeOff,
   Library,
-  Loader2,
   RotateCcw,
   Trash2,
 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card"
-import { Skeleton } from "@/components/ui/skeleton"
+} from "@/components/garn/card"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -147,16 +147,18 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
         variant="ghost"
         size="sm"
         className="-ml-2"
-        render={<Link href="/admin/decks" />}
+        asChild
       >
-        <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
-        Back to decks
+        <Link href="/admin/decks">
+          <ArrowLeft className="mr-1.5 h-3.5 w-3.5" strokeWidth={1.75} />
+          Back to decks
+        </Link>
       </Button>
 
       <Card>
         <CardHeader className="space-y-2">
           <div className="flex items-start gap-3">
-            <span className="bg-ink/5 text-ink/70 flex h-10 w-10 items-center justify-center rounded-lg">
+            <span className="bg-foreground/5 text-foreground/70 flex h-10 w-10 items-center justify-center rounded-lg">
               <Library className="h-5 w-5" strokeWidth={1.75} />
             </span>
             <div className="min-w-0 flex-1">
@@ -168,24 +170,24 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
           </div>
           <div className="flex flex-wrap items-center gap-2">
             {data.isCurated ? (
-              <Badge variant="highlight">
+              <Badge tone="brand" appearance="soft">
                 <Award className="h-3 w-3" />
                 Curated
               </Badge>
             ) : null}
             {data.visibility === "public" ? (
-              <Badge variant="default">
+              <Badge tone="success" appearance="soft">
                 <Eye className="h-3 w-3" />
                 Public
               </Badge>
             ) : (
-              <Badge variant="secondary">
+              <Badge tone="neutral" appearance="soft">
                 <EyeOff className="h-3 w-3" />
                 Private
               </Badge>
             )}
             {isDeleted ? (
-              <Badge variant="destructive">
+              <Badge tone="danger">
                 <Trash2 className="h-3 w-3" />
                 Soft-deleted
               </Badge>
@@ -198,7 +200,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
       </Card>
 
       <div className="grid gap-4 sm:grid-cols-3">
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Active cards</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -206,7 +208,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Study sessions</CardDescription>
             <CardTitle className="text-2xl tabular-nums">
@@ -214,7 +216,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
             </CardTitle>
           </CardHeader>
         </Card>
-        <Card size="sm">
+        <Card>
           <CardHeader className="pb-2">
             <CardDescription>Creator</CardDescription>
             <CardTitle className="text-base">
@@ -252,7 +254,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
                 }
               >
                 {updatePending ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                  <Spinner size="sm" className="mr-1.5" />
                 ) : data.isCurated ? (
                   <Award className="mr-1.5 h-3.5 w-3.5" />
                 ) : null}
@@ -288,7 +290,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
               </Button>
             </div>
             {updateMutation.isError ? (
-              <p className="text-destructive text-xs">
+              <p className="text-danger text-xs">
                 {updateMutation.error?.message ?? "Update failed"}
               </p>
             ) : null}
@@ -320,7 +322,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
                 <dd>
                   <Link
                     href={`/admin/decks/${data.forkedFromDeckId}`}
-                    className="text-ink/80 hover:text-ink font-mono text-xs"
+                    className="text-foreground/80 hover:text-foreground font-mono text-xs"
                   >
                     {data.forkedFromDeckId}
                   </Link>
@@ -342,7 +344,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
           {data.cards.length === 0 ? (
             <p className="text-muted-foreground text-sm">No cards yet</p>
           ) : (
-            <ul className="divide-y divide-ink/8">
+            <ul className="divide-y divide-border">
               {data.cards.slice(0, 50).map((card) => (
                 <li
                   key={card.id}
@@ -350,11 +352,11 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
                 >
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="text-ink/90 truncate font-medium">
+                      <span className="text-foreground/90 truncate font-medium">
                         {card.front}
                       </span>
                       <span className="text-muted-foreground">→</span>
-                      <span className="text-ink/80 truncate">
+                      <span className="text-foreground/80 truncate">
                         {card.back}
                       </span>
                     </div>
@@ -364,7 +366,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
                     </div>
                   </div>
                   {card.deletedAt ? (
-                    <Badge variant="destructive">Deleted</Badge>
+                    <Badge tone="danger">Deleted</Badge>
                   ) : null}
                 </li>
               ))}
@@ -394,7 +396,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
               onClick={() => setConfirmRestore(true)}
             >
               {restoreMutation.isPending ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" className="mr-1.5" />
               ) : (
                 <RotateCcw className="mr-1.5 h-3.5 w-3.5" />
               )}
@@ -402,7 +404,7 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
             </Button>
           ) : (
             <Button
-              variant="destructive"
+              tone="danger"
               disabled={deleteMutation.isPending}
               onClick={() => setConfirmDelete(true)}
             >

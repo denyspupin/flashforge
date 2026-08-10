@@ -2,13 +2,14 @@
 
 import * as React from "react"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
-import { Loader2, Pencil, Plus, RotateCcw, Trash2 } from "lucide-react"
+import { Pencil, Plus, RotateCcw, Trash2 } from "lucide-react"
 
-import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Input } from "@/components/ui/input"
-import { Skeleton } from "@/components/ui/skeleton"
+import { Badge } from "@/components/garn/badge"
+import { Button } from "@/components/garn/button"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/garn/card"
+import { Input } from "@/components/garn/input"
+import { Skeleton } from "@/components/garn/skeleton"
+import { Spinner } from "@/components/garn/spinner"
 import { ConfirmDialog } from "@/components/admin/confirm-dialog"
 import { queryKeys } from "@/hooks"
 import type { ApiResponse } from "@/lib/api/response"
@@ -94,7 +95,7 @@ function TopicRow({
   return (
     <div
       className={cn(
-        "flex flex-col gap-2 border-ink/8 border-b py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between",
+        "flex flex-col gap-2 border-border border-b py-3 last:border-b-0 sm:flex-row sm:items-center sm:justify-between",
         isDeleted && "opacity-60",
       )}
     >
@@ -145,7 +146,7 @@ function TopicRow({
               {topic.slug}
             </span>
             {isDeleted ? (
-              <Badge variant="destructive">
+              <Badge tone="danger" appearance="soft">
                 <Trash2 className="h-3 w-3" />
                 Deleted
               </Badge>
@@ -176,7 +177,7 @@ function TopicRow({
             </Button>
             <Button
               size="xs"
-              variant="destructive"
+              tone="danger"
               disabled={pending}
               onClick={onDelete}
             >
@@ -310,7 +311,7 @@ export function AdminTopicsView() {
             </div>
             <Button type="submit" disabled={createMutation.isPending || !name.trim()}>
               {createMutation.isPending ? (
-                <Loader2 className="h-3.5 w-3.5 animate-spin" />
+                <Spinner size="sm" />
               ) : (
                 <Plus className="h-3.5 w-3.5" />
               )}
@@ -318,7 +319,7 @@ export function AdminTopicsView() {
             </Button>
           </form>
           {createMutation.isError ? (
-            <p className="text-destructive mt-2 text-xs">
+            <p className="text-danger mt-2 text-xs">
               {createMutation.error?.message}
             </p>
           ) : null}
@@ -334,7 +335,7 @@ export function AdminTopicsView() {
               ))}
             </div>
           ) : error ? (
-            <div className="text-destructive py-6 text-sm">
+            <div className="text-danger py-6 text-sm">
               Failed to load topics
             </div>
           ) : !data || data.length === 0 ? (
