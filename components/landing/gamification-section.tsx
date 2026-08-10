@@ -18,38 +18,29 @@ export function GamificationSection() {
   return (
     <section
       id="gamification"
-      className="relative border-b border-ink/8 py-24 sm:py-32"
+      className="relative border-b border-border py-24 sm:py-32"
     >
-      <div className="pointer-events-none absolute inset-0 -z-0 overflow-hidden">
-        <div
-          className="absolute -left-32 top-40 h-[380px] w-[380px] rounded-full blur-3xl"
-          style={{ background: "radial-gradient(circle, hsl(var(--ember-deep) / 0.16), transparent 70%)" }}
-        />
-      </div>
       <div className="relative mx-auto max-w-[1280px] px-6 lg:px-10">
         <div className="grid gap-16 lg:grid-cols-[1fr_1.1fr]">
           <div>
             <Reveal>
-              <div className="font-mono-tag text-[11px] font-medium uppercase tracking-[0.3em] text-ember-deep">
+              <div className="font-mono text-[11px] font-medium uppercase tracking-[0.3em] text-brand-solid">
                 — The compounding
               </div>
             </Reveal>
             <Reveal delay={0.1}>
-              <h2
-                className="mt-4 font-display text-[clamp(2.2rem,4.5vw,3.8rem)] font-medium leading-[1] tracking-[-0.03em] text-ink"
-                style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
-              >
+              <h2 className="mt-4 text-[clamp(2.2rem,4.5vw,3.8rem)] font-semibold leading-[1] tracking-tight text-foreground">
                 XP that
                 <br />
                 compounds,
                 <br />
                 streaks that
                 <br />
-                <span className="text-ember">reward patience.</span>
+                <span className="text-brand-solid">reward patience.</span>
               </h2>
             </Reveal>
             <Reveal delay={0.2}>
-              <p className="mt-6 max-w-md text-pretty text-ink/65">
+              <p className="mt-6 max-w-md text-pretty text-muted-foreground">
                 A day-one session earns what a day-one session should. A
                 thirty-day streak earns three times that. The numbers reward
                 the thing you actually want to build: a habit that sticks.
@@ -58,10 +49,10 @@ export function GamificationSection() {
 
             <Reveal delay={0.3}>
               <div className="mt-10 flex items-baseline gap-3">
-                <span className="font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   Sample session
                 </span>
-                <span className="h-px flex-1 bg-ink/15" />
+                <span className="h-px flex-1 bg-border" />
               </div>
               <div className="mt-4 grid grid-cols-2 gap-3">
                 <XPCounterCard
@@ -100,10 +91,10 @@ export function GamificationSection() {
           <div>
             <Reveal>
               <div className="mb-6 flex items-baseline gap-3">
-                <span className="font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+                <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
                   Streak multipliers
                 </span>
-                <span className="h-px flex-1 bg-ink/15" />
+                <span className="h-px flex-1 bg-border" />
               </div>
             </Reveal>
 
@@ -122,19 +113,16 @@ export function GamificationSection() {
             </div>
 
             <Reveal delay={0.5}>
-              <div className="mt-8 rounded-2xl border border-ink/10 bg-paper/70 p-6 sm:p-8">
+              <div className="mt-8 rounded-2xl border border-border bg-card p-6 sm:p-8">
                 <div className="flex items-start gap-4">
-                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ember-deep/15">
-                    <Flame className="h-5 w-5 text-ember-deep" />
+                  <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-brand-subtle">
+                    <Flame className="h-5 w-5 text-brand-solid" />
                   </div>
                   <div>
-                    <h4
-                      className="font-display text-lg font-medium leading-snug tracking-tight text-ink"
-                      style={{ fontVariationSettings: "'opsz' 60, 'SOFT' 40" }}
-                    >
+                    <h4 className="text-lg font-semibold leading-snug tracking-tight text-foreground">
                       A streak is a sentence — not a chain.
                     </h4>
-                    <p className="mt-1.5 text-sm leading-relaxed text-ink/65">
+                    <p className="mt-1.5 text-sm leading-relaxed text-muted-foreground">
                       One card keeps it alive. There is no penalty for missing
                       a day; there is only a quiet loss of the multiplier. The
                       fire returns the moment you do.
@@ -194,30 +182,30 @@ function XPCounterCard({
       className={cn(
         "flex items-center gap-3 rounded-xl border p-3.5",
         highlight
-          ? "border-ember/30 bg-gradient-to-br from-ember/15 to-honey/10"
-          : "border-ink/10 bg-paper/70",
+          ? "border-brand/30 bg-brand-subtle"
+          : "border-border bg-card",
       )}
     >
       <div
         className={cn(
           "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg",
-          highlight ? "bg-ember/20" : "bg-ink/5",
+          highlight ? "bg-brand-solid/15" : "bg-secondary",
         )}
       >
-        <Icon className={cn("h-4 w-4", highlight ? "text-ember" : "text-ink/65")} />
+        <Icon className={cn("h-4 w-4", highlight ? "text-brand-solid" : "text-muted-foreground")} />
       </div>
       <div className="min-w-0 flex-1">
-        <p className="truncate text-[11px] uppercase tracking-wider text-ink/55">
+        <p className="truncate text-[11px] uppercase tracking-wider text-muted-foreground">
           {label}
         </p>
         <p
           className={cn(
-            "font-display text-lg font-medium leading-tight tracking-tight",
-            highlight ? "text-ember" : "text-ink",
+            "text-lg font-semibold leading-tight tracking-tight",
+            highlight ? "text-brand-solid" : "text-foreground",
           )}
         >
           <motion.span>{display}</motion.span>
-          <span className="ml-0.5 text-xs font-normal text-ink/55">
+          <span className="ml-0.5 text-xs font-normal text-muted-foreground">
             {suffix}
           </span>
         </p>
@@ -240,37 +228,31 @@ function StreakRow({
   isLast: boolean
 }) {
   return (
-    <div className="group relative flex items-center gap-4 rounded-xl border border-transparent px-4 py-3.5 transition-all hover:border-ink/10 hover:bg-paper/60">
+    <div className="group relative flex items-center gap-4 rounded-xl border border-transparent px-4 py-3.5 transition-all hover:border-border hover:bg-card/60">
       {!isLast && (
-        <div className="absolute left-[2.4rem] top-full h-2 w-px bg-ink/10" />
+        <div className="absolute left-[2.4rem] top-full h-2 w-px bg-border" />
       )}
 
-      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-ink/12 bg-paper font-mono-tag text-[10px] text-ink/55 transition-colors group-hover:border-ember/30 group-hover:text-ember">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-border bg-card font-mono text-[10px] text-muted-foreground transition-colors group-hover:border-brand/30 group-hover:text-brand-solid">
         {days}d
       </div>
 
       <div className="flex-1">
         <div className="flex items-baseline gap-2">
-          <h4
-            className="font-display text-lg font-medium leading-tight tracking-tight text-ink"
-            style={{ fontVariationSettings: "'opsz' 60, 'SOFT' 40" }}
-          >
+          <h4 className="text-lg font-semibold leading-tight tracking-tight text-foreground">
             {label}
           </h4>
-          <span className="font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+          <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
             {note}
           </span>
         </div>
       </div>
 
       <div className="flex items-baseline gap-1.5">
-        <span
-          className="font-display-soft text-2xl text-ember-deep"
-          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 100" }}
-        >
+        <span className="text-2xl font-semibold text-brand-solid">
           {mult}
         </span>
-        <span className="font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+        <span className="font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
           mult
         </span>
       </div>
@@ -285,13 +267,13 @@ function StreakBar({ days }: { days: number }) {
   const width = Math.min(100, (days / max) * 100)
   const reduce = useReducedMotion()
   return (
-    <div className="relative ml-2 hidden h-1 w-16 overflow-hidden rounded-full bg-ink/8 sm:block">
+    <div className="relative ml-2 hidden h-1 w-16 overflow-hidden rounded-full bg-border sm:block">
       <motion.div
         initial={{ width: 0 }}
         whileInView={{ width: `${width}%` }}
         viewport={{ once: true }}
         transition={{ duration: 1.2, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-        className="h-full rounded-full bg-gradient-to-r from-honey via-ember to-ember-deep"
+        className="h-full rounded-full bg-gradient-to-r from-brand to-brand-strong"
       />
     </div>
   )

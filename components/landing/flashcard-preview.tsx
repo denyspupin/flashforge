@@ -58,14 +58,14 @@ export function FlashcardPreview() {
 
   return (
     <div className="relative w-full max-w-[460px]">
-      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-gradient-to-br from-honey/20 via-ember/10 to-rust/10 blur-2xl" />
+      <div className="absolute -inset-6 -z-10 rounded-[3rem] bg-foreground/5 blur-2xl" />
 
       <div className="relative">
-        <div className="mb-4 flex items-center justify-between text-xs">
-          <span className="font-mono-tag uppercase tracking-wider text-ink/45">
+        <div className="mb-4 flex items-center justify-between font-mono text-xs uppercase tracking-wider text-muted-foreground">
+          <span>
             {card.source} → {card.target}
           </span>
-          <span className="font-mono-tag text-ink/55">
+          <span>
             {String(index + 1).padStart(2, "0")} /{" "}
             {String(SAMPLE_CARDS.length).padStart(2, "0")}
           </span>
@@ -82,7 +82,7 @@ export function FlashcardPreview() {
           <div className="flex items-center gap-1">
             <button
               onClick={() => goTo((index - 1 + SAMPLE_CARDS.length) % SAMPLE_CARDS.length)}
-              className="flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-ink/5 hover:text-ink"
+              className="flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-state-hover hover:text-foreground"
               aria-label="Previous card"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
@@ -91,14 +91,14 @@ export function FlashcardPreview() {
               onClick={() => goTo((index + 1) % SAMPLE_CARDS.length)}
               disabled={isLast}
               className={cn(
-                "flex h-8 w-8 items-center justify-center rounded-full text-ink/55 transition-colors hover:bg-ink/5 hover:text-ink",
-                isLast && "opacity-30 hover:bg-transparent hover:text-ink/55",
+                "flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-state-hover hover:text-foreground",
+                isLast && "opacity-30 hover:bg-transparent hover:text-muted-foreground",
               )}
               aria-label="Next card"
             >
               <ArrowRight className="h-3.5 w-3.5" />
             </button>
-            <span className="ml-2 font-mono-tag text-[10px] uppercase tracking-wider text-ink/45">
+            <span className="ml-2 font-mono text-[10px] uppercase tracking-wider text-muted-foreground">
               {isFirst
                 ? "Try the first"
                 : isLast
@@ -110,10 +110,10 @@ export function FlashcardPreview() {
           <button
             onClick={() => setFlipped((f) => !f)}
             className={cn(
-              "group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono-tag text-[11px] uppercase tracking-wider transition-all",
+              "group inline-flex items-center gap-1.5 rounded-full border px-3.5 py-1.5 font-mono text-[11px] uppercase tracking-wider transition-all",
               flipped
-                ? "border-ink/15 bg-paper text-ink/65 hover:border-ink/30 hover:text-ink"
-                : "border-ink bg-ink text-paper hover:bg-ink/85",
+                ? "border-border bg-background text-muted-foreground hover:border-foreground/30 hover:text-foreground"
+                : "border-foreground bg-foreground text-background hover:bg-foreground/85",
             )}
           >
             {flipped ? (

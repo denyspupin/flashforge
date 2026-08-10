@@ -1,3 +1,4 @@
+import { Badge } from "@/components/garn/badge"
 import { cn } from "@/lib/utils"
 import type { FlashcardContent } from "@/types/flashcard"
 
@@ -16,21 +17,21 @@ export function CardFront({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-card p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3),0_2px_4px_-1px_rgba(0,0,0,0.1)] sm:p-8",
+        "flex h-full w-full flex-col justify-between rounded-[2rem] border border-border bg-card p-6 shadow-surface-raised sm:p-8",
         className,
       )}
     >
       <div className="flex items-start justify-between">
         <div>
           {data.source && data.target && (
-            <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70">
+            <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs font-medium uppercase tracking-wider text-muted-foreground">
               {data.sourceFlag && (
                 <span className="text-base leading-none" aria-hidden>
                   {data.sourceFlag}
                 </span>
               )}
               <span>{data.source}</span>
-              <span className="text-ink/30">→</span>
+              <span className="text-muted-foreground/50">→</span>
               {data.targetFlag && (
                 <span className="text-base leading-none" aria-hidden>
                   {data.targetFlag}
@@ -40,34 +41,33 @@ export function CardFront({ data, className, size = "default" }: FaceProps) {
             </div>
           )}
           {data.topic && (
-            <div className="mt-1 font-mono-tag text-[10px] uppercase tracking-widest text-ember">
-              {data.topic}
+            <div className="mt-1.5">
+              <Badge tone="brand" appearance="soft" size="xs">
+                {data.topic}
+              </Badge>
             </div>
           )}
         </div>
-        <div className="font-display text-3xl text-ink/15">&ldquo;</div>
+        <div className="text-3xl font-semibold text-foreground/15">&ldquo;</div>
       </div>
 
       <div className="flex flex-1 items-center justify-center px-2">
         <h3
           className={cn(
-            "text-balance text-center font-display font-medium tracking-tight text-ink",
+            "text-balance text-center font-semibold tracking-tight text-foreground",
             TEXT_SIZE[size],
           )}
-          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
         >
           {data.front}
         </h3>
       </div>
 
-      <div className="flex items-center justify-between text-xs text-ink/45">
-        <span className="font-mono-tag uppercase tracking-wider">
-          Press reveal to see meaning
-        </span>
+      <div className="flex items-center justify-between font-mono text-xs uppercase tracking-wider text-muted-foreground">
+        <span>Press reveal to see meaning</span>
         <div className="flex items-center gap-1">
-          <span className="h-1 w-1 rounded-full bg-ink/30" />
-          <span className="h-1 w-1 rounded-full bg-ink/30" />
-          <span className="h-1 w-1 rounded-full bg-ink/30" />
+          <span className="h-1 w-1 rounded-full bg-foreground/30" />
+          <span className="h-1 w-1 rounded-full bg-foreground/30" />
+          <span className="h-1 w-1 rounded-full bg-foreground/30" />
         </div>
       </div>
     </div>
@@ -78,47 +78,48 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-ink p-6 text-paper shadow-[0_30px_80px_-30px_rgba(0,0,0,0.4)] sm:p-8",
+        "flex h-full w-full flex-col justify-between rounded-[2rem] bg-foreground p-6 text-background shadow-surface-overlay sm:p-8",
         className,
       )}
     >
       <div className="flex items-start justify-between">
         <div>
           {data.target && (
-            <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-paper/70">
+            <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs font-medium uppercase tracking-wider text-background/70">
               {data.targetFlag && (
                 <span className="text-base leading-none" aria-hidden>
                   {data.targetFlag}
                 </span>
               )}
               <span>{data.target}</span>
-              <span className="text-paper/40">·</span>
+              <span className="text-background/40">·</span>
               <span>Definition</span>
             </div>
           )}
           {data.topic && (
-            <div className="mt-1 font-mono-tag text-[10px] uppercase tracking-widest text-honey">
-              {data.topic}
+            <div className="mt-1.5">
+              <Badge tone="brand" appearance="soft" size="xs">
+                {data.topic}
+              </Badge>
             </div>
           )}
         </div>
-        <div className="font-display text-3xl text-paper/20">&ldquo;</div>
+        <div className="text-3xl font-semibold text-background/20">&ldquo;</div>
       </div>
 
       <div className="flex flex-1 items-center justify-center px-2">
         <p
           className={cn(
-            "text-balance text-center font-display font-medium tracking-tight text-paper",
+            "text-balance text-center font-semibold tracking-tight text-background",
             TEXT_SIZE[size],
           )}
-          style={{ fontVariationSettings: "'opsz' 144, 'SOFT' 60" }}
         >
           {data.back}
         </p>
       </div>
 
-      <div className="flex items-center justify-between border-t border-paper/10 pt-4 text-sm text-paper/55">
-        <div className="flex items-center gap-1.5 font-mono-tag uppercase tracking-wider">
+      <div className="flex items-center justify-between border-t border-background/10 pt-4 font-mono text-xs uppercase tracking-wider text-background/55">
+        <div className="flex items-center gap-1.5">
           {data.sourceFlag && (
             <span className="text-base leading-none" aria-hidden>
               {data.sourceFlag}
@@ -126,10 +127,7 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
           )}
           {data.source && <span>{data.source}</span>}
         </div>
-        <span
-          className="font-display-soft italic"
-          style={{ fontVariationSettings: "'opsz' 30, 'SOFT' 100" }}
-        >
+        <span className="font-semibold normal-case italic tracking-tight">
           {data.front}
         </span>
       </div>

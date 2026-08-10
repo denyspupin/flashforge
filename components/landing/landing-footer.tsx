@@ -1,4 +1,5 @@
 import Link from "next/link"
+import { Separator } from "@/components/garn/separator"
 import { Wordmark } from "@/components/layout/wordmark"
 
 export function LandingFooter() {
@@ -8,7 +9,7 @@ export function LandingFooter() {
         <div className="grid gap-12 lg:grid-cols-[1.5fr_2fr]">
           <div>
             <Wordmark />
-            <p className="mt-4 max-w-xs text-pretty text-sm leading-relaxed text-ink/55">
+            <p className="mt-4 max-w-xs text-pretty text-sm leading-relaxed text-muted-foreground">
               A vocabulary workshop, quietly running. Built for people who
               would rather learn than be sold to.
             </p>
@@ -34,8 +35,9 @@ export function LandingFooter() {
           </div>
         </div>
 
-        <div className="mt-16 flex flex-col items-end justify-end gap-4 border-t border-ink/10 pt-8 text-xs text-ink/45 sm:flex-row sm:items-center">
-          <span className="font-mono-tag uppercase tracking-wider">
+        <Separator className="mt-16" />
+        <div className="flex flex-col items-end justify-end gap-4 pt-8 font-mono text-xs uppercase tracking-wider text-muted-foreground sm:flex-row sm:items-center">
+          <span>
             © {new Date().getFullYear()} FlashForge · A quiet workshop
           </span>
         </div>
@@ -53,7 +55,7 @@ function FooterCol({
 }) {
   return (
     <div>
-      <h4 className="font-mono-tag text-[10px] uppercase tracking-[0.2em] text-ink/45">
+      <h4 className="font-mono text-[10px] uppercase tracking-[0.2em] text-muted-foreground">
         — {title}
       </h4>
       <ul className="mt-4 space-y-2.5">
@@ -61,7 +63,7 @@ function FooterCol({
           <li key={link.label}>
             <Link
               href={link.href}
-              className="text-sm text-ink/70 transition-colors hover:text-ink"
+              className="text-sm text-muted-foreground transition-colors hover:text-foreground"
             >
               {link.label}
             </Link>
