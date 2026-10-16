@@ -70,7 +70,7 @@ export function MobileNav({
           <Menu className="h-5 w-5" />
         </Button>
       )}
-      <DialogContent className="!flex bottom-0 top-auto z-50 max-h-[85dvh] w-full max-w-sm !flex-col translate-y-0 gap-0 rounded-t-2xl rounded-b-none border-t border-ink/10 bg-paper p-0 text-left shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom-1/2 data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom-1/2 data-closed:fade-out-0">
+      <DialogContent className="!flex bottom-2 top-auto z-50 max-h-[85dvh] w-[calc(100%-1rem)] max-w-md !flex-col translate-y-0 gap-0 rounded-2xl bg-paper p-0 text-left shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom-1/2 data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom-1/2 data-closed:fade-out-0">
         <MobileNavContext.Provider value={{ close }}>
           <div
             aria-hidden
@@ -121,7 +121,7 @@ export function MobileNav({
             <div className="flex-1" />
           )}
           {footer ? (
-            <div className="border-t border-ink/8 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
+            <div className="border-t border-ink/8 px-3 pt-3 pb-3">
               {footer}
             </div>
           ) : null}
