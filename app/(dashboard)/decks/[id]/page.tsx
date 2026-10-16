@@ -371,6 +371,7 @@ export default function DeckDetailPage() {
               onEdit={onEditDeck}
               onTogglePublish={onTogglePublish}
               onDelete={onDeleteDeck}
+              triggerClassName="sm:h-9 sm:w-9"
             />
           )}
         </div>
@@ -455,6 +456,7 @@ export default function DeckDetailPage() {
 
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
+            size="lg"
             onClick={() =>
               startNavigate(() =>
                 router.push(

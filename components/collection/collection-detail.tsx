@@ -571,7 +571,7 @@ export default function CollectionDetail({
         {isOwner ? (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Button
-              size="sm"
+              size="lg"
               onClick={() => setAddOpen(true)}
               className="w-full sm:w-auto"
             >
@@ -588,13 +588,14 @@ export default function CollectionDetail({
               onEdit={() => setEditing(true)}
               onTogglePublish={onTogglePublish}
               onDelete={onDelete}
-              triggerClassName="h-8 w-8"
+              triggerClassName="sm:h-9 sm:w-9"
             />
           </div>
         ) : isSignedIn ? (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Button
               variant="outline"
+              size="lg"
               onClick={onFork}
               disabled={pendingAction !== null}
               className="w-full sm:w-auto"
@@ -612,7 +613,7 @@ export default function CollectionDetail({
         ) : (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Link href={`/login?redirect_url=${encodeURIComponent(`/collections/${collection.id}`)}`}>
-              <Button variant="outline" className="w-full gap-1.5 sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full gap-1.5 sm:w-auto">
                 Sign in to fork
               </Button>
             </Link>

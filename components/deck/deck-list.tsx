@@ -220,7 +220,7 @@ export default function DeckList() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
+          <DialogTrigger render={<Button size="lg" className="w-full sm:w-auto" />}>
             <Plus className="mr-2 h-4 w-4" />
             New Deck
           </DialogTrigger>

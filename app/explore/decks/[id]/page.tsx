@@ -238,6 +238,7 @@ export default function PublicDeckPage() {
             {isOwner ? (
               <Button
                 variant="outline"
+                size="lg"
                 className="w-full sm:w-auto"
                 onClick={() =>
                   startNavigate(() => router.push(`/decks/${deck.id}`))
@@ -249,6 +250,7 @@ export default function PublicDeckPage() {
               <>
                 <Button
                   variant="ghost"
+                  size="lg"
                   onClick={onFork}
                   disabled={pendingAction !== null}
                   className="w-full sm:w-auto"
@@ -261,6 +263,7 @@ export default function PublicDeckPage() {
                   {pendingAction === "fork" ? "Forking…" : "Fork to my decks"}
                 </Button>
                 <Button
+                  size="lg"
                   onClick={onStudy}
                   disabled={pendingAction !== null}
                   className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
@@ -281,7 +284,10 @@ export default function PublicDeckPage() {
               href={`/explore/decks/${deck.id}/study`}
               className="w-full sm:w-auto"
             >
-              <Button className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto">
+              <Button
+                size="lg"
+                className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
+              >
                 <Play className="h-4 w-4" />
                 Study as guest
               </Button>
@@ -294,6 +300,7 @@ export default function PublicDeckPage() {
             >
               <Button
                 variant="outline"
+                size="lg"
                 className="w-full gap-1.5 sm:w-auto"
               >
                 Sign in to save progress
