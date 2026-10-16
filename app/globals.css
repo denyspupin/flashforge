@@ -118,6 +118,7 @@
   html {
     font-family: var(--font-sans);
     font-size: 100%;
+    background-color: hsl(var(--paper));
   }
 
   @media (min-width: 1280px) {

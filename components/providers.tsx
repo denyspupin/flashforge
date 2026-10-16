@@ -3,6 +3,7 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
 import dynamic from "next/dynamic"
 import { useState } from "react"
+import { ThemeColorSync } from "@/components/theme/theme-color-sync"
 import { ThemeSync } from "@/components/theme/theme-sync"
 import type { Theme } from "@/lib/constants"
 
@@ -36,6 +37,7 @@ export default function Providers({
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync initialTheme={initialTheme} />
+      <ThemeColorSync />
       {children}
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
