@@ -543,7 +543,7 @@ export default function DeckDetailPage() {
         </Dialog>
       </div>
 
-      <div className="space-y-3 [contain:layout]">
+      <div className="grid grid-cols-1 gap-3 [contain:layout] xl:grid-cols-2">
         {deck.cards?.length === 0 ? (
           <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <Plus className="h-12 w-12 text-muted-foreground mb-4" />

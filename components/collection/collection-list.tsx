@@ -462,7 +462,7 @@ export default function CollectionList() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
           {[1, 2, 3].map((i) => (
             <CollectionCardSkeleton key={i} />
           ))}
@@ -479,7 +479,7 @@ export default function CollectionList() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
           {collections.map((collection) => {
             const sourceName = languagesById[collection.sourceLanguageId]?.name
             const targetName = languagesById[collection.targetLanguageId]?.name

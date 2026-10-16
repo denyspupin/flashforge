@@ -461,7 +461,7 @@ export default function DeckList() {
       </div>
 
       {decksLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
           {[1, 2, 3].map((i) => (
             <DeckCardSkeleton key={i} />
           ))}
@@ -478,7 +478,7 @@ export default function DeckList() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
           {decks.map((deck) => {
             const sourceName = languagesById[deck.sourceLanguageId]?.name
             const targetName = languagesById[deck.targetLanguageId]?.name
