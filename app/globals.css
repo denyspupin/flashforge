@@ -117,6 +117,19 @@
   }
   html {
     font-family: var(--font-sans);
+    font-size: 100%;
+  }
+
+  @media (min-width: 1280px) {
+    html {
+      font-size: 106.25%;
+    }
+  }
+
+  @media (min-width: 1536px) {
+    html {
+      font-size: 112.5%;
+    }
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
