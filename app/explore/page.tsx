@@ -4,7 +4,7 @@ import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Copy, Globe, Layers, Loader2 } from "lucide-react"
+import { Copy, Globe, Layers, Loader2, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -95,6 +95,30 @@ async function startStudy(
 }
 
 type ExploreTab = "decks" | "collections"
+
+type LanguagePairGroup<T> = {
+  key: string
+  items: T[]
+  count: number
+}
+
+function groupByLanguagePair<
+  T extends { sourceLanguageId: string; targetLanguageId: string }
+>(items: T[]): LanguagePairGroup<T>[] {
+  const groups = new Map<string, T[]>()
+  for (const item of items) {
+    const key = `${item.sourceLanguageId}-${item.targetLanguageId}`
+    const existing = groups.get(key)
+    if (existing) {
+      existing.push(item)
+    } else {
+      groups.set(key, [item])
+    }
+  }
+  return [...groups.entries()]
+    .map(([key, group]) => ({ key, items: group, count: group.length }))
+    .sort((a, b) => b.count - a.count)
+}
 
 export default function ExplorePage() {
   const router = useRouter()
@@ -191,8 +215,159 @@ export default function ExplorePage() {
     },
   })
 
-  const decks = data?.data || []
-  const collections = collectionsQuery.data?.data || []
+  const decks = useMemo(() => data?.data || [], [data])
+  const collections = useMemo(
+    () => collectionsQuery.data?.data || [],
+    [collectionsQuery.data]
+  )
+
+  const curatedDecks = decks.filter((deck) => deck.isCurated)
+  const deckGroups = useMemo(
+    () => groupByLanguagePair(decks.filter((deck) => !deck.isCurated)),
+    [decks]
+  )
+  const curatedCollections = collections.filter(
+    (collection) => collection.isCurated
+  )
+  const collectionGroups = useMemo(
+    () =>
+      groupByLanguagePair(collections.filter((c) => !c.isCurated)),
+    [collections]
+  )
+
+  const renderDeckCard = (deck: Deck) => {
+    const isMine = myId && deck.creatorId === myId
+    const isForking = pendingForkId === deck.id
+    return (
+      <DeckCard
+        key={deck.id}
+        deck={deck}
+        href={`/explore/decks/${deck.id}`}
+        badges={
+          <>
+            {deck.isCurated ? <DeckCard.CuratedBadge /> : null}
+            {deck.forkedFromDeckId ? <DeckCard.ForkedBadge /> : null}
+            <DeckCard.TopicBadges topics={deck.topics} />
+          </>
+        }
+        languageNames={{
+          source: languagesById[deck.sourceLanguageId]?.name,
+          target: languagesById[deck.targetLanguageId]?.name,
+          sourceFlag: languagesById[deck.sourceLanguageId]?.flag,
+          targetFlag: languagesById[deck.targetLanguageId]?.flag,
+        }}
+        footerLeft={
+          <span>
+            <span className="font-medium text-ink/80">
+              {deck.creatorName ?? "Unknown"}
+            </span>
+            <span className="mx-1.5">·</span>
+            <span>
+              {deck.cardCount}{" "}
+              {deck.cardCount === 1 ? "card" : "cards"}
+            </span>
+          </span>
+        }
+        onStudy={
+          isSignedIn
+            ? () => onStudy(deck)
+            : (id) =>
+                startNavigate(() =>
+                  router.push(`/explore/decks/${id}/study`)
+                )
+        }
+        actions={
+          isSignedIn ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
+              disabled={isForking}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (isMine) {
+                  startNavigate(() => router.push(`/decks/${deck.id}`))
+                  return
+                }
+                onForkDeck(deck)
+              }}
+            >
+              {isForking ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : isMine ? (
+                <Globe className="mr-1.5 h-3.5 w-3.5" />
+              ) : (
+                <Copy className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
+            </Button>
+          ) : undefined
+        }
+      />
+    )
+  }
+
+  const renderCollectionCard = (collection: Collection) => {
+    const isMine = myId && collection.creatorId === myId
+    const isForking = pendingForkId === collection.id
+    return (
+      <CollectionCard
+        key={collection.id}
+        collection={collection}
+        href={`/explore/collections/${collection.id}`}
+        languageNames={{
+          source: languagesById[collection.sourceLanguageId]?.name,
+          target: languagesById[collection.targetLanguageId]?.name,
+          sourceFlag: languagesById[collection.sourceLanguageId]?.flag,
+          targetFlag: languagesById[collection.targetLanguageId]?.flag,
+        }}
+        badges={
+          <>
+            {collection.isCurated ? <CollectionCard.CuratedBadge /> : null}
+            {collection.forkedFromCollectionId ? (
+              <CollectionCard.ForkedBadge />
+            ) : null}
+          </>
+        }
+        footerLeft={
+          <span>
+            <span className="font-medium text-ink/80">
+              {collection.creatorName ?? "Unknown"}
+            </span>
+          </span>
+        }
+        actions={
+          isSignedIn ? (
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
+              disabled={isForking}
+              onClick={(e) => {
+                e.stopPropagation()
+                if (isMine) {
+                  startNavigate(() =>
+                    router.push(`/collections/${collection.id}`)
+                  )
+                  return
+                }
+                onForkCollection(collection)
+              }}
+            >
+              {isForking ? (
+                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
+              ) : isMine ? (
+                <Globe className="mr-1.5 h-3.5 w-3.5" />
+              ) : (
+                <Copy className="mr-1.5 h-3.5 w-3.5" />
+              )}
+              {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
+            </Button>
+          ) : undefined
+        }
+      />
+    )
+  }
 
   const onForkDeck = (deck: Deck) => {
     if (!isSignedIn) return
@@ -274,76 +449,46 @@ export default function ExplorePage() {
               description="Be the first to share a deck with the community"
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
-              {decks.map((deck) => {
-                const isMine = myId && deck.creatorId === myId
-                const isForking = pendingForkId === deck.id
+            <div className="space-y-10">
+              {curatedDecks.length > 0 ? (
+                <section className="[contain:layout]">
+                  <h2 className="text-ember flex items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Featured
+                    <span className="text-ink/40 ml-1">
+                      · {curatedDecks.length}
+                    </span>
+                  </h2>
+                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                    {curatedDecks.map(renderDeckCard)}
+                  </div>
+                </section>
+              ) : null}
+              {deckGroups.map((group) => {
+                const source = languagesById[group.items[0].sourceLanguageId]
+                const target = languagesById[group.items[0].targetLanguageId]
                 return (
-                  <DeckCard
-                    key={deck.id}
-                    deck={deck}
-                    href={`/explore/decks/${deck.id}`}
-                    badges={
-                      <>
-                        {deck.isCurated ? <DeckCard.CuratedBadge /> : null}
-                        {deck.forkedFromDeckId ? <DeckCard.ForkedBadge /> : null}
-                        <DeckCard.TopicBadges topics={deck.topics} />
-                      </>
-                    }
-                    languageNames={{
-                      source: languagesById[deck.sourceLanguageId]?.name,
-                      target: languagesById[deck.targetLanguageId]?.name,
-                      sourceFlag: languagesById[deck.sourceLanguageId]?.flag,
-                      targetFlag: languagesById[deck.targetLanguageId]?.flag,
-                    }}
-                    footerLeft={
-                      <span>
-                        <span className="font-medium text-ink/80">
-                          {deck.creatorName ?? "Unknown"}
+                  <section key={group.key} className="[contain:layout]">
+                    <h2 className="text-muted-foreground flex flex-wrap items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
+                      {source?.flag ? (
+                        <span className="text-sm leading-none">
+                          {source.flag}
                         </span>
-                        <span className="mx-1.5">·</span>
-                        <span>
-                          {deck.cardCount}{" "}
-                          {deck.cardCount === 1 ? "card" : "cards"}
+                      ) : null}
+                      <span>{source?.name ?? "Unknown"}</span>
+                      <span aria-hidden>→</span>
+                      {target?.flag ? (
+                        <span className="text-sm leading-none">
+                          {target.flag}
                         </span>
-                      </span>
-                    }
-                    onStudy={
-                      isSignedIn
-                        ? () => onStudy(deck)
-                        : (id) =>
-                            startNavigate(() =>
-                              router.push(`/explore/decks/${id}/study`)
-                            )
-                    }
-                    actions={
-                      isSignedIn ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
-                          disabled={isForking}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (isMine) {
-                              startNavigate(() => router.push(`/decks/${deck.id}`))
-                              return
-                            }
-                            onForkDeck(deck)
-                          }}
-                        >
-                          {isForking ? (
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                          ) : isMine ? (
-                            <Globe className="mr-1.5 h-3.5 w-3.5" />
-                          ) : (
-                            <Copy className="mr-1.5 h-3.5 w-3.5" />
-                          )}
-                          {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
-                        </Button>
-                      ) : undefined
-                    }
-                  />
+                      ) : null}
+                      <span>{target?.name ?? "Unknown"}</span>
+                      <span className="text-ink/40 ml-1">· {group.count}</span>
+                    </h2>
+                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                      {group.items.map(renderDeckCard)}
+                    </div>
+                  </section>
                 )
               })}
             </div>
@@ -372,64 +517,46 @@ export default function ExplorePage() {
               description="Be the first to share a collection with the community"
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
-              {collections.map((collection) => {
-                const isMine = myId && collection.creatorId === myId
-                const isForking = pendingForkId === collection.id
+            <div className="space-y-10">
+              {curatedCollections.length > 0 ? (
+                <section className="[contain:layout]">
+                  <h2 className="text-ember flex items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
+                    <Sparkles className="h-3.5 w-3.5" />
+                    Featured
+                    <span className="text-ink/40 ml-1">
+                      · {curatedCollections.length}
+                    </span>
+                  </h2>
+                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                    {curatedCollections.map(renderCollectionCard)}
+                  </div>
+                </section>
+              ) : null}
+              {collectionGroups.map((group) => {
+                const source = languagesById[group.items[0].sourceLanguageId]
+                const target = languagesById[group.items[0].targetLanguageId]
                 return (
-                  <CollectionCard
-                    key={collection.id}
-                    collection={collection}
-                    href={`/explore/collections/${collection.id}`}
-                    languageNames={{
-                      source: languagesById[collection.sourceLanguageId]?.name,
-                      target: languagesById[collection.targetLanguageId]?.name,
-                      sourceFlag: languagesById[collection.sourceLanguageId]?.flag,
-                      targetFlag: languagesById[collection.targetLanguageId]?.flag,
-                    }}
-                    badges={
-                      <>
-                        {collection.isCurated ? <CollectionCard.CuratedBadge /> : null}
-                        {collection.forkedFromCollectionId ? <CollectionCard.ForkedBadge /> : null}
-                      </>
-                    }
-                    footerLeft={
-                      <span>
-                        <span className="font-medium text-ink/80">
-                          {collection.creatorName ?? "Unknown"}
+                  <section key={group.key} className="[contain:layout]">
+                    <h2 className="text-muted-foreground flex flex-wrap items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
+                      {source?.flag ? (
+                        <span className="text-sm leading-none">
+                          {source.flag}
                         </span>
-                      </span>
-                    }
-                    actions={
-                      isSignedIn ? (
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
-                          disabled={isForking}
-                          onClick={(e) => {
-                            e.stopPropagation()
-                            if (isMine) {
-                              startNavigate(() =>
-                                router.push(`/collections/${collection.id}`)
-                              )
-                              return
-                            }
-                            onForkCollection(collection)
-                          }}
-                        >
-                          {isForking ? (
-                            <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                          ) : isMine ? (
-                            <Globe className="mr-1.5 h-3.5 w-3.5" />
-                          ) : (
-                            <Copy className="mr-1.5 h-3.5 w-3.5" />
-                          )}
-                          {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
-                        </Button>
-                      ) : undefined
-                    }
-                  />
+                      ) : null}
+                      <span>{source?.name ?? "Unknown"}</span>
+                      <span aria-hidden>→</span>
+                      {target?.flag ? (
+                        <span className="text-sm leading-none">
+                          {target.flag}
+                        </span>
+                      ) : null}
+                      <span>{target?.name ?? "Unknown"}</span>
+                      <span className="text-ink/40 ml-1">· {group.count}</span>
+                    </h2>
+                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                      {group.items.map(renderCollectionCard)}
+                    </div>
+                  </section>
                 )
               })}
             </div>
