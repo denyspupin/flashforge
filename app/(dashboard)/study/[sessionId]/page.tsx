@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery } from "@tanstack/react-query"
-import { useParams } from "next/navigation"
+import { useParams, useSearchParams } from "next/navigation"
 import { motion } from "framer-motion"
 
 import { StudyPlayer } from "@/components/study"
@@ -51,7 +51,13 @@ async function fetchUser(): Promise<UserData> {
 
 export default function StudySessionPage() {
   const params = useParams()
+  const searchParams = useSearchParams()
   const sessionId = params.sessionId as string
+  const fromParam = searchParams.get("from")
+  const returnHref =
+    fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")
+      ? fromParam
+      : "/decks"
 
   const sessionQuery = useQuery({
     queryKey: queryKeys.studySession(sessionId),
@@ -116,6 +122,7 @@ export default function StudySessionPage() {
       deck={deck}
       cards={cards}
       initialStreak={streak}
+      returnHref={returnHref}
     />
   )
 }

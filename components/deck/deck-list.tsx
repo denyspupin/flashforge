@@ -495,7 +495,9 @@ export default function DeckList() {
                   targetFlag,
                 }}
                 onStudy={(deckId) =>
-                  startNavigate(() => router.push(`/study?deckId=${deckId}`))
+                  startNavigate(() =>
+                    router.push(`/study?deckId=${deckId}&from=${encodeURIComponent("/decks")}`)
+                  )
                 }
                 actions={
                   <DeckActionsMenu

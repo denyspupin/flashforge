@@ -127,7 +127,11 @@ export default function PublicDeckPage() {
   const studyMutation = useMutation({
     mutationFn: () => startStudy(deckId),
     onSuccess: (result) => {
-      startNavigate(() => router.push(`/study/${result.data.session.id}`))
+      startNavigate(() =>
+        router.push(
+          `/study/${result.data.session.id}?from=${encodeURIComponent(`/explore/decks/${deckId}`)}`
+        )
+      )
     },
     onError: (error) => {
       setActionError(error instanceof Error ? error.message : "Couldn’t start a study session")

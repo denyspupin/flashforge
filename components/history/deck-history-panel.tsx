@@ -18,9 +18,10 @@ const PANEL_LIMIT = 3
 
 type DeckHistoryPanelProps = {
   deckId: string
+  from?: string
 }
 
-export function DeckHistoryPanel({ deckId }: DeckHistoryPanelProps) {
+export function DeckHistoryPanel({ deckId, from = "/decks" }: DeckHistoryPanelProps) {
   const router = useRouter()
   const { data, isLoading, error } = useQuery({
     queryKey: queryKeys.studyHistory({ deckId, limit: PANEL_LIMIT }),
@@ -85,7 +86,11 @@ export function DeckHistoryPanel({ deckId }: DeckHistoryPanelProps) {
             key={session.id}
             session={session}
             compact
-            onStudy={() => router.push(`/study?deckId=${session.deckId}`)}
+            onStudy={() =>
+              router.push(
+                `/study?deckId=${session.deckId}&from=${encodeURIComponent(from)}`
+              )
+            }
           />
         ))}
       </CardContent>

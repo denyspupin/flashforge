@@ -336,7 +336,11 @@ export default function CollectionDetail({
   const studyMutation = useMutation({
     mutationFn: (deckId: string) => startStudy(deckId),
     onSuccess: (result) => {
-      startNavigate(() => router.push(`/study/${result.data.session.id}`))
+      startNavigate(() =>
+        router.push(
+          `/study/${result.data.session.id}?from=${encodeURIComponent(`/collections/${collectionId}`)}`
+        )
+      )
     },
     onError: (error) => {
       setActionError(

@@ -175,7 +175,11 @@ export default function ExplorePage() {
   const studyMutation = useMutation({
     mutationFn: startStudy,
     onSuccess: (result) => {
-      startNavigate(() => router.push(`/study/${result.data.session.id}`))
+      startNavigate(() =>
+        router.push(
+          `/study/${result.data.session.id}?from=${encodeURIComponent("/explore")}`
+        )
+      )
     },
     onError: (error) => {
       setForkError(
