@@ -6,9 +6,9 @@ import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
 import {
   Bell,
-  ChevronDown,
   History,
   LogOut,
+  MoreHorizontal,
   Settings,
   Shield,
   User as UserIcon,
@@ -162,7 +162,7 @@ export function UserMenu({
           </span>
         )}
         {presentation === "row" ? (
-          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+          <MoreHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" />
         ) : null}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
