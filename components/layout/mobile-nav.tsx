@@ -70,8 +70,12 @@ export function MobileNav({
           <Menu className="h-5 w-5" />
         </Button>
       )}
-      <DialogContent className="!flex top-0 right-0 left-auto z-50 h-dvh w-full max-w-xs !flex-col -translate-x-0 -translate-y-0 gap-0 rounded-none border-l border-ink/10 bg-paper p-0 text-left data-open:animate-in data-open:slide-in-from-right data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-right data-closed:fade-out-0">
+      <DialogContent className="!flex bottom-0 top-auto z-50 max-h-[85dvh] w-full max-w-sm !flex-col translate-y-0 gap-0 rounded-t-2xl rounded-b-none border-t border-ink/10 bg-paper p-0 text-left shadow-xl outline-none data-open:animate-in data-open:slide-in-from-bottom-1/2 data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-bottom-1/2 data-closed:fade-out-0">
         <MobileNavContext.Provider value={{ close }}>
+          <div
+            aria-hidden
+            className="mx-auto mt-2 h-1 w-9 shrink-0 rounded-full bg-ink/20"
+          />
           <div className="flex items-center justify-between border-b border-ink/8 px-5 py-4">
             {brand ?? <span className="font-display text-lg font-medium">Menu</span>}
             <Button
