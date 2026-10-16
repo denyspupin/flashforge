@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
 import {
   Bell,
+  ChevronDown,
   History,
   LogOut,
   Settings,
@@ -22,10 +23,12 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
+import { ThemeMenuItems } from "@/components/theme/theme-menu-items"
 
 type UserMenuProps = {
   className?: string
   redirectUrl?: string
+  presentation?: "compact" | "row"
 }
 
 type MeResponse = {
@@ -66,7 +69,11 @@ function fullName(
   return username?.trim() || ""
 }
 
-export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
+export function UserMenu({
+  className,
+  redirectUrl = "/",
+  presentation = "compact",
+}: UserMenuProps) {
   const router = useRouter()
   const { isLoaded, isSignedIn, user } = useUser()
   const { signOut, openUserProfile } = useClerk()
@@ -103,19 +110,27 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button
-            type="button"
-            aria-label="Open user menu"
-            className={cn(
-              "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
-              className,
-            )}
-          />
+          presentation === "row" ? (
+            <button
+              type="button"
+              aria-label="Open user menu"
+              className={cn(
+                "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                className,
+              )}
+            />
+          ) : (
+            <button
+              type="button"
+              aria-label="Open user menu"
+              className={cn(
+                "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
+                className,
+              )}
+            />
+          )
         }
       >
-        <span className="hidden text-sm font-medium text-ink/80 sm:inline">
-          {displayName || "Learner"}
-        </span>
         <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
           {avatarUrl ? (
             <Image
@@ -133,6 +148,18 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
             </span>
           )}
         </span>
+        {presentation === "row" ? (
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink/85">
+            {displayName || "Learner"}
+          </span>
+        ) : (
+          <span className="hidden text-sm font-medium text-ink/80 sm:inline">
+            {displayName || "Learner"}
+          </span>
+        )}
+        {presentation === "row" ? (
+          <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+        ) : null}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         <div className="flex items-center gap-3 px-2.5 py-2.5">
@@ -183,6 +210,10 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
             </DropdownMenuItem>
           </>
         ) : null}
+
+        <DropdownMenuSeparator />
+
+        <ThemeMenuItems />
 
         <DropdownMenuSeparator />
 

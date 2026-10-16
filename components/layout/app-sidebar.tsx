@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { useQuery } from "@tanstack/react-query"
 import {
   Bell,
   Compass,
@@ -10,26 +9,13 @@ import {
   Layers,
   LayoutDashboard,
   Library,
-  Shield,
+  Plus,
 } from "lucide-react"
 
-import { ThemeQuickToggle } from "@/components/theme/theme-quick-toggle"
 import { UserMenu } from "@/components/layout/user-menu"
-import { queryKeys } from "@/hooks"
-import type { ApiResponse } from "@/lib/api/response"
+import { buttonVariants } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 import { Wordmark } from "./wordmark"
-
-type MeResponse = {
-  id: string
-  role: "user" | "curator" | "admin"
-}
-
-async function fetchMe(): Promise<ApiResponse<MeResponse>> {
-  const res = await fetch("/api/v1/users/me")
-  if (!res.ok) throw new Error("Failed to fetch user")
-  return res.json()
-}
 
 const PRIMARY_NAV = [
   {
@@ -90,36 +76,18 @@ function NavItem({
   )
 }
 
-function SidebarAdminLink() {
-  const { data } = useQuery({
-    queryKey: queryKeys.me(),
-    queryFn: fetchMe,
-    staleTime: 60_000,
-  })
-
-  if (data?.data?.role !== "admin") return null
-
-  return (
-    <Link
-      href="/admin"
-      aria-label="Admin area"
-      className={cn(
-        "flex h-9 w-9 shrink-0 items-center justify-center rounded-lg text-ink/70 transition-colors hover:bg-ink/5 hover:text-ink",
-      )}
-    >
-      <Shield className="h-4 w-4" strokeWidth={1.75} />
-    </Link>
-  )
-}
-
 export function AppSidebar() {
   const pathname = usePathname()
 
   return (
     <aside className="fixed inset-y-0 left-0 z-40 hidden w-60 flex-col border-r border-ink/8 bg-paper lg:flex">
-      <div className="px-5 pt-5 pb-2">
-        <Link href="/dashboard" className="inline-flex text-lg text-ink">
+      <div className="flex flex-col gap-3 px-4 pt-5 pb-4">
+        <Link href="/dashboard" className="inline-flex pl-1 text-lg text-ink">
           <Wordmark />
+        </Link>
+        <Link href="/decks?new=1" className={buttonVariants()}>
+          <Plus className="h-4 w-4" />
+          New deck
         </Link>
       </div>
 
@@ -147,12 +115,8 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="flex items-center gap-1 border-t border-ink/8 px-4 py-3">
-        <ThemeQuickToggle />
-        <SidebarAdminLink />
-        <div className="ml-auto">
-          <UserMenu />
-        </div>
+      <div className="border-t border-ink/8 px-3 py-3">
+        <UserMenu presentation="row" />
       </div>
     </aside>
   )

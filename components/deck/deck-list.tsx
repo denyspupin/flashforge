@@ -1,7 +1,7 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
@@ -104,10 +104,20 @@ async function unpublishDeck(id: string): Promise<void> {
 export default function DeckList() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
+  const searchParams = useSearchParams()
+  const open = searchParams.get("new") === "1"
   const [mode, setMode] = useState<NewDeckMode>("create")
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [, startNavigate] = useTransition()
+
+  const handleOpenChange = (next: boolean) => {
+    router.replace(next ? "/decks?new=1" : "/decks", { scroll: false })
+    if (!next) {
+      setMode("create")
+      form.reset()
+      setSubmitError(null)
+    }
+  }
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
     queryKey: queryKeys.decks(),
@@ -125,7 +135,7 @@ export default function DeckList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      setOpen(false)
+      router.replace("/decks", { scroll: false })
       form.reset()
       setSubmitError(null)
     },
@@ -185,17 +195,8 @@ export default function DeckList() {
     setSubmitError(messages.length ? messages.join(" · ") : "Please fill all required fields.")
   }
 
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next)
-    if (!next) {
-      setMode("create")
-      form.reset()
-      setSubmitError(null)
-    }
-  }
-
   const handleImportSuccess = (result: ImportDeckResult) => {
-    setOpen(false)
+    router.replace("/decks", { scroll: false })
     setMode("create")
     if (result.mode === "new") {
       startNavigate(() => router.push(`/decks/${result.deckId}`))
@@ -470,7 +471,7 @@ export default function DeckList() {
           title="No decks yet"
           description="Create your first deck to start learning"
           action={
-            <Button onClick={() => setOpen(true)}>
+            <Button onClick={() => handleOpenChange(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create Deck
             </Button>
