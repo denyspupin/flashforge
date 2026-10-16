@@ -2,9 +2,11 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useEffect, useRef } from "react"
 
 import { AppSidebar } from "@/components/layout/app-sidebar"
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar"
+import { PageTransition } from "@/components/layout/page-transition"
 import { ThemeQuickToggle } from "@/components/theme/theme-quick-toggle"
 import { UserMenu } from "@/components/layout/user-menu"
 import { cn } from "@/lib/utils"
@@ -37,30 +39,46 @@ export function DashboardShell({
 }) {
   const pathname = usePathname()
   const focus = FOCUS_PATTERN.test(pathname)
+  const scrollRef = useRef<HTMLDivElement | null>(null)
+
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 })
+  }, [pathname])
 
   return (
     <div className="relative min-h-dvh">
       {focus ? null : <AppSidebar />}
-      <div className={cn("flex min-h-dvh flex-col", !focus && "lg:pl-60")}>
+      <div
+        className={cn(
+          "flex min-h-dvh flex-col lg:h-dvh",
+          !focus && "lg:pl-60 lg:min-h-0",
+        )}
+      >
         {focus ? null : <MobileTopBar />}
         {bleed ? (
           <div
+            ref={scrollRef}
             className={cn(
-              "flex-1",
+              "flex-1 min-h-0 lg:overflow-y-auto",
               !focus && "pb-24 sm:pb-28 lg:pb-6",
             )}
           >
             {children}
           </div>
         ) : (
-          <main
-            className={cn(
-              "flex-1 mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6",
-              !focus && "pb-24 sm:pb-28 lg:pb-6",
-            )}
+          <div
+            ref={scrollRef}
+            className="flex-1 min-h-0 lg:overflow-y-auto"
           >
-            {children}
-          </main>
+            <main
+              className={cn(
+                "mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6",
+                !focus && "pb-24 sm:pb-28 lg:pb-6",
+              )}
+            >
+              <PageTransition>{children}</PageTransition>
+            </main>
+          </div>
         )}
         {focus ? null : <MobileTabBar />}
       </div>
