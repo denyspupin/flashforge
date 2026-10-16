@@ -10,6 +10,7 @@ import {
   Dialog,
   DialogContent,
   DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { cn } from "@/lib/utils"
 
@@ -54,7 +55,11 @@ export function MobileNav({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTitle className="sr-only">Navigation</DialogTitle>
-      {trigger ?? (
+      {trigger ? (
+        <DialogTrigger render={<span className="contents" />}>
+          {trigger}
+        </DialogTrigger>
+      ) : (
         <Button
           variant="ghost"
           size="icon"
