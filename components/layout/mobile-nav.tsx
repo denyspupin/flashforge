@@ -85,6 +85,8 @@ export function MobileNav({
   const gestureRef = useRef<GestureState | null>(null)
   const exitInFlightRef = useRef(false)
   const animationRef = useRef<ReturnType<typeof animate> | null>(null)
+  const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const entryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   const playSheetTo = (y: number, velocity: number, stiffness: number, damping: number) => {
     const el = sheetRef.current
@@ -106,6 +108,7 @@ export function MobileNav({
       return
     }
     exitInFlightRef.current = true
+    if (exitTimerRef.current) clearTimeout(exitTimerRef.current)
     const target = el.offsetHeight + el.getBoundingClientRect().top + 48
     animationRef.current?.cancel()
     animationRef.current = animate(el, { y: target }, {
@@ -114,11 +117,20 @@ export function MobileNav({
       damping: 34,
       mass: 0.9,
       velocity,
-      onComplete: () => {
+    })
+    void animationRef.current
+      .then(() => {
+        exitInFlightRef.current = false
+        exitTimerRef.current = null
+        setOpen(false)
+      })
+      .catch(() => {})
+    exitTimerRef.current = setTimeout(() => {
+      if (exitInFlightRef.current) {
         exitInFlightRef.current = false
         setOpen(false)
-      },
-    })
+      }
+    }, 1500)
   }
 
   const close = () => runExit(0)
@@ -143,6 +155,18 @@ export function MobileNav({
       stiffness: 380,
       damping: 36,
     })
+    entryTimerRef.current = setTimeout(() => {
+      if (el.style.opacity === "0") {
+        el.style.opacity = ""
+        el.style.transform = ""
+      }
+    }, 1800)
+    return () => {
+      if (entryTimerRef.current) {
+        clearTimeout(entryTimerRef.current)
+        entryTimerRef.current = null
+      }
+    }
   }, [isOpen, reducedMotion])
 
   const onSheetPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
