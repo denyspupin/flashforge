@@ -29,6 +29,8 @@ type UserMenuProps = {
   className?: string
   redirectUrl?: string
   presentation?: "compact" | "row"
+  /** Hide links the host surface already exposes in its nav (e.g. the app sidebar). */
+  showQuickLinks?: boolean
 }
 
 type MeResponse = {
@@ -73,6 +75,7 @@ export function UserMenu({
   className,
   redirectUrl = "/",
   presentation = "compact",
+  showQuickLinks = true,
 }: UserMenuProps) {
   const router = useRouter()
   const { isLoaded, isSignedIn, user } = useUser()
@@ -102,6 +105,7 @@ export function UserMenu({
     user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
       ?.emailAddress ?? user.emailAddresses[0]?.emailAddress ?? null
 
+  const isAdmin = meData?.data?.role === "admin"
   const displayName = fullName(user.firstName, user.lastName, user.username)
   const initials = initialsFrom(user.firstName, user.lastName, primaryEmail)
   const avatarUrl = meData?.data?.avatarUrl ?? user.imageUrl
@@ -190,28 +194,30 @@ export function UserMenu({
           </div>
         </div>
 
-        <DropdownMenuSeparator />
+        {showQuickLinks || isAdmin ? <DropdownMenuSeparator /> : null}
 
-        <DropdownMenuItem onClick={() => router.push("/notifications")}>
-          <Bell className="h-4 w-4" />
-          Notifications
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => router.push("/history")}>
-          <History className="h-4 w-4" />
-          Study history
-        </DropdownMenuItem>
-
-        {meData?.data?.role === "admin" ? (
+        {showQuickLinks ? (
           <>
-            <DropdownMenuItem onClick={() => router.push("/admin")}>
-              <Shield className="h-4 w-4" />
-              Admin
+            <DropdownMenuItem onClick={() => router.push("/notifications")}>
+              <Bell className="h-4 w-4" />
+              Notifications
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={() => router.push("/history")}>
+              <History className="h-4 w-4" />
+              Study history
             </DropdownMenuItem>
           </>
         ) : null}
 
-        <DropdownMenuSeparator />
+        {isAdmin ? (
+          <DropdownMenuItem onClick={() => router.push("/admin")}>
+            <Shield className="h-4 w-4" />
+            Admin
+          </DropdownMenuItem>
+        ) : null}
+
+        {showQuickLinks || isAdmin ? <DropdownMenuSeparator /> : null}
 
         <ThemeMenuItems />
 

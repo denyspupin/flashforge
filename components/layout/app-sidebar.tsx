@@ -110,7 +110,7 @@ export function AppSidebar() {
       </nav>
 
       <div className="border-t border-ink/8 px-3 py-3">
-        <UserMenu presentation="row" />
+        <UserMenu presentation="row" showQuickLinks={false} />
       </div>
     </aside>
   )
