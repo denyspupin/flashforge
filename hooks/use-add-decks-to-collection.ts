@@ -33,8 +33,14 @@ export function useAddDecksToCollection(collectionId: string) {
     mutationFn: (deckIds: string[]) =>
       addDecksToCollection(collectionId, deckIds),
     onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.publicCollection(collectionId),
+      })
       queryClient.invalidateQueries({ queryKey: queryKeys.collection(collectionId) })
       queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
+      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
     },
   })
 }

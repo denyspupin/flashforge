@@ -309,9 +309,7 @@ export default function CollectionDetail({
     queryClient.invalidateQueries({
       queryKey: queryKeys.collection(collectionId),
     })
-    queryClient.invalidateQueries({
-      queryKey: queryKeys.communityCollections(),
-    })
+    queryClient.invalidateQueries({ queryKey: ["community-collections"] })
     queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
     queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
     queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
