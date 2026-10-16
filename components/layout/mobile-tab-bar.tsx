@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Compass, Layers, LayoutDashboard, Library, MoreHorizontal } from "lucide-react"
+import { Compass, Layers, LayoutDashboard, Library, Menu } from "lucide-react"
 
 import { MobileUserFooterWithAdmin } from "@/components/layout/mobile-user-footer-with-admin"
 import { MobileNav } from "@/components/layout/mobile-nav"
@@ -30,9 +30,37 @@ function matches(pathname: string, href: string) {
 export function MobileTabBar() {
   const pathname = usePathname()
 
-  const moreActive = MORE_ROUTES.some(
+  const menuActive = MORE_ROUTES.some(
     (href) => pathname === href || pathname.startsWith(`${href}/`),
   )
+
+  const tabClass = (active: boolean) =>
+    cn(
+      "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
+      active ? "text-ember" : "text-ink/60 hover:text-ink",
+    )
+
+  const tabs = (from: number, to = TABS.length) =>
+    TABS.slice(from, to).map((tab) => {
+      const active = tab.match
+        ? tab.match(pathname)
+        : matches(pathname, tab.href)
+
+      return (
+        <Link
+          key={tab.href}
+          href={tab.href}
+          aria-current={active ? "page" : undefined}
+          className={tabClass(active)}
+        >
+          <tab.icon
+            className={cn("h-6 w-6", active && "text-ember")}
+            strokeWidth={active ? 2 : 1.75}
+          />
+          {tab.label}
+        </Link>
+      )
+    })
 
   return (
     <nav
@@ -40,46 +68,25 @@ export function MobileTabBar() {
       className="fixed inset-x-0 bottom-0 z-40 border-t border-ink/8 bg-paper/85 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden"
     >
       <div className="grid grid-cols-5 items-stretch">
-        {TABS.map((tab) => {
-          const active = tab.match
-            ? tab.match(pathname)
-            : matches(pathname, tab.href)
-
-          return (
-            <Link
-              key={tab.href}
-              href={tab.href}
-              aria-current={active ? "page" : undefined}
-              className={cn(
-                "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
-                active ? "text-ember" : "text-ink/60 hover:text-ink",
-              )}
-            >
-              <tab.icon
-                className={cn("h-6 w-6", active && "text-ember")}
-                strokeWidth={active ? 2 : 1.75}
-              />
-              {tab.label}
-            </Link>
-          )
-        })}
-
+        {tabs(0, 2)}
         <MobileNav
           brand={<Wordmark className="text-lg text-ink" />}
           footer={<MobileUserFooterWithAdmin />}
           trigger={
             <button
               type="button"
-              className={cn(
-                "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
-                moreActive ? "text-ember" : "text-ink/60 hover:text-ink",
-              )}
+              aria-current={menuActive ? "page" : undefined}
+              className={tabClass(menuActive)}
             >
-              <MoreHorizontal className="h-6 w-6" strokeWidth={1.75} />
-              More
+              <Menu
+                className={cn("h-6 w-6", menuActive && "text-ember")}
+                strokeWidth={menuActive ? 2 : 1.75}
+              />
+              Menu
             </button>
           }
         />
+        {tabs(2)}
       </div>
     </nav>
   )
