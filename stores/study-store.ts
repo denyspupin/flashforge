@@ -99,6 +99,17 @@ function persistCurrent(get: () => StudyState) {
   })
 }
 
+function shuffled<T>(items: readonly T[]): T[] {
+  const arr = [...items]
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const tmp = arr[i]!
+    arr[i] = arr[j]!
+    arr[j] = tmp
+  }
+  return arr
+}
+
 export const useStudyStore = create<StudyState>((set, get) => {
   const apply = (partial: Partial<StudyState>) => {
     set(partial)
@@ -110,24 +121,28 @@ export const useStudyStore = create<StudyState>((set, get) => {
 
     init: (sessionId, cards) => {
       const saved = loadPersisted(sessionId)
-      const freshResults: Record<string, boolean> = Object.fromEntries(
-        cards.map((c) => [c.id, false]),
-      )
       if (saved && saved.cards.length === cards.length) {
+        const restoredResults: Record<string, boolean> = Object.fromEntries(
+          saved.cards.map((c) => [c.id, saved.results[c.id] ?? false])
+        )
         apply({
           sessionId,
-          cards,
-          index: Math.min(saved.index, Math.max(cards.length - 1, 0)),
+          cards: saved.cards,
+          index: Math.min(saved.index, Math.max(saved.cards.length - 1, 0)),
           phase: saved.phase,
           flipped: saved.flipped,
-          results: { ...freshResults, ...saved.results },
+          results: restoredResults,
           startedAt: saved.startedAt,
         })
       } else {
+        const deckCards = shuffled(cards)
+        const freshResults: Record<string, boolean> = Object.fromEntries(
+          deckCards.map((c) => [c.id, false])
+        )
         apply({
           ...initial,
           sessionId,
-          cards,
+          cards: deckCards,
           results: freshResults,
           startedAt: Date.now(),
         })
