@@ -438,7 +438,7 @@ export default function ExplorePage() {
           ) : null}
 
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <DeckCardSkeleton key={i} />
               ))}
@@ -459,7 +459,7 @@ export default function ExplorePage() {
                       · {curatedDecks.length}
                     </span>
                   </h2>
-                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
                     {curatedDecks.map(renderDeckCard)}
                   </div>
                 </section>
@@ -485,7 +485,7 @@ export default function ExplorePage() {
                       <span>{target?.name ?? "Unknown"}</span>
                       <span className="text-ink/40 ml-1">· {group.count}</span>
                     </h2>
-                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
                       {group.items.map(renderDeckCard)}
                     </div>
                   </section>
@@ -506,7 +506,7 @@ export default function ExplorePage() {
           ) : null}
 
           {collectionsQuery.isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
               {[1, 2, 3].map((i) => (
                 <CollectionCardSkeleton key={i} />
               ))}
@@ -527,7 +527,7 @@ export default function ExplorePage() {
                       · {curatedCollections.length}
                     </span>
                   </h2>
-                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
                     {curatedCollections.map(renderCollectionCard)}
                   </div>
                 </section>
@@ -553,7 +553,7 @@ export default function ExplorePage() {
                       <span>{target?.name ?? "Unknown"}</span>
                       <span className="text-ink/40 ml-1">· {group.count}</span>
                     </h2>
-                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+                    <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
                       {group.items.map(renderCollectionCard)}
                     </div>
                   </section>

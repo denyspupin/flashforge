@@ -169,7 +169,7 @@ export function DashboardView() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+          <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
             {recentDecks.map((deck) => (
               <RecentDeckCard
                 key={deck.id}

@@ -641,7 +641,7 @@ export default function CollectionDetail({
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {collection.decks.map((deckRow) => {
             const deckForCard: Deck = {
               id: deckRow.id,
