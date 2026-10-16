@@ -146,15 +146,23 @@ export function MobileNav({
   useIsomorphicLayoutEffect(() => {
     if (!isOpen) return
     const el = sheetRef.current
-    if (!el || reducedMotion) return
-    const startY = el.offsetHeight + 48
-    el.style.opacity = "0"
-    el.style.transform = `translateY(${startY}px)`
-    animationRef.current = animate(el, { y: 0, opacity: 1 }, {
-      type: "spring",
-      stiffness: 380,
-      damping: 36,
-    })
+    if (!el) return
+    if (reducedMotion) {
+      el.style.opacity = "0"
+      animationRef.current = animate(el, { opacity: 1 }, {
+        duration: 0.18,
+        ease: "easeOut",
+      })
+    } else {
+      const startY = el.offsetHeight + 48
+      el.style.opacity = "0"
+      el.style.transform = `translateY(${startY}px)`
+      animationRef.current = animate(el, { y: 0, opacity: 1 }, {
+        type: "spring",
+        stiffness: 340,
+        damping: 36,
+      })
+    }
     entryTimerRef.current = setTimeout(() => {
       if (el.style.opacity === "0") {
         el.style.opacity = ""
