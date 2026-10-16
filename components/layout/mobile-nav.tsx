@@ -4,6 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
   createContext,
+  useCallback,
   useEffect,
   useLayoutEffect,
   use,
@@ -63,6 +64,24 @@ const DRAG_DISMISS_DISTANCE = 120
 const DRAG_DISMISS_VELOCITY = 700
 const DRAG_ENGAGE_DISTANCE = 8
 const DRAG_UP_RESISTANCE = 0.15
+const SHEET_EXIT_MARGIN_PX = 48
+const BACKDROP_BLUR_PX = 4
+const BACKDROP_TINT_ALPHA = 0.1
+
+function syncBackdropWithSheet(
+  sheet: HTMLDivElement | null,
+  backdrop: HTMLDivElement | null
+) {
+  if (!sheet || !backdrop) return
+  const travel = sheet.offsetHeight + SHEET_EXIT_MARGIN_PX
+  const transform = getComputedStyle(sheet).transform
+  const y = transform === "none" ? 0 : new DOMMatrixReadOnly(transform).m42
+  const progress = Math.max(0, 1 - Math.abs(y) / travel)
+  const blur = `blur(${(progress * BACKDROP_BLUR_PX).toFixed(2)}px)`
+  backdrop.style.setProperty("backdrop-filter", blur)
+  backdrop.style.setProperty("-webkit-backdrop-filter", blur)
+  backdrop.style.backgroundColor = `rgba(0, 0, 0, ${(progress * BACKDROP_TINT_ALPHA).toFixed(3)})`
+}
 
 const useIsomorphicLayoutEffect =
   typeof window !== "undefined" ? useLayoutEffect : useEffect
@@ -82,11 +101,16 @@ export function MobileNav({
   const pathname = usePathname()
   const reducedMotion = useReducedMotion()
   const sheetRef = useRef<HTMLDivElement | null>(null)
+  const backdropRef = useRef<HTMLDivElement | null>(null)
   const gestureRef = useRef<GestureState | null>(null)
   const exitInFlightRef = useRef(false)
   const animationRef = useRef<ReturnType<typeof animate> | null>(null)
   const exitTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
   const entryTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null)
+
+  const syncBackdrop = useCallback(() => {
+    syncBackdropWithSheet(sheetRef.current, backdropRef.current)
+  }, [])
 
   const playSheetTo = (y: number, velocity: number, stiffness: number, damping: number) => {
     const el = sheetRef.current
@@ -97,6 +121,7 @@ export function MobileNav({
       stiffness,
       damping,
       velocity,
+      onUpdate: syncBackdrop,
     })
   }
 
@@ -109,7 +134,7 @@ export function MobileNav({
     }
     exitInFlightRef.current = true
     if (exitTimerRef.current) clearTimeout(exitTimerRef.current)
-    const target = el.offsetHeight + el.getBoundingClientRect().top + 48
+    const target = el.offsetHeight + el.getBoundingClientRect().top + SHEET_EXIT_MARGIN_PX
     animationRef.current?.cancel()
     animationRef.current = animate(el, { y: target }, {
       type: "spring",
@@ -117,6 +142,7 @@ export function MobileNav({
       damping: 34,
       mass: 0.9,
       velocity,
+      onUpdate: syncBackdrop,
     })
     void animationRef.current
       .then(() => {
@@ -149,18 +175,21 @@ export function MobileNav({
     if (!el) return
     if (reducedMotion) {
       el.style.opacity = "0"
+      syncBackdrop()
       animationRef.current = animate(el, { opacity: 1 }, {
         duration: 0.18,
         ease: "easeOut",
       })
     } else {
-      const startY = el.offsetHeight + 48
+      const startY = el.offsetHeight + SHEET_EXIT_MARGIN_PX
       el.style.opacity = "0"
       el.style.transform = `translateY(${startY}px)`
+      syncBackdrop()
       animationRef.current = animate(el, { y: 0, opacity: 1 }, {
         type: "spring",
         stiffness: 340,
         damping: 36,
+        onUpdate: syncBackdrop,
       })
     }
     entryTimerRef.current = setTimeout(() => {
@@ -175,7 +204,7 @@ export function MobileNav({
         entryTimerRef.current = null
       }
     }
-  }, [isOpen, reducedMotion])
+  }, [isOpen, reducedMotion, syncBackdrop])
 
   const onSheetPointerDown = (event: ReactPointerEvent<HTMLDivElement>) => {
     if (exitInFlightRef.current) return
@@ -222,6 +251,7 @@ export function MobileNav({
     const offset = total < 0 ? total * DRAG_UP_RESISTANCE : total
     gesture.offset = offset
     el.style.transform = `translateY(${offset}px)`
+    syncBackdrop()
   }
 
   const onSheetPointerEnd = (event: ReactPointerEvent<HTMLDivElement>) => {
@@ -262,7 +292,7 @@ export function MobileNav({
         </Button>
       )}
       <DialogPortal>
-        <DialogOverlay />
+        <DialogOverlay ref={backdropRef} className="transition-none" />
         <DialogPrimitive.Popup
           ref={sheetRef}
           className="fixed bottom-2 left-1/2 top-auto z-50 flex max-h-[85dvh] w-[calc(100%-1rem)] max-w-md -translate-x-1/2 translate-y-0 flex-col gap-0 overflow-hidden rounded-2xl bg-paper p-0 text-left shadow-xl outline-none"
@@ -274,9 +304,9 @@ export function MobileNav({
           <MobileNavContext.Provider value={{ close }}>
             <div
               data-sheet-drag
-              className="cursor-grab touch-none select-none pt-2 pb-1"
+              className="cursor-grab touch-none select-none pt-2 pb-1.5"
             >
-              <div aria-hidden className="mx-auto h-1 w-9 rounded-full bg-ink/20" />
+              <div aria-hidden className="mx-auto h-[5px] w-12 rounded-full bg-ink/20" />
             </div>
             <div
               data-sheet-drag
