@@ -155,16 +155,16 @@ export default function PublicDeckPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
+      <div>
         <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
         <div className="h-32 bg-muted animate-pulse rounded" />
-      </main>
+      </div>
     )
   }
 
   if (!deck) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
+      <div>
           <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
           <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
@@ -177,13 +177,13 @@ export default function PublicDeckPage() {
           >
             Back to Explore
           </Button>
-        </Card>
-      </main>
+      </Card>
+      </div>
     )
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
+    <div>
       <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
         <Button
           variant="ghost"
@@ -323,7 +323,7 @@ export default function PublicDeckPage() {
         </div>
       )}
 
-      <div className="space-y-3 [contain:layout]">
+      <div className="grid grid-cols-1 gap-3 [contain:layout] xl:grid-cols-2">
         {deck.cards?.length === 0 ? (
         <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
             <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
@@ -355,6 +355,6 @@ export default function PublicDeckPage() {
           ))
         )}
       </div>
-    </main>
+    </div>
   )
 }

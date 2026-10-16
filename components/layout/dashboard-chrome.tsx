@@ -59,7 +59,7 @@ export function DashboardShell({
           <div
             ref={scrollRef}
             className={cn(
-              "flex-1 min-h-0 lg:overflow-y-auto",
+              "flex-1 min-h-0 px-4 py-4 sm:px-6 sm:py-6 lg:px-8 lg:overflow-y-auto",
               !focus && "pb-24 sm:pb-28 lg:pb-6",
             )}
           >

@@ -216,7 +216,7 @@ export default function ExplorePage() {
   }
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+    <div>
       <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
           <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
@@ -263,7 +263,7 @@ export default function ExplorePage() {
           ) : null}
 
           {isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
               {[1, 2, 3, 4, 5, 6].map((i) => (
                 <DeckCardSkeleton key={i} />
               ))}
@@ -274,7 +274,7 @@ export default function ExplorePage() {
               description="Be the first to share a deck with the community"
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
               {decks.map((deck) => {
                 const isMine = myId && deck.creatorId === myId
                 const isForking = pendingForkId === deck.id
@@ -361,7 +361,7 @@ export default function ExplorePage() {
           ) : null}
 
           {collectionsQuery.isLoading ? (
-            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
               {[1, 2, 3].map((i) => (
                 <CollectionCardSkeleton key={i} />
               ))}
@@ -372,7 +372,7 @@ export default function ExplorePage() {
               description="Be the first to share a collection with the community"
             />
           ) : (
-            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+            <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(280px,1fr))]">
               {collections.map((collection) => {
                 const isMine = myId && collection.creatorId === myId
                 const isForking = pendingForkId === collection.id
@@ -436,6 +436,6 @@ export default function ExplorePage() {
           )}
         </TabsContent>
       </Tabs>
-    </main>
+    </div>
   )
 }

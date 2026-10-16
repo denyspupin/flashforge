@@ -34,7 +34,9 @@ export default async function ExploreLayout({
   return (
     <div className="flex min-h-screen flex-col">
       <SiteHeader />
-      <main className="flex-1">{children}</main>
+      <main className="mx-auto flex-1 w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+        {children}
+      </main>
       <LandingFooter />
     </div>
   )
