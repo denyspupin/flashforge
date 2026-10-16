@@ -1,4 +1,4 @@
-import { beforeEach, describe, expect, test } from "vitest"
+import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import {
   selectCurrentCard,
   selectProgress,
@@ -49,6 +49,11 @@ describe("useStudyStore", () => {
   beforeEach(() => {
     attachStorage()
     freshStore()
+    vi.spyOn(Math, "random").mockReturnValue(0.999999999)
+  })
+
+  afterEach(() => {
+    vi.restoreAllMocks()
   })
 
   test("init starts cold with fresh results map", () => {
@@ -214,5 +219,50 @@ describe("useStudyStore", () => {
     expect(() => store.getState().init("s1", makeCards(2))).not.toThrow()
     expect(store.getState().sessionId).toBe("s1")
     expect(store.getState().phase).toBe("pass1")
+  })
+
+  test("fresh init shuffles cards instead of keeping creation order", () => {
+    const store = useStudyStore
+    const cards = makeCards(4)
+    vi.spyOn(Math, "random").mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.5)
+      .mockReturnValueOnce(0.5)
+    store.getState().init("s1", cards)
+    const s = store.getState()
+    expect(s.cards.map((c) => c.id)).toEqual(["c1", "c4", "c2", "c3"])
+    expect(Object.keys(s.results).sort()).toEqual(["c1", "c2", "c3", "c4"])
+    expect(cards.map((c) => c.id)).toEqual(["c1", "c2", "c3", "c4"])
+  })
+
+  test("resumed init keeps the saved order instead of reshuffling", () => {
+    const store = useStudyStore
+    const savedCards = [makeCard("c3"), makeCard("c1"), makeCard("c2")]
+    const savedState = {
+      sessionId: "s1",
+      cards: savedCards,
+      index: 1,
+      phase: "pass1" as const,
+      flipped: false,
+      results: { c3: true, c1: false, c2: false },
+      startedAt: 1_700_000_000_000,
+    }
+    attachStorage({ [STORAGE_KEY_PREFIX + "s1"]: JSON.stringify(savedState) })
+    vi.spyOn(Math, "random").mockReturnValue(0.1)
+    store.getState().init("s1", makeCards(3))
+    const s = store.getState()
+    expect(s.cards.map((c) => c.id)).toEqual(["c3", "c1", "c2"])
+    expect(s.index).toBe(1)
+    expect(s.results).toEqual({ c3: true, c1: false, c2: false })
+  })
+
+  test("repeated fresh runs produce varying orders", () => {
+    vi.restoreAllMocks()
+    const store = useStudyStore
+    const orders = new Set<string>()
+    for (let i = 0; i < 12; i++) {
+      store.getState().init(`run-${i}`, makeCards(8))
+      orders.add(store.getState().cards.map((c) => c.id).join(","))
+    }
+    expect(orders.size).toBeGreaterThan(1)
   })
 })
