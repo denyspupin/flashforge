@@ -51,12 +51,12 @@ export function MobileTabBar() {
               href={tab.href}
               aria-current={active ? "page" : undefined}
               className={cn(
-                "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+                "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
                 active ? "text-ember" : "text-ink/60 hover:text-ink",
               )}
             >
               <tab.icon
-                className={cn("h-5 w-5", active && "text-ember")}
+                className={cn("h-6 w-6", active && "text-ember")}
                 strokeWidth={active ? 2 : 1.75}
               />
               {tab.label}
@@ -71,11 +71,11 @@ export function MobileTabBar() {
             <button
               type="button"
               className={cn(
-                "flex flex-col items-center gap-0.5 py-2 text-[11px] font-medium transition-colors",
+                "flex flex-col items-center gap-1 py-2.5 text-xs font-medium transition-colors",
                 moreActive ? "text-ember" : "text-ink/60 hover:text-ink",
               )}
             >
-              <MoreHorizontal className="h-5 w-5" strokeWidth={1.75} />
+              <MoreHorizontal className="h-6 w-6" strokeWidth={1.75} />
               More
             </button>
           }
