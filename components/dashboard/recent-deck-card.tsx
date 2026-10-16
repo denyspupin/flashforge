@@ -71,7 +71,11 @@ export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
           {deck.cardCount} {deck.cardCount === 1 ? "card" : "cards"}
         </span>
       }
-      onStudy={() => router.push(`/study?deckId=${deck.id}`)}
+      onStudy={() =>
+        router.push(
+          `/study?deckId=${deck.id}&from=${encodeURIComponent("/dashboard")}`
+        )
+      }
       actions={
         <DeckActionsMenu
           deck={deck}

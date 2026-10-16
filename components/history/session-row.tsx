@@ -52,7 +52,9 @@ export function SessionRow({
   const study = () =>
     onStudy
       ? onStudy(session.deckId)
-      : router.push(`/study?deckId=${session.deckId}`)
+      : router.push(
+          `/study?deckId=${session.deckId}&from=${encodeURIComponent("/history")}`
+        )
 
   const toneClasses = {
     high: "bg-forest/10 text-forest ring-forest/20",

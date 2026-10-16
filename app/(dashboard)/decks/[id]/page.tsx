@@ -456,7 +456,11 @@ export default function DeckDetailPage() {
         <div className="flex flex-col gap-2 sm:flex-row">
           <Button
             onClick={() =>
-              startNavigate(() => router.push(`/study?deckId=${deck.id}`))
+              startNavigate(() =>
+                router.push(
+                  `/study?deckId=${deck.id}&from=${encodeURIComponent(backHref)}`
+                )
+              )
             }
             className="w-full sm:w-auto"
           >
@@ -466,7 +470,7 @@ export default function DeckDetailPage() {
         </div>
       </div>
 
-      <DeckHistoryPanel deckId={deck.id} />
+      <DeckHistoryPanel deckId={deck.id} from={backHref} />
 
       <div className="flex items-center justify-between gap-3">
         <h2 className="text-xl font-semibold">

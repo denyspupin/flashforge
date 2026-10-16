@@ -28,11 +28,20 @@ export default function StudyIndexPage() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const deckId = searchParams.get("deckId")
+  const fromParam = searchParams.get("from")
+  const from =
+    fromParam && fromParam.startsWith("/") && !fromParam.startsWith("//")
+      ? fromParam
+      : null
 
   const startMutation = useMutation({
     mutationFn: (id: string) => startSession(id),
     onSuccess: (res) => {
-      router.replace(`/study/${res.data.session.id}`)
+      router.replace(
+        from
+          ? `/study/${res.data.session.id}?from=${encodeURIComponent(from)}`
+          : `/study/${res.data.session.id}`
+      )
     },
   })
 

@@ -65,7 +65,11 @@ export function ContinueStudyingCard({
           <Button
             size="sm"
             className="flex-1 sm:flex-none"
-            onClick={() => router.push(`/study?deckId=${deckId}`)}
+            onClick={() =>
+              router.push(
+                `/study?deckId=${deckId}&from=${encodeURIComponent("/dashboard")}`
+              )
+            }
           >
             <Play className="mr-1.5 h-3.5 w-3.5" />
             Resume

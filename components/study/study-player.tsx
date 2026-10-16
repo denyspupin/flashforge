@@ -30,6 +30,7 @@ type StudyPlayerProps = {
   deck: StudyDeckInfo
   cards: StudyCard[]
   initialStreak: number
+  returnHref?: string
 }
 
 async function postComplete(
@@ -46,8 +47,10 @@ async function postComplete(
 }
 
 function EmptyState() {
-  const router = useRouter()
-  const { state } = useStudyContext()
+  const {
+    state,
+    actions: { handleExit },
+  } = useStudyContext()
   return (
     <div className="mx-auto flex max-w-md flex-col items-center text-center">
       <h1 className="font-display text-3xl font-medium tracking-tight text-ink">
@@ -58,10 +61,10 @@ function EmptyState() {
         back.
       </p>
       <Button
-        onClick={() => router.push(`/decks/${state.deck.id}`)}
+        onClick={handleExit}
         className="mt-6 h-11 rounded-full bg-ink px-6 text-paper"
       >
-        Back to deck
+        Go back
       </Button>
     </div>
   )
@@ -107,14 +110,16 @@ function CompletionRunner({
   return null
 }
 
-function SummaryView() {
+function SummaryView({ returnHref }: { returnHref: string }) {
   const router = useRouter()
   const { state } = useStudyContext()
   const { summary } = useStudySummary<CompleteResponse>()
 
   const handleRetry = useCallback(() => {
-    router.replace(`/study?deckId=${state.deck.id}`)
-  }, [router, state.deck.id])
+    router.replace(
+      `/study?deckId=${state.deck.id}&from=${encodeURIComponent(returnHref)}`
+    )
+  }, [router, state.deck.id, returnHref])
 
   const missedCards = useMemo(() => {
     if (!summary) return []
@@ -135,6 +140,7 @@ function SummaryView() {
       newStreak={summary.newStreak}
       deckTitle={state.deck.title}
       onRetry={handleRetry}
+      backHref={returnHref}
     />
   )
 }
@@ -152,8 +158,10 @@ function SummaryLoading() {
 }
 
 function SummaryError({ onRetry }: { onRetry: () => void }) {
-  const router = useRouter()
-  const { state } = useStudyContext()
+  const {
+    state,
+    actions: { handleExit },
+  } = useStudyContext()
   return (
     <div className="mx-auto flex max-w-md flex-col items-center text-center">
       <h1 className="font-display text-2xl font-medium tracking-tight text-ink">
@@ -166,10 +174,10 @@ function SummaryError({ onRetry }: { onRetry: () => void }) {
       <div className="mt-6 flex gap-2">
         <Button
           variant="outline"
-          onClick={() => router.push(`/decks/${state.deck.id}`)}
+          onClick={handleExit}
           className="h-11 rounded-full"
         >
-          Back to deck
+          Go back
         </Button>
         <Button
           onClick={onRetry}
@@ -190,7 +198,7 @@ function SummaryStage({ children }: { children: React.ReactNode }) {
   )
 }
 
-function StudyRouter() {
+function StudyRouter({ returnHref }: { returnHref: string }) {
   const { state } = useStudyContext()
   const { summary, phase: summaryPhase } = useStudySummary()
   const retryRef = useRef<() => void>(() => {})
@@ -199,7 +207,7 @@ function StudyRouter() {
     if (summary && summaryPhase === "ready") {
       return (
         <SummaryStage>
-          <SummaryView />
+          <SummaryView returnHref={returnHref} />
         </SummaryStage>
       )
     }
@@ -237,8 +245,9 @@ export function StudyPlayer({
   deck,
   cards,
   initialStreak,
+  returnHref = "/decks",
 }: StudyPlayerProps) {
-  const exitHref = `/decks/${deck.id}`
+  const exitHref = returnHref
 
   if (cards.length === 0) {
     return (
@@ -263,7 +272,7 @@ export function StudyPlayer({
       exitHref={exitHref}
     >
       <StudySummaryProvider>
-        <StudyRouter />
+        <StudyRouter returnHref={returnHref} />
       </StudySummaryProvider>
     </StudyProvider>
   )

@@ -23,6 +23,17 @@ type StudySummaryProps = {
   newStreak: number
   deckTitle: string
   onRetry: () => void
+  backHref?: string
+}
+
+function backLabel(href: string): string {
+  if (href.startsWith("/collections")) return "Back to collection"
+  if (href === "/decks") return "Back to decks"
+  if (href.startsWith("/decks/")) return "Back to deck"
+  if (href.startsWith("/dashboard")) return "Back to dashboard"
+  if (href.startsWith("/history")) return "Back to history"
+  if (href.startsWith("/explore")) return "Back to explore"
+  return "Back"
 }
 
 function CountUp({ value, suffix = "" }: { value: number; suffix?: string }) {
@@ -60,6 +71,7 @@ export function StudySummary({
   newStreak,
   deckTitle,
   onRetry,
+  backHref = "/decks",
 }: StudySummaryProps) {
   const isPerfect = failedCardIds.length === 0
   const accuracy =
@@ -183,12 +195,12 @@ export function StudySummary({
       )}
 
       <div className="mt-10 flex flex-wrap items-center justify-center gap-3">
-        <Link href="/decks">
+        <Link href={backHref}>
           <Button
             size="lg"
             className="h-12 sm:h-12 rounded-full bg-ink px-6 sm:px-6 text-[15px] text-paper hover:bg-ink/90"
           >
-            Back to decks
+            {backLabel(backHref)}
             <ArrowRight className="ml-1.5 h-4 w-4" />
           </Button>
         </Link>
@@ -202,15 +214,17 @@ export function StudySummary({
             Study again
           </Button>
         )}
-        <Link href="/dashboard">
-          <Button
-            size="lg"
-            variant="ghost"
-            className="h-12 sm:h-12 rounded-full px-5 sm:px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
-          >
-            Dashboard
-          </Button>
-        </Link>
+        {backHref !== "/dashboard" && (
+          <Link href="/dashboard">
+            <Button
+              size="lg"
+              variant="ghost"
+              className="h-12 sm:h-12 rounded-full px-5 sm:px-5 text-[15px] text-ink/75 hover:bg-ink/5 hover:text-ink"
+            >
+              Dashboard
+            </Button>
+          </Link>
+        )}
       </div>
     </div>
   )
