@@ -17,7 +17,6 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { queryKeys } from "@/hooks"
 
@@ -165,8 +164,8 @@ export default function PublicDeckPage() {
   if (!deck) {
     return (
       <div>
-          <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-          <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+          <div className="flex flex-col items-center py-16 text-center sm:py-20">
+          <BookOpen className="text-muted-foreground mb-4 h-8 w-8" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
           <p className="text-muted-foreground mt-1">
             This deck might be private or does not exist
@@ -177,7 +176,7 @@ export default function PublicDeckPage() {
           >
             Back to Explore
           </Button>
-      </Card>
+      </div>
       </div>
     )
   }
@@ -323,19 +322,18 @@ export default function PublicDeckPage() {
         </div>
       )}
 
-      <div className="grid grid-cols-1 gap-3 [contain:layout] xl:grid-cols-2">
+      <div className="divide-y divide-ink/6 [contain:layout]">
         {deck.cards?.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-            <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+        <div className="flex flex-col items-center py-16 text-center sm:py-20">
+            <BookOpen className="text-muted-foreground mb-4 h-8 w-8" />
             <h3 className="text-lg font-semibold">No cards in this deck</h3>
             <p className="text-muted-foreground mt-1">
               The author hasn’t added any cards yet
             </p>
-          </Card>
+          </div>
         ) : (
           deck.cards?.map((card, index) => (
-            <Card key={card.id}>
-              <CardContent className="p-4">
+            <div key={card.id} className="py-3.5 sm:py-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground/80">
@@ -350,8 +348,7 @@ export default function PublicDeckPage() {
                     <p className="mt-1 font-medium">{card.back}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+            </div>
           ))
         )}
       </div>

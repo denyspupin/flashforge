@@ -543,10 +543,10 @@ export default function DeckDetailPage() {
         </Dialog>
       </div>
 
-      <div className="grid grid-cols-1 gap-3 [contain:layout] xl:grid-cols-2">
+      <div className="divide-y divide-ink/6 [contain:layout]">
         {deck.cards?.length === 0 ? (
-          <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-            <Plus className="h-12 w-12 text-muted-foreground mb-4" />
+          <div className="flex flex-col items-center py-16 text-center sm:py-20">
+            <Plus className="text-muted-foreground mb-4 h-8 w-8" />
             <h3 className="text-lg font-semibold">No cards yet</h3>
             <p className="text-muted-foreground mt-1 mb-4">
               Add your first flashcard to start learning
@@ -555,12 +555,11 @@ export default function DeckDetailPage() {
               <Plus className="mr-2 h-4 w-4" />
               Add Card
             </Button>
-          </Card>
+          </div>
         ) : (
           deck.cards?.map((card) => (
-            <Card key={card.id}>
-              <CardContent className="p-4">
-                {editingCard === card.id ? (
+            <div key={card.id} className="py-3.5 sm:py-4">
+              {editingCard === card.id ? (
                   <div className="flex items-start gap-3">
                     <div className="min-w-0 flex-1">
                       <Input
@@ -666,8 +665,7 @@ export default function DeckDetailPage() {
                     </div>
                   </div>
                 )}
-              </CardContent>
-            </Card>
+            </div>
           ))
         )}
       </div>

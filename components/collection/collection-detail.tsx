@@ -452,8 +452,8 @@ export default function CollectionDetail({
   if (!collection) {
     return (
       <div>
-        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-          <Library className="h-12 w-12 text-muted-foreground mb-4" />
+        <div className="flex flex-col items-center py-16 text-center sm:py-20">
+          <Library className="text-muted-foreground mb-4 h-8 w-8" />
           <h3 className="text-lg font-semibold">Collection not found</h3>
           <p className="text-muted-foreground mt-1">
             This collection might be private or does not exist
@@ -466,7 +466,7 @@ export default function CollectionDetail({
           >
             Back
           </Button>
-        </Card>
+        </div>
       </div>
     )
   }
