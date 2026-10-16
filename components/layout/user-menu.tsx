@@ -128,7 +128,7 @@ export function UserMenu({
               type="button"
               aria-label="Open user menu"
               className={cn(
-                "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
+                "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-0.5 sm:pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
                 className,
               )}
             />
