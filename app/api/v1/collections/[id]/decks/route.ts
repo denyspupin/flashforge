@@ -8,6 +8,11 @@ import {
 import { eq, and, isNull, sql, asc } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { revalidateCache } from "@/lib/cache/revalidate"
+import {
+  COMMUNITY_COLLECTIONS_CACHE_TAG,
+  COMMUNITY_COLLECTIONS_DETAIL_CACHE_TAG,
+} from "@/lib/cache/community-collections-detail"
 import { z } from "zod"
 
 export const dynamic = "force-dynamic"
@@ -153,6 +158,9 @@ export async function POST(
     })
     .onConflictDoNothing()
     .returning()
+
+  revalidateCache(COMMUNITY_COLLECTIONS_CACHE_TAG)
+  revalidateCache(COMMUNITY_COLLECTIONS_DETAIL_CACHE_TAG)
 
   return NextResponse.json(
     successResponse(
