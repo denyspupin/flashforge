@@ -1,98 +1,69 @@
-import Link from "next/link"
-import {
-  LayoutDashboard,
-  Library,
-  Compass,
-  Layers,
-} from "lucide-react"
+"use client"
 
-import { AppHeader } from "@/components/layout/app-header"
-import { MobileNav } from "@/components/layout/mobile-nav"
-import { MobileUserFooterWithAdmin } from "@/components/layout/mobile-user-footer-with-admin"
-import { UserMenu } from "@/components/layout/user-menu"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+
+import { AppSidebar } from "@/components/layout/app-sidebar"
+import { MobileTabBar } from "@/components/layout/mobile-tab-bar"
 import { ThemeQuickToggle } from "@/components/theme/theme-quick-toggle"
-import { Button } from "@/components/ui/button"
+import { UserMenu } from "@/components/layout/user-menu"
+import { cn } from "@/lib/utils"
 import { Wordmark } from "./wordmark"
 
-const NAV_ITEMS = [
-  {
-    href: "/dashboard",
-    label: "Dashboard",
-    icon: <LayoutDashboard className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/decks",
-    label: "My Decks",
-    icon: <Library className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/collections",
-    label: "Collections",
-    icon: <Layers className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/explore",
-    label: "Explore",
-    icon: <Compass className="h-4 w-4" strokeWidth={1.75} />,
-  },
-]
+const FOCUS_PATTERN = /^\/study\/[^/]+/
 
-function DashboardNav() {
+function MobileTopBar() {
   return (
-    <nav className="flex items-center gap-1">
-      {NAV_ITEMS.map((item) => (
-        <Link key={item.href} href={item.href}>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="h-9 sm:h-9 px-3 sm:px-3 text-ink/80 hover:text-ink"
-          >
-            {item.label}
-          </Button>
+    <header className="sticky top-0 z-40 border-b border-ink/8 bg-paper/70 backdrop-blur-md lg:hidden">
+      <div className="flex h-16 items-center justify-between px-4 sm:px-6">
+        <Link href="/dashboard" className="inline-flex text-lg text-ink">
+          <Wordmark />
         </Link>
-      ))}
-    </nav>
+        <div className="flex items-center gap-1">
+          <ThemeQuickToggle />
+          <UserMenu />
+        </div>
+      </div>
+    </header>
   )
 }
 
-function DashboardActions() {
-  return (
-    <div className="hidden items-center gap-1 sm:flex">
-      <ThemeQuickToggle />
-      <UserMenu />
-    </div>
-  )
-}
+export function DashboardShell({
+  children,
+  bleed = false,
+}: {
+  children: React.ReactNode
+  bleed?: boolean
+}) {
+  const pathname = usePathname()
+  const focus = FOCUS_PATTERN.test(pathname)
 
-export function DashboardHeader() {
   return (
-    <AppHeader
-      brandHref="/dashboard"
-      brand={<Wordmark />}
-      nav={<DashboardNav />}
-      actions={<DashboardActions />}
-      mobileNav={
-        <MobileNav
-          items={NAV_ITEMS}
-          brand={
-            <span className="font-display text-lg font-medium tracking-tight text-ink">
-              Flash<span className="font-display-soft italic text-ember">forge</span>
-            </span>
-          }
-          footer={<MobileUserFooterWithAdmin />}
-        />
-      }
-    />
-  )
-}
-
-export function DashboardShell({ children }: { children: React.ReactNode }) {
-  return (
-    <div className="min-h-screen flex flex-col">
-      <DashboardHeader />
-      <main className="flex-1 mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6">
-        {children}
-      </main>
+    <div className="relative min-h-dvh">
+      {focus ? null : <AppSidebar />}
+      <div className={cn("flex min-h-dvh flex-col", !focus && "lg:pl-60")}>
+        {focus ? null : <MobileTopBar />}
+        {bleed ? (
+          <div
+            className={cn(
+              "flex-1",
+              !focus && "pb-24 sm:pb-28 lg:pb-6",
+            )}
+          >
+            {children}
+          </div>
+        ) : (
+          <main
+            className={cn(
+              "flex-1 mx-auto w-full max-w-6xl px-4 py-4 sm:px-6 sm:py-6",
+              !focus && "pb-24 sm:pb-28 lg:pb-6",
+            )}
+          >
+            {children}
+          </main>
+        )}
+        {focus ? null : <MobileTabBar />}
+      </div>
     </div>
   )
 }

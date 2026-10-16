@@ -40,10 +40,12 @@ export function MobileNav({
   items,
   brand,
   footer,
+  trigger,
 }: {
-  items: NavItem[]
+  items?: NavItem[]
   brand?: ReactNode
   footer?: ReactNode
+  trigger?: ReactNode
 }) {
   const [open, setOpen] = useState(false)
   const pathname = usePathname()
@@ -52,15 +54,17 @@ export function MobileNav({
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTitle className="sr-only">Navigation</DialogTitle>
-      <Button
-        variant="ghost"
-        size="icon"
-        className="h-9 w-9 sm:h-9 sm:w-9 text-ink/70 hover:bg-ink/5 hover:text-ink md:hidden"
-        onClick={() => setOpen(true)}
-        aria-label="Open menu"
-      >
-        <Menu className="h-5 w-5" />
-      </Button>
+      {trigger ?? (
+        <Button
+          variant="ghost"
+          size="icon"
+          className="h-9 w-9 sm:h-9 sm:w-9 text-ink/70 hover:bg-ink/5 hover:text-ink md:hidden"
+          onClick={() => setOpen(true)}
+          aria-label="Open menu"
+        >
+          <Menu className="h-5 w-5" />
+        </Button>
+      )}
       <DialogContent className="!flex top-0 right-0 left-auto z-50 h-dvh w-full max-w-xs !flex-col -translate-x-0 -translate-y-0 gap-0 rounded-none border-l border-ink/10 bg-paper p-0 text-left data-open:animate-in data-open:slide-in-from-right data-open:fade-in-0 data-closed:animate-out data-closed:slide-out-to-right data-closed:fade-out-0">
         <MobileNavContext.Provider value={{ close }}>
           <div className="flex items-center justify-between border-b border-ink/8 px-5 py-4">
@@ -75,8 +79,9 @@ export function MobileNav({
               <X className="h-5 w-5" />
             </Button>
           </div>
-          <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
-            {items.map((item) => {
+          {items?.length ? (
+            <nav className="flex flex-1 flex-col gap-1 overflow-y-auto p-3">
+              {items.map((item) => {
               const active = (item.match ?? defaultMatch(item.href))(pathname)
               return (
                 <Link
@@ -102,7 +107,10 @@ export function MobileNav({
                 </Link>
               )
             })}
-          </nav>
+            </nav>
+          ) : (
+            <div className="flex-1" />
+          )}
           {footer ? (
             <div className="border-t border-ink/8 px-3 pt-3 pb-[max(0.75rem,env(safe-area-inset-bottom))]">
               {footer}

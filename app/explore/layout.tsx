@@ -3,7 +3,7 @@ import { auth } from "@clerk/nextjs/server"
 
 import { LandingFooter } from "@/components/landing/landing-footer"
 import { SiteHeader } from "@/components/landing/site-header"
-import { DashboardHeader } from "@/components/layout/dashboard-chrome"
+import { DashboardShell } from "@/components/layout/dashboard-chrome"
 
 export const metadata: Metadata = {
   title: "Explore the library",
@@ -27,10 +27,7 @@ export default async function ExploreLayout({
 
   if (userId) {
     return (
-      <div className="min-h-screen flex flex-col">
-        <DashboardHeader />
-        <div className="flex-1">{children}</div>
-      </div>
+      <DashboardShell bleed>{children}</DashboardShell>
     )
   }
 
