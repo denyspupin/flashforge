@@ -5,6 +5,7 @@ import { Monitor, Moon, Sun } from "lucide-react"
 
 import {
   DropdownMenuCheckboxItem,
+  DropdownMenuGroup,
   DropdownMenuLabel,
 } from "@/components/ui/dropdown-menu"
 import { queryKeys, useTheme } from "@/hooks"
@@ -39,10 +40,8 @@ export function ThemeMenuItems() {
   }
 
   return (
-    <>
-      <DropdownMenuLabel
-        className="px-2 pt-1.5 pb-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground"
-      >
+    <DropdownMenuGroup>
+      <DropdownMenuLabel className="px-2 pt-1.5 pb-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground">
         Theme
       </DropdownMenuLabel>
       {OPTIONS.map(({ value, label, icon: Icon }) => (
@@ -55,6 +54,6 @@ export function ThemeMenuItems() {
           {label}
         </DropdownMenuCheckboxItem>
       ))}
-    </>
+    </DropdownMenuGroup>
   )
 }
