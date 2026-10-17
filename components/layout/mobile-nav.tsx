@@ -11,6 +11,7 @@ import {
   useRef,
   useState,
   type PointerEvent as ReactPointerEvent,
+  type ReactElement,
   type ReactNode,
 } from "react"
 import { animate, useReducedMotion } from "framer-motion"
@@ -95,7 +96,7 @@ export function MobileNav({
   items?: NavItem[]
   brand?: ReactNode
   footer?: ReactNode
-  trigger?: ReactNode
+  trigger?: ReactElement
 }) {
   const [isOpen, setOpen] = useState(false)
   const pathname = usePathname()
@@ -277,9 +278,7 @@ export function MobileNav({
     <Dialog open={isOpen} onOpenChange={onOpenChange}>
       <DialogTitle className="sr-only">Navigation</DialogTitle>
       {trigger ? (
-        <DialogTrigger render={<span className="contents" />}>
-          {trigger}
-        </DialogTrigger>
+        <DialogTrigger render={trigger} />
       ) : (
         <Button
           variant="ghost"

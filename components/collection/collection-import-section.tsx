@@ -306,18 +306,7 @@ export function CollectionImportSection({
               className="flex min-w-0 flex-1 items-center gap-2 text-left"
             >
               <Wand2 className="h-4 w-4 shrink-0 text-primary" />
-              <span className="truncate">
-                Generate a collection with AI
-              </span>
-              <span className="ml-1 rounded-md bg-primary/15 px-1.5 py-0.5 text-[10px] font-medium uppercase tracking-wider text-primary">
-                Prompt included
-              </span>
-              <ChevronDown
-                className={cn(
-                  "ml-auto h-4 w-4 shrink-0 text-muted-foreground transition-transform",
-                  promptOpen && "rotate-180"
-                )}
-              />
+              <span>Generate a collection with AI</span>
             </button>
             <Button
               type="button"
@@ -330,6 +319,12 @@ export function CollectionImportSection({
               <Copy className="mr-1.5 h-3 w-3" />
               {copied ? "Copied!" : "Copy prompt"}
             </Button>
+            <ChevronDown
+              className={cn(
+                "h-4 w-4 shrink-0 text-muted-foreground transition-transform",
+                promptOpen && "rotate-180"
+              )}
+            />
           </div>
           {promptOpen && (
             <div className="space-y-2 border-t border-primary/20 px-3 py-3">

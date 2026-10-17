@@ -6,7 +6,7 @@ import { useMemo, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Globe, Plus, Wand2 } from "lucide-react"
+import { FileUp, Globe, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -113,7 +113,6 @@ export default function DeckList() {
   const handleOpenChange = (next: boolean) => {
     router.replace(next ? "/decks?new=1" : "/decks", { scroll: false })
     if (!next) {
-      setMode("create")
       form.reset()
       setSubmitError(null)
     }
@@ -197,7 +196,6 @@ export default function DeckList() {
 
   const handleImportSuccess = (result: ImportDeckResult) => {
     router.replace("/decks", { scroll: false })
-    setMode("create")
     if (result.mode === "new") {
       startNavigate(() => router.push(`/decks/${result.deckId}`))
     }
@@ -265,8 +263,8 @@ export default function DeckList() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Wand2 className="h-3.5 w-3.5" />
-                Generate with AI
+                <FileUp className="h-3.5 w-3.5" />
+                Import
               </button>
             </div>
 
