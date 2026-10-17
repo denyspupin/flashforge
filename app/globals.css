@@ -350,3 +350,7 @@
 .delay-500 {
   animation-delay: 0.5s;
 }
+
+[data-clerk-dev-mode-overlay] {
+  display: none !important;
+}

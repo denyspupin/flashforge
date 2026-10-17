@@ -1,4 +1,4 @@
-import { SignIn } from "@clerk/nextjs"
+import { AuthScreen } from "@/components/auth/auth-screen"
 
 type SearchParams = Promise<{ redirect_url?: string }>
 
@@ -8,11 +8,5 @@ export default async function LoginPage({
   searchParams: SearchParams
 }) {
   const { redirect_url } = await searchParams
-  return (
-    <SignIn
-      path="/login"
-      fallbackRedirectUrl={redirect_url || "/dashboard"}
-      forceRedirectUrl={redirect_url || undefined}
-    />
-  )
+  return <AuthScreen redirectTo={redirect_url} />
 }

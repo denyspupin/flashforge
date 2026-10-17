@@ -3,10 +3,8 @@ import type { ReactNode } from "react"
 import {
   Bell,
   Compass,
-  Layers,
   Library,
   LayoutDashboard,
-  Trophy,
 } from "lucide-react"
 
 import { auth } from "@clerk/nextjs/server"
@@ -24,21 +22,6 @@ const PUBLIC_NAV_ITEMS: NavItem[] = [
     href: "/explore",
     label: "Explore",
     icon: <Compass className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/#process",
-    label: "How it works",
-    icon: <Layers className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/#library",
-    label: "Library",
-    icon: <Library className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/#gamification",
-    label: "Streaks & XP",
-    icon: <Trophy className="h-4 w-4" strokeWidth={1.75} />,
   },
 ]
 
@@ -74,18 +57,6 @@ function PublicNav() {
       >
         Explore
       </Link>
-      <Link
-        href="/#process"
-        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
-      >
-        How it works
-      </Link>
-      <Link
-        href="/#library"
-        className="rounded-md px-3 py-1.5 text-sm text-ink/70 transition-colors hover:text-ink"
-      >
-        Library
-      </Link>
     </nav>
   )
 }
@@ -100,9 +71,7 @@ export async function SiteHeader() {
   const { userId } = await auth()
   const signedIn = Boolean(userId)
 
-  const mobileItems = signedIn
-    ? [...DASHBOARD_NAV_ITEMS, ...PUBLIC_NAV_ITEMS.filter((item) => item.href !== "/explore")]
-    : PUBLIC_NAV_ITEMS
+  const mobileItems = signedIn ? DASHBOARD_NAV_ITEMS : PUBLIC_NAV_ITEMS
 
   return (
     <AppHeader

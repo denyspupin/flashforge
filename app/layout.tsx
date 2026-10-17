@@ -88,6 +88,8 @@ export default async function RootLayout({
     <ClerkProvider
       appearance={clerkAppearance}
       afterSignOutUrl="/"
+      signInUrl="/"
+      signUpUrl="/register"
     >
       <html
         lang="en"
