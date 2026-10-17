@@ -442,18 +442,18 @@ export default function CollectionDetail({
 
   if (isLoading) {
     return (
-      <main className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+      <div>
         <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
         <div className="h-32 bg-muted animate-pulse rounded" />
-      </main>
+      </div>
     )
   }
 
   if (!collection) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
-        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-          <Library className="h-12 w-12 text-muted-foreground mb-4" />
+      <div>
+        <div className="flex flex-col items-center py-16 text-center sm:py-20">
+          <Library className="text-muted-foreground mb-4 h-8 w-8" />
           <h3 className="text-lg font-semibold">Collection not found</h3>
           <p className="text-muted-foreground mt-1">
             This collection might be private or does not exist
@@ -466,8 +466,8 @@ export default function CollectionDetail({
           >
             Back
           </Button>
-        </Card>
-      </main>
+        </div>
+      </div>
     )
   }
 
@@ -478,7 +478,7 @@ export default function CollectionDetail({
   const myDecks = myDecksQuery.data?.data ?? []
 
   return (
-    <main className="mx-auto w-full max-w-7xl px-4 py-4 sm:px-6 sm:py-6">
+    <div>
       <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
         <Button
           variant="ghost"
@@ -571,7 +571,7 @@ export default function CollectionDetail({
         {isOwner ? (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Button
-              size="sm"
+              size="lg"
               onClick={() => setAddOpen(true)}
               className="w-full sm:w-auto"
             >
@@ -588,13 +588,14 @@ export default function CollectionDetail({
               onEdit={() => setEditing(true)}
               onTogglePublish={onTogglePublish}
               onDelete={onDelete}
-              triggerClassName="h-8 w-8"
+              triggerClassName="sm:h-9 sm:w-9"
             />
           </div>
         ) : isSignedIn ? (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Button
               variant="outline"
+              size="lg"
               onClick={onFork}
               disabled={pendingAction !== null}
               className="w-full sm:w-auto"
@@ -612,7 +613,7 @@ export default function CollectionDetail({
         ) : (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Link href={`/login?redirect_url=${encodeURIComponent(`/collections/${collection.id}`)}`}>
-              <Button variant="outline" className="w-full gap-1.5 sm:w-auto">
+              <Button variant="outline" size="lg" className="w-full gap-1.5 sm:w-auto">
                 Sign in to fork
               </Button>
             </Link>
@@ -640,7 +641,7 @@ export default function CollectionDetail({
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {collection.decks.map((deckRow) => {
             const deckForCard: Deck = {
               id: deckRow.id,
@@ -744,7 +745,7 @@ export default function CollectionDetail({
           {pendingAction === "study" ? "Starting study session…" : "Forking…"}
         </span>
       )}
-    </main>
+    </div>
   )
 }
 

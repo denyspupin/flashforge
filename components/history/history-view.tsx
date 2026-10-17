@@ -175,7 +175,7 @@ export function HistoryView() {
       {items.length === 0 ? (
         <HistoryNoMatches />
       ) : (
-        <div className="space-y-2 [contain:layout]">
+        <div className="divide-y divide-ink/6 [contain:layout]">
           {items.map((session) => (
             <SessionRow key={session.id} session={session} showDeck />
           ))}

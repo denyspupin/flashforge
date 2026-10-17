@@ -17,7 +17,6 @@ import {
 } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { queryKeys } from "@/hooks"
 
@@ -155,18 +154,18 @@ export default function PublicDeckPage() {
 
   if (isLoading) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
+      <div>
         <div className="h-8 w-48 bg-muted animate-pulse rounded mb-4" />
         <div className="h-32 bg-muted animate-pulse rounded" />
-      </main>
+      </div>
     )
   }
 
   if (!deck) {
     return (
-      <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
-          <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-          <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+      <div>
+          <div className="flex flex-col items-center py-16 text-center sm:py-20">
+          <BookOpen className="text-muted-foreground mb-4 h-8 w-8" />
           <h3 className="text-lg font-semibold">Deck not found</h3>
           <p className="text-muted-foreground mt-1">
             This deck might be private or does not exist
@@ -177,13 +176,13 @@ export default function PublicDeckPage() {
           >
             Back to Explore
           </Button>
-        </Card>
-      </main>
+      </div>
+      </div>
     )
   }
 
   return (
-    <main className="mx-auto w-full max-w-4xl px-4 py-4 sm:px-6 sm:py-6">
+    <div>
       <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
         <Button
           variant="ghost"
@@ -239,6 +238,7 @@ export default function PublicDeckPage() {
             {isOwner ? (
               <Button
                 variant="outline"
+                size="lg"
                 className="w-full sm:w-auto"
                 onClick={() =>
                   startNavigate(() => router.push(`/decks/${deck.id}`))
@@ -250,6 +250,7 @@ export default function PublicDeckPage() {
               <>
                 <Button
                   variant="ghost"
+                  size="lg"
                   onClick={onFork}
                   disabled={pendingAction !== null}
                   className="w-full sm:w-auto"
@@ -262,6 +263,7 @@ export default function PublicDeckPage() {
                   {pendingAction === "fork" ? "Forking…" : "Fork to my decks"}
                 </Button>
                 <Button
+                  size="lg"
                   onClick={onStudy}
                   disabled={pendingAction !== null}
                   className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
@@ -282,7 +284,10 @@ export default function PublicDeckPage() {
               href={`/explore/decks/${deck.id}/study`}
               className="w-full sm:w-auto"
             >
-              <Button className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto">
+              <Button
+                size="lg"
+                className="w-full gap-1.5 bg-ember text-primary-foreground hover:bg-ember-deep sm:w-auto"
+              >
                 <Play className="h-4 w-4" />
                 Study as guest
               </Button>
@@ -295,6 +300,7 @@ export default function PublicDeckPage() {
             >
               <Button
                 variant="outline"
+                size="lg"
                 className="w-full gap-1.5 sm:w-auto"
               >
                 Sign in to save progress
@@ -323,19 +329,18 @@ export default function PublicDeckPage() {
         </div>
       )}
 
-      <div className="space-y-3 [contain:layout]">
+      <div className="divide-y divide-ink/6 [contain:layout]">
         {deck.cards?.length === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-            <BookOpen className="h-12 w-12 text-muted-foreground mb-4" />
+        <div className="flex flex-col items-center py-16 text-center sm:py-20">
+            <BookOpen className="text-muted-foreground mb-4 h-8 w-8" />
             <h3 className="text-lg font-semibold">No cards in this deck</h3>
             <p className="text-muted-foreground mt-1">
               The author hasn’t added any cards yet
             </p>
-          </Card>
+          </div>
         ) : (
           deck.cards?.map((card, index) => (
-            <Card key={card.id}>
-              <CardContent className="p-4">
+            <div key={card.id} className="py-3.5 sm:py-4">
                 <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4">
                   <div>
                     <p className="text-xs uppercase tracking-wider text-muted-foreground/80">
@@ -350,11 +355,10 @@ export default function PublicDeckPage() {
                     <p className="mt-1 font-medium">{card.back}</p>
                   </div>
                 </div>
-              </CardContent>
-            </Card>
+            </div>
           ))
         )}
       </div>
-    </main>
+    </div>
   )
 }

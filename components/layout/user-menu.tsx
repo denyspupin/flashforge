@@ -8,6 +8,7 @@ import {
   Bell,
   History,
   LogOut,
+  MoreHorizontal,
   Settings,
   Shield,
   User as UserIcon,
@@ -22,10 +23,14 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
+import { ThemeMenuItems } from "@/components/theme/theme-menu-items"
 
 type UserMenuProps = {
   className?: string
   redirectUrl?: string
+  presentation?: "compact" | "row"
+  /** Hide links the host surface already exposes in its nav (e.g. the app sidebar). */
+  showQuickLinks?: boolean
 }
 
 type MeResponse = {
@@ -66,7 +71,12 @@ function fullName(
   return username?.trim() || ""
 }
 
-export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
+export function UserMenu({
+  className,
+  redirectUrl = "/",
+  presentation = "compact",
+  showQuickLinks = true,
+}: UserMenuProps) {
   const router = useRouter()
   const { isLoaded, isSignedIn, user } = useUser()
   const { signOut, openUserProfile } = useClerk()
@@ -95,6 +105,7 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
     user.emailAddresses.find((e) => e.id === user.primaryEmailAddressId)
       ?.emailAddress ?? user.emailAddresses[0]?.emailAddress ?? null
 
+  const isAdmin = meData?.data?.role === "admin"
   const displayName = fullName(user.firstName, user.lastName, user.username)
   const initials = initialsFrom(user.firstName, user.lastName, primaryEmail)
   const avatarUrl = meData?.data?.avatarUrl ?? user.imageUrl
@@ -103,19 +114,27 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
     <DropdownMenu>
       <DropdownMenuTrigger
         render={
-          <button
-            type="button"
-            aria-label="Open user menu"
-            className={cn(
-              "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
-              className,
-            )}
-          />
+          presentation === "row" ? (
+            <button
+              type="button"
+              aria-label="Open user menu"
+              className={cn(
+                "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                className,
+              )}
+            />
+          ) : (
+            <button
+              type="button"
+              aria-label="Open user menu"
+              className={cn(
+                "flex items-center gap-2 rounded-full py-0.5 pr-0.5 pl-0.5 sm:pl-2.5 ring-1 ring-ink/10 transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-paper",
+                className,
+              )}
+            />
+          )
         }
       >
-        <span className="hidden text-sm font-medium text-ink/80 sm:inline">
-          {displayName || "Learner"}
-        </span>
         <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
           {avatarUrl ? (
             <Image
@@ -133,6 +152,18 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
             </span>
           )}
         </span>
+        {presentation === "row" ? (
+          <span className="min-w-0 flex-1 truncate text-sm font-medium text-ink/85">
+            {displayName || "Learner"}
+          </span>
+        ) : (
+          <span className="hidden text-sm font-medium text-ink/80 sm:inline">
+            {displayName || "Learner"}
+          </span>
+        )}
+        {presentation === "row" ? (
+          <MoreHorizontal className="h-4 w-4 shrink-0 text-muted-foreground" />
+        ) : null}
       </DropdownMenuTrigger>
       <DropdownMenuContent align="end" sideOffset={8} className="w-64">
         <div className="flex items-center gap-3 px-2.5 py-2.5">
@@ -163,26 +194,32 @@ export function UserMenu({ className, redirectUrl = "/" }: UserMenuProps) {
           </div>
         </div>
 
-        <DropdownMenuSeparator />
+        {showQuickLinks || isAdmin ? <DropdownMenuSeparator /> : null}
 
-        <DropdownMenuItem onClick={() => router.push("/notifications")}>
-          <Bell className="h-4 w-4" />
-          Notifications
-        </DropdownMenuItem>
-
-        <DropdownMenuItem onClick={() => router.push("/history")}>
-          <History className="h-4 w-4" />
-          Study history
-        </DropdownMenuItem>
-
-        {meData?.data?.role === "admin" ? (
+        {showQuickLinks ? (
           <>
-            <DropdownMenuItem onClick={() => router.push("/admin")}>
-              <Shield className="h-4 w-4" />
-              Admin
+            <DropdownMenuItem onClick={() => router.push("/notifications")}>
+              <Bell className="h-4 w-4" />
+              Notifications
+            </DropdownMenuItem>
+
+            <DropdownMenuItem onClick={() => router.push("/history")}>
+              <History className="h-4 w-4" />
+              Study history
             </DropdownMenuItem>
           </>
         ) : null}
+
+        {isAdmin ? (
+          <DropdownMenuItem onClick={() => router.push("/admin")}>
+            <Shield className="h-4 w-4" />
+            Admin
+          </DropdownMenuItem>
+        ) : null}
+
+        {showQuickLinks || isAdmin ? <DropdownMenuSeparator /> : null}
+
+        <ThemeMenuItems />
 
         <DropdownMenuSeparator />
 

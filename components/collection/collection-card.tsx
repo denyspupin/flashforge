@@ -164,12 +164,14 @@ function CollectionCardEmptyState({
   action?: ReactNode;
 }) {
   return (
-    <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-      <Library className="text-muted-foreground mb-4 h-12 w-12" />
+    <div className="flex flex-col items-center py-16 text-center sm:py-20">
+      <div className="bg-ember/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+        <Library className="text-ember h-6 w-6" strokeWidth={1.75} />
+      </div>
       <h3 className="text-lg font-semibold">{title}</h3>
       <p className="text-muted-foreground mt-1 mb-4">{description}</p>
       {action}
-    </Card>
+    </div>
   );
 }
 

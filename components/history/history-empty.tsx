@@ -1,15 +1,13 @@
 "use client"
 
-import { useMemo } from "react"
-
-import { Card, CardContent } from "@/components/ui/card"
 import { History, Library } from "lucide-react"
 import Link from "next/link"
+
 import { Button } from "@/components/ui/button"
 
 export function HistoryEmpty() {
   return (
-    <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
+    <div className="flex flex-col items-center py-16 text-center sm:py-24">
       <div className="bg-ember/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
         <History className="text-ember h-6 w-6" strokeWidth={1.75} />
       </div>
@@ -31,16 +29,14 @@ export function HistoryEmpty() {
           </Button>
         </Link>
       </div>
-    </Card>
+    </div>
   )
 }
 
 export function HistoryNoMatches() {
   return (
-    <Card>
-      <CardContent className="text-muted-foreground p-10 text-center text-sm">
-        No sessions match these filters.
-      </CardContent>
-    </Card>
+    <div className="text-muted-foreground py-10 text-center text-sm">
+      No sessions match these filters.
+    </div>
   )
 }

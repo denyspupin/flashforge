@@ -42,8 +42,10 @@ const NAV_ITEMS: AdminNavItem[] = [
 
 export function AdminMobileNav({
   brand,
+  trigger,
 }: {
   brand: React.ReactNode
+  trigger: React.ReactElement
 }) {
   return (
     <MobileNav
@@ -55,6 +57,7 @@ export function AdminMobileNav({
       }))}
       brand={brand}
       footer={<AdminMobileFooter />}
+      trigger={trigger}
     />
   )
 }

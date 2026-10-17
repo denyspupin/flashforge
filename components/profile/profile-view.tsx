@@ -10,19 +10,11 @@ import {
   Layers,
   Shield,
   Star,
-  Trophy,
 } from "lucide-react"
 import { useUser } from "@clerk/nextjs"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { AvatarEditor } from "@/components/profile/avatar-editor"
 import { ProfileSettingsForm } from "@/components/profile/profile-settings-form"
 import { ProfileSkeleton } from "@/components/profile/profile-skeleton"
@@ -159,20 +151,12 @@ export function ProfileView() {
         />
       </section>
 
-      <section className="grid grid-cols-1 gap-4 lg:grid-cols-3">
-        <Card className="lg:col-span-2">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Trophy className="h-4 w-4 text-ember" />
-              Account details
-            </CardTitle>
-            <CardDescription>
-              Information tied to your account. Name, language, and appearance
-              can be updated below.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <dl className="divide-y divide-ink/8 text-sm">
+      <section className="grid grid-cols-1 gap-8 lg:grid-cols-3">
+        <div className="lg:col-span-2">
+          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            Account details
+          </p>
+          <dl className="divide-y divide-ink/8 text-sm">
               <DetailRow label="Email" value={dbUser.email ?? "—"} />
               <DetailRow
                 label="Display name"
@@ -208,51 +192,39 @@ export function ProfileView() {
                 label="Achievements unlocked"
                 value={stats.achievementCount.toLocaleString()}
               />
-            </dl>
-          </CardContent>
-        </Card>
+          </dl>
+        </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Award className="h-4 w-4 text-ember" />
-              Recognition
-            </CardTitle>
-            <CardDescription>
-              Earn XP and achievements by completing decks and topics.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm">
-            <p className="text-muted-foreground">
-              Keep your streak alive by reviewing at least one card every day.
-              Streak multipliers boost XP for up to 30 days in a row.
-            </p>
-            <Link href="/dashboard" className="block">
-              <Button variant="outline" size="sm" className="w-full">
-                Back to dashboard
-              </Button>
-            </Link>
-          </CardContent>
-        </Card>
+        <div>
+          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            Recognition
+          </p>
+          <p className="text-muted-foreground mt-2 text-sm">
+            Earn XP and achievements by completing decks and topics. Keep your
+            streak alive by reviewing at least one card every day. Streak
+            multipliers boost XP for up to 30 days in a row.
+          </p>
+          <Link href="/dashboard" className="mt-3 block">
+            <Button variant="outline" size="sm">
+              Back to dashboard
+            </Button>
+          </Link>
+        </div>
       </section>
 
-      <section>
-        <Card>
-          <CardHeader>
-            <CardTitle>Settings</CardTitle>
-            <CardDescription>
-              Choose your display name, native language, and appearance.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <ProfileSettingsForm
-              initialName={dbUser.name}
-              initialNativeLanguageId={dbUser.nativeLanguageId}
-              initialTheme={dbUser.theme}
-              languages={languages}
-            />
-          </CardContent>
-        </Card>
+      <section className="space-y-2">
+        <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+          Settings
+        </p>
+        <p className="text-muted-foreground text-sm">
+          Choose your display name, native language, and appearance.
+        </p>
+        <ProfileSettingsForm
+          initialName={dbUser.name}
+          initialNativeLanguageId={dbUser.nativeLanguageId}
+          initialTheme={dbUser.theme}
+          languages={languages}
+        />
       </section>
     </div>
   )
@@ -270,26 +242,24 @@ function StatTile({
   suffix?: string
 }) {
   return (
-    <Card>
-      <CardContent className="flex items-center gap-3 p-4">
-        <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink/5">
-          {icon}
-        </div>
-        <div className="min-w-0">
-          <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
-            {label}
-          </p>
-          <p className="mt-0.5 truncate text-xl font-semibold">
-            {value}
-            {suffix ? (
-              <span className="text-muted-foreground ml-1 text-sm font-normal">
-                {suffix}
-              </span>
-            ) : null}
-          </p>
-        </div>
-      </CardContent>
-    </Card>
+    <div className="flex items-center gap-3 py-1">
+      <div className="flex h-10 w-10 shrink-0 items-center justify-center rounded-lg bg-ink/5">
+        {icon}
+      </div>
+      <div className="min-w-0">
+        <p className="text-muted-foreground text-[11px] font-medium uppercase tracking-wider">
+          {label}
+        </p>
+        <p className="mt-0.5 truncate text-xl font-semibold">
+          {value}
+          {suffix ? (
+            <span className="text-muted-foreground ml-1 text-sm font-normal">
+              {suffix}
+            </span>
+          ) : null}
+        </p>
+      </div>
+    </div>
   )
 }
 

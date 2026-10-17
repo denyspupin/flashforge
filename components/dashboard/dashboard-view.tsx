@@ -2,16 +2,9 @@
 
 import { useQuery } from "@tanstack/react-query"
 import Link from "next/link"
-import { BookOpen, Flame, Library, Plus, Star } from "lucide-react"
+import { BookOpen, Flame, Plus, Star } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
-import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card"
 import { ContinueStudyingCard } from "@/components/dashboard/continue-studying-card"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
@@ -86,58 +79,49 @@ export function DashboardView() {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:grid-cols-3">
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Current Streak</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <Flame
-                className={
-                  streakFresh
-                    ? "h-6 w-6 text-orange-500"
-                    : "h-6 w-6 text-muted-foreground"
-                }
-              />
-              {user.streak} {user.streak === 1 ? "day" : "days"}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">{streakSubtitle}</p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Total XP</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <Star className="h-6 w-6 text-yellow-500" />
-              {user.xp.toLocaleString()}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <p className="text-sm text-muted-foreground">
-              {user.xp === 0
-                ? "Complete a session to earn your first XP"
-                : "Earned by reviewing cards and completing decks"}
-            </p>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardHeader className="pb-2">
-            <CardDescription>Decks</CardDescription>
-            <CardTitle className="flex items-center gap-2 text-3xl">
-              <BookOpen className="h-6 w-6 text-primary" />
-              {deckCount}
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <Link href="/decks">
-              <Button size="sm" variant="outline">
-                <Library className="mr-2 h-4 w-4" />
-                Manage decks
-              </Button>
+      <div className="grid grid-cols-1 divide-y divide-ink/6 sm:grid-cols-3 sm:divide-x sm:divide-y-0">
+        <div className="pt-4 sm:py-1 sm:pr-6">
+          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            Current streak
+          </p>
+          <p className="font-display mt-1.5 flex items-center gap-2 text-3xl font-medium tracking-tight">
+            <Flame
+              className={
+                streakFresh ? "h-6 w-6 text-orange-500" : "h-6 w-6 text-muted-foreground"
+              }
+            />
+            {user.streak} {user.streak === 1 ? "day" : "days"}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">{streakSubtitle}</p>
+        </div>
+        <div className="pt-4 sm:py-1 sm:px-6">
+          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            Total XP
+          </p>
+          <p className="font-display mt-1.5 flex items-center gap-2 text-3xl font-medium tracking-tight">
+            <Star className="h-6 w-6 text-yellow-500" />
+            {user.xp.toLocaleString()}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            {user.xp === 0
+              ? "Complete a session to earn your first XP"
+              : "Earned by reviewing cards and completing decks"}
+          </p>
+        </div>
+        <div className="pt-4 sm:py-1 sm:pl-6">
+          <p className="font-mono-tag text-[10px] uppercase tracking-widest text-muted-foreground">
+            Decks
+          </p>
+          <p className="font-display mt-1.5 flex items-center gap-2 text-3xl font-medium tracking-tight">
+            <BookOpen className="h-6 w-6 text-primary" />
+            {deckCount}
+          </p>
+          <p className="text-muted-foreground mt-1 text-sm">
+            <Link href="/decks" className="underline-offset-4 hover:underline">
+              {deckCount === 1 ? "Manage deck" : "Manage decks"}
             </Link>
-          </CardContent>
-        </Card>
+          </p>
+        </div>
       </div>
 
       {activeSession ? (
@@ -148,8 +132,10 @@ export function DashboardView() {
           cardsCorrect={activeSession.cardsCorrect}
         />
       ) : deckCount === 0 ? (
-        <Card className="flex flex-col items-center justify-center p-8 text-center sm:p-12">
-          <BookOpen className="text-muted-foreground mb-4 h-12 w-12" />
+        <div className="flex flex-col items-center py-16 text-center sm:py-20">
+          <div className="bg-ember/10 mb-4 flex h-12 w-12 items-center justify-center rounded-full">
+            <BookOpen className="text-ember h-6 w-6" strokeWidth={1.75} />
+          </div>
           <h3 className="text-lg font-semibold">Ready to learn?</h3>
           <p className="text-muted-foreground mt-1 mb-4">
             Create your first deck or explore the community
@@ -167,7 +153,7 @@ export function DashboardView() {
               </Button>
             </Link>
           </div>
-        </Card>
+        </div>
       ) : null}
 
       {recentDecks.length > 0 ? (
@@ -183,7 +169,7 @@ export function DashboardView() {
               View all →
             </Link>
           </div>
-          <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+          <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
             {recentDecks.map((deck) => (
               <RecentDeckCard
                 key={deck.id}

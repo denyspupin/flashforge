@@ -4,6 +4,14 @@ export const THEME_STORAGE_KEY = "ff-theme"
 export const THEME_COOKIE = "ff_theme"
 export const THEME_COOKIE_MAX_AGE = 60 * 60 * 24 * 365
 
+// Paper canvas colors per resolved theme. `<meta name="theme-color">` cannot
+// use CSS variables, so the literal values are kept in sync with the --paper
+// token in app/globals.css.
+export const PAPER_HEX: Record<"light" | "dark", string> = {
+  light: "#F3EEE7",
+  dark: "#14110F",
+}
+
 export const THEME_LABELS: Record<Theme, string> = {
   light: "Light",
   dark: "Dark",

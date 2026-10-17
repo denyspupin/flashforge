@@ -6,7 +6,7 @@ import { useState } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Globe, Plus, Wand2 } from "lucide-react"
+import { FileUp, Globe, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -194,7 +194,6 @@ export default function CollectionList() {
   const handleOpenChange = (next: boolean) => {
     setOpen(next)
     if (!next) {
-      setMode("create")
       form.reset()
       setSubmitError(null)
     }
@@ -202,7 +201,6 @@ export default function CollectionList() {
 
   const handleImportSuccess = (collectionId: string) => {
     setOpen(false)
-    setMode("create")
     router.push(`/collections/${collectionId}`)
   }
 
@@ -222,7 +220,7 @@ export default function CollectionList() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
+          <DialogTrigger render={<Button size="lg" className="w-full sm:w-auto" />}>
             <Plus className="mr-2 h-4 w-4" />
             New Collection
           </DialogTrigger>
@@ -267,8 +265,8 @@ export default function CollectionList() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Wand2 className="h-3.5 w-3.5" />
-                Generate with AI
+                <FileUp className="h-3.5 w-3.5" />
+                Import
               </button>
             </div>
 
@@ -462,7 +460,7 @@ export default function CollectionList() {
       </div>
 
       {isLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {[1, 2, 3].map((i) => (
             <CollectionCardSkeleton key={i} />
           ))}
@@ -479,7 +477,7 @@ export default function CollectionList() {
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {collections.map((collection) => {
             const sourceName = languagesById[collection.sourceLanguageId]?.name
             const targetName = languagesById[collection.targetLanguageId]?.name

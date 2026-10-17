@@ -1,4 +1,4 @@
-import type { Metadata } from "next"
+import type { Metadata, Viewport } from "next"
 import { Geist } from "next/font/google"
 import { ClerkProvider } from "@clerk/nextjs"
 import Providers from "@/components/providers"
@@ -6,6 +6,7 @@ import { ThemeInitScript } from "@/components/theme/theme-init-script"
 import { clerkAppearance } from "@/lib/clerk/appearance"
 import { fontSerif, fontMono } from "@/lib/fonts"
 import { readThemeCookie } from "@/lib/theme/server"
+import { PAPER_HEX } from "@/lib/theme"
 import { cn } from "@/lib/utils"
 import "./globals.css"
 
@@ -68,6 +69,13 @@ export const metadata: Metadata = {
   },
 }
 
+export const viewport: Viewport = {
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: PAPER_HEX.light },
+    { media: "(prefers-color-scheme: dark)", color: PAPER_HEX.dark },
+  ],
+}
+
 export const dynamic = "force-dynamic"
 
 export default async function RootLayout({
@@ -80,6 +88,8 @@ export default async function RootLayout({
     <ClerkProvider
       appearance={clerkAppearance}
       afterSignOutUrl="/"
+      signInUrl="/"
+      signUpUrl="/register"
     >
       <html
         lang="en"

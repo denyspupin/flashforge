@@ -52,9 +52,9 @@ Defined in [`proxy.ts`](../proxy.ts). Routes outside this list are protected by 
 
 | Public route | Why |
 | --- | --- |
-| `/` | Landing page |
+| `/` | Auth one-pager (Sign in / Create account tabs) |
 | `/explore/*` | Community discovery |
-| `/login/*`, `/register/*` | Clerk-hosted auth UI |
+| `/login/*`, `/register/*` | Auth one-pager entry variants (hash-routed Clerk components) |
 | `/api/v1/languages`, `/api/v1/topics` | Reference data |
 | `/api/v1/community/*` | Public deck and collection reads |
 | `/api/webhooks/clerk` | Svix-verified user sync |

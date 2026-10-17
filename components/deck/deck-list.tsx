@@ -1,12 +1,12 @@
 "use client"
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
-import { useRouter } from "next/navigation"
+import { useRouter, useSearchParams } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import { z } from "zod"
-import { Globe, Plus, Wand2 } from "lucide-react"
+import { FileUp, Globe, Plus } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -104,10 +104,19 @@ async function unpublishDeck(id: string): Promise<void> {
 export default function DeckList() {
   const router = useRouter()
   const queryClient = useQueryClient()
-  const [open, setOpen] = useState(false)
+  const searchParams = useSearchParams()
+  const open = searchParams.get("new") === "1"
   const [mode, setMode] = useState<NewDeckMode>("create")
   const [submitError, setSubmitError] = useState<string | null>(null)
   const [, startNavigate] = useTransition()
+
+  const handleOpenChange = (next: boolean) => {
+    router.replace(next ? "/decks?new=1" : "/decks", { scroll: false })
+    if (!next) {
+      form.reset()
+      setSubmitError(null)
+    }
+  }
 
   const { data: decksData, isLoading: decksLoading } = useQuery({
     queryKey: queryKeys.decks(),
@@ -125,7 +134,7 @@ export default function DeckList() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      setOpen(false)
+      router.replace("/decks", { scroll: false })
       form.reset()
       setSubmitError(null)
     },
@@ -185,18 +194,8 @@ export default function DeckList() {
     setSubmitError(messages.length ? messages.join(" · ") : "Please fill all required fields.")
   }
 
-  const handleOpenChange = (next: boolean) => {
-    setOpen(next)
-    if (!next) {
-      setMode("create")
-      form.reset()
-      setSubmitError(null)
-    }
-  }
-
   const handleImportSuccess = (result: ImportDeckResult) => {
-    setOpen(false)
-    setMode("create")
+    router.replace("/decks", { scroll: false })
     if (result.mode === "new") {
       startNavigate(() => router.push(`/decks/${result.deckId}`))
     }
@@ -219,7 +218,7 @@ export default function DeckList() {
           </p>
         </div>
         <Dialog open={open} onOpenChange={handleOpenChange}>
-          <DialogTrigger render={<Button className="w-full sm:w-auto" />}>
+          <DialogTrigger render={<Button size="lg" className="w-full sm:w-auto" />}>
             <Plus className="mr-2 h-4 w-4" />
             New Deck
           </DialogTrigger>
@@ -264,8 +263,8 @@ export default function DeckList() {
                     : "text-muted-foreground hover:text-foreground"
                 )}
               >
-                <Wand2 className="h-3.5 w-3.5" />
-                Generate with AI
+                <FileUp className="h-3.5 w-3.5" />
+                Import
               </button>
             </div>
 
@@ -460,7 +459,7 @@ export default function DeckList() {
       </div>
 
       {decksLoading ? (
-        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {[1, 2, 3].map((i) => (
             <DeckCardSkeleton key={i} />
           ))}
@@ -470,14 +469,14 @@ export default function DeckList() {
           title="No decks yet"
           description="Create your first deck to start learning"
           action={
-            <Button onClick={() => setOpen(true)}>
+            <Button onClick={() => handleOpenChange(true)}>
               <Plus className="mr-2 h-4 w-4" />
               Create Deck
             </Button>
           }
         />
       ) : (
-        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-2 lg:grid-cols-3">
+        <div className="grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
           {decks.map((deck) => {
             const sourceName = languagesById[deck.sourceLanguageId]?.name
             const targetName = languagesById[deck.targetLanguageId]?.name
