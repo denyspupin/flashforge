@@ -18,6 +18,7 @@ import {
   Pencil,
   Plus,
   Save,
+  Shuffle,
   X,
 } from "lucide-react"
 
@@ -476,6 +477,18 @@ export default function CollectionDetail({
   const isPublic = collection.visibility === "public"
   const existingDeckIds = new Set(collection.decks.map((d) => d.id))
   const myDecks = myDecksQuery.data?.data ?? []
+  const studyableDecks = collection.decks.filter((d) => d.cardCount > 0)
+
+  const onStudyRandom = () => {
+    if (!studyableDecks.length) return
+    const randomIndex = Math.floor(Math.random() * studyableDecks.length)
+    const randomDeck = studyableDecks[randomIndex]
+    if (!isSignedIn) {
+      startNavigate(() => router.push(`/explore/decks/${randomDeck.id}/study`))
+      return
+    }
+    onStudyDeck(randomDeck.id)
+  }
 
   return (
     <div>
@@ -630,7 +643,23 @@ export default function CollectionDetail({
         </div>
       )}
 
-      <h2 className="mb-3 text-lg font-semibold">Decks in this collection</h2>
+      <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
+        <h2 className="text-lg font-semibold">Decks in this collection</h2>
+        {studyableDecks.length > 0 && (
+          <Button
+            variant="outline"
+            onClick={onStudyRandom}
+            disabled={pendingAction !== null}
+          >
+            {pendingAction === "study" ? (
+              <Loader2 className="mr-1.5 h-4 w-4 animate-spin" />
+            ) : (
+              <Shuffle className="mr-1.5 h-4 w-4" />
+            )}
+            Study random deck
+          </Button>
+        )}
+      </div>
       {collection.decks.length === 0 ? (
         <DeckCardEmptyState
           title="No decks in this collection"
