@@ -149,7 +149,6 @@ function AdminMobileTopBar() {
         </Link>
         <div className="flex items-center gap-1">
           <ThemeQuickToggle />
-          <UserMenu />
           <AdminMobileNav
             brand={
               <span className="inline-flex items-center gap-2">

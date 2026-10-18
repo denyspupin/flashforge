@@ -8,7 +8,6 @@ import { AppSidebar } from "@/components/layout/app-sidebar"
 import { MobileTabBar } from "@/components/layout/mobile-tab-bar"
 import { PageTransition } from "@/components/layout/page-transition"
 import { ThemeQuickToggle } from "@/components/theme/theme-quick-toggle"
-import { UserMenu } from "@/components/layout/user-menu"
 import { cn } from "@/lib/utils"
 import { Wordmark } from "./wordmark"
 
@@ -23,7 +22,6 @@ function MobileTopBar() {
         </Link>
         <div className="flex items-center gap-1">
           <ThemeQuickToggle />
-          <UserMenu />
         </div>
       </div>
     </header>
