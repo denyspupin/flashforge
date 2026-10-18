@@ -37,7 +37,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select"
-import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
+import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -86,21 +86,6 @@ async function createDeck(data: CreateDeckInput): Promise<{ data: Deck }> {
   return res.json()
 }
 
-async function deleteDeck(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/decks/${id}`, { method: "DELETE" })
-  if (!res.ok) throw new Error("Failed to delete deck")
-}
-
-async function publishDeck(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/decks/${id}/publish`, { method: "POST" })
-  if (!res.ok) throw new Error("Failed to publish deck")
-}
-
-async function unpublishDeck(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/decks/${id}/unpublish`, { method: "POST" })
-  if (!res.ok) throw new Error("Failed to unpublish deck")
-}
-
 export default function DeckList() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -141,30 +126,6 @@ export default function DeckList() {
     onError: (error) => {
       console.error("[create deck] mutation failed:", error)
       setSubmitError(error instanceof Error ? error.message : "Couldn’t create the deck. Try again.")
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteDeck,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-    },
-  })
-
-  const publishMutation = useMutation({
-    mutationFn: publishDeck,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-    },
-  })
-
-  const unpublishMutation = useMutation({
-    mutationFn: unpublishDeck,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
     },
   })
 
@@ -499,18 +460,7 @@ export default function DeckList() {
                   )
                 }
                 actions={
-                  <DeckActionsMenu
-                    deck={deck}
-                    onEdit={() =>
-                      startNavigate(() => router.push(`/decks/${deck.id}`))
-                    }
-                    onTogglePublish={() =>
-                      deck.visibility === "private"
-                        ? publishMutation.mutate(deck.id)
-                        : unpublishMutation.mutate(deck.id)
-                    }
-                    onDelete={() => deleteMutation.mutate(deck.id)}
-                  />
+                  <FavoriteToggleButton target={{ deckId: deck.id }} />
                 }
               />
             )

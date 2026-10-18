@@ -42,7 +42,7 @@ import {
   CollectionCardEmptyState,
   CollectionCardSkeleton,
 } from "@/components/collection/collection-card"
-import { CollectionActionsMenu } from "@/components/collection/collection-actions-menu"
+import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
 import { CollectionImportSection } from "@/components/collection/collection-import-section"
 import { queryKeys } from "@/hooks"
 import { cn } from "@/lib/utils"
@@ -88,23 +88,6 @@ async function createCollection(
   return res.json()
 }
 
-async function deleteCollection(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/collections/${id}`, { method: "DELETE" })
-  if (!res.ok) throw new Error("Failed to delete collection")
-}
-
-async function publishCollection(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/collections/${id}/publish`, { method: "POST" })
-  if (!res.ok) throw new Error("Failed to publish collection")
-}
-
-async function unpublishCollection(id: string): Promise<void> {
-  const res = await fetch(`/api/v1/collections/${id}/unpublish`, {
-    method: "POST",
-  })
-  if (!res.ok) throw new Error("Failed to unpublish collection")
-}
-
 export default function CollectionList() {
   const router = useRouter()
   const queryClient = useQueryClient()
@@ -138,32 +121,6 @@ export default function CollectionList() {
       setSubmitError(
         error instanceof Error ? error.message : "Couldn’t create the collection. Try again."
       )
-    },
-  })
-
-  const deleteMutation = useMutation({
-    mutationFn: deleteCollection,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-    },
-  })
-
-  const publishMutation = useMutation({
-    mutationFn: publishCollection,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
-    },
-  })
-
-  const unpublishMutation = useMutation({
-    mutationFn: unpublishCollection,
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
     },
   })
 
@@ -495,15 +452,8 @@ export default function CollectionList() {
                   targetFlag,
                 }}
                 actions={
-                  <CollectionActionsMenu
-                    collection={collection}
-                    onEdit={() => router.push(`/collections/${collection.id}`)}
-                    onTogglePublish={() =>
-                      collection.visibility === "private"
-                        ? publishMutation.mutate(collection.id)
-                        : unpublishMutation.mutate(collection.id)
-                    }
-                    onDelete={() => deleteMutation.mutate(collection.id)}
+                  <FavoriteToggleButton
+                    target={{ collectionId: collection.id }}
                   />
                 }
               />
