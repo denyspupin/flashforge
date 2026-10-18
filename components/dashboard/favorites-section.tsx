@@ -2,13 +2,24 @@
 
 import Link from "next/link"
 import { useRouter } from "next/navigation"
+import { BookOpen, Library } from "lucide-react"
 
+import { Badge } from "@/components/ui/badge"
 import { DeckCard } from "@/components/deck/deck-card"
 import { CollectionCard } from "@/components/collection/collection-card"
 import {
   FavoriteToggleButton,
 } from "@/components/favorites/favorite-toggle-button"
 import { useFavoritesQuery } from "@/hooks"
+
+function FavoritesTypeBadge({ type }: { type: "deck" | "collection" }) {
+  return (
+    <Badge variant="outline">
+      {type === "deck" ? <BookOpen className="h-3 w-3" /> : <Library className="h-3 w-3" />}
+      {type === "deck" ? "Deck" : "Collection"}
+    </Badge>
+  )
+}
 
 export function FavoritesSection() {
   const router = useRouter()
@@ -48,6 +59,7 @@ export function FavoritesSection() {
             }}
             badges={
               <>
+                <FavoritesTypeBadge type="deck" />
                 <DeckCard.CuratedBadge />
                 <DeckCard.TopicBadges topics={deck.topics} />
               </>
@@ -76,6 +88,18 @@ export function FavoritesSection() {
               sourceFlag: languagesById[collection.sourceLanguageId]?.flag,
               targetFlag: languagesById[collection.targetLanguageId]?.flag,
             }}
+            badges={
+              <>
+                <FavoritesTypeBadge type="collection" />
+                <CollectionCard.VisibilityBadge
+                  visibility={collection.visibility}
+                />
+                {collection.isCurated ? <CollectionCard.CuratedBadge /> : null}
+                {collection.forkedFromCollectionId ? (
+                  <CollectionCard.ForkedBadge />
+                ) : null}
+              </>
+            }
             actions={
               <FavoriteToggleButton
                 target={{ collectionId: collection.id }}
