@@ -66,11 +66,13 @@ export function FollowToggleButton({
         <Plus className="h-4 w-4" />
       )}
       {following ? (
-        <span className="grid">
-          <span className="col-start-1 row-start-1 justify-self-center group-hover:invisible">
-            Following
-          </span>
-          <span className="col-start-1 row-start-1 justify-self-center invisible group-hover:visible">
+        <span className="whitespace-nowrap">
+          Following
+          <span
+            aria-hidden="true"
+            className="opacity-0 transition-opacity group-hover:opacity-100"
+          >
+            {" · "}
             Unfollow
           </span>
         </span>
