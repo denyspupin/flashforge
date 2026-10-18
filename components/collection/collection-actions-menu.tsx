@@ -1,6 +1,14 @@
 "use client"
 
-import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import {
+  Copy,
+  Globe,
+  Link2Off,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -17,6 +25,8 @@ type CollectionActionsMenuProps = {
   onEdit: () => void
   onTogglePublish: () => void
   onDelete: () => void
+  onCopyLink: () => void
+  onRevokeLink?: () => void
   triggerClassName?: string
 }
 
@@ -25,6 +35,8 @@ export function CollectionActionsMenu({
   onEdit,
   onTogglePublish,
   onDelete,
+  onCopyLink,
+  onRevokeLink,
   triggerClassName,
 }: CollectionActionsMenuProps) {
   const isPrivate = collection.visibility === "private"
@@ -48,6 +60,16 @@ export function CollectionActionsMenu({
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={onCopyLink}>
+          <Copy className="mr-2 h-4 w-4" />
+          Copy Link
+        </DropdownMenuItem>
+        {isPrivate && onRevokeLink && (
+          <DropdownMenuItem onClick={onRevokeLink}>
+            <Link2Off className="mr-2 h-4 w-4" />
+            Revoke Share Link
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={onTogglePublish}>
           {isPrivate ? (
             <>

@@ -1,8 +1,10 @@
 "use client"
 
 import {
+  Copy,
   Download,
   Globe,
+  Link2Off,
   Lock,
   MoreHorizontal,
   Pencil,
@@ -24,6 +26,8 @@ type DeckActionsMenuProps = {
   onEdit: () => void
   onTogglePublish: () => void
   onDelete: () => void
+  onCopyLink: () => void
+  onRevokeLink?: () => void
   triggerClassName?: string
 }
 
@@ -32,6 +36,8 @@ export function DeckActionsMenu({
   onEdit,
   onTogglePublish,
   onDelete,
+  onCopyLink,
+  onRevokeLink,
   triggerClassName,
 }: DeckActionsMenuProps) {
   const handleExport = () => {
@@ -66,6 +72,16 @@ export function DeckActionsMenu({
           <Pencil className="mr-2 h-4 w-4" />
           Edit
         </DropdownMenuItem>
+        <DropdownMenuItem onClick={onCopyLink}>
+          <Copy className="mr-2 h-4 w-4" />
+          Copy Link
+        </DropdownMenuItem>
+        {isPrivate && onRevokeLink && (
+          <DropdownMenuItem onClick={onRevokeLink}>
+            <Link2Off className="mr-2 h-4 w-4" />
+            Revoke Share Link
+          </DropdownMenuItem>
+        )}
         <DropdownMenuItem onClick={onTogglePublish}>
           {isPrivate ? (
             <>

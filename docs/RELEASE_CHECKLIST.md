@@ -85,7 +85,7 @@ Next.js 16, React 19, PostgreSQL 16, Drizzle ORM, Clerk, Tailwind CSS 4, shadcn/
 
 - Decks organized by language pairs and topics, with cards inheriting the deck's pair.
 - Public discovery and forking for both decks and collections.
-- Guest study (no account required) with seamless sign-in upgrade.
+- Guest study via shared deck/collection links (no account required) with seamless sign-in upgrade.
 - Resumable study sessions: start, walk away, come back to the same card.
 - XP and streak multipliers (×1 → ×3 over 30 days) with a "sentence, not a chain" streak philosophy.
 - Achievements (First Steps, Perfect Score, Week Warrior, Polyglot, Deck Master, Card Collector, Topic Explorer, Fork Star).

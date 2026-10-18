@@ -44,7 +44,10 @@ import type {
   CommunityCollectionDetailResult,
 } from "@/lib/cache/community-collections-detail"
 
-type Props = { backHref?: string }
+type Props = {
+  backHref?: string
+  shareToken?: string | null
+}
 
 type ViewDeck = CommunityCollectionDeck & { createdAt: string }
 
@@ -67,8 +70,12 @@ type ViewCollection = {
 
 async function fetchCommunityCollection(
   id: string,
+  share: string | null
 ): Promise<{ data: CommunityCollectionDetailResult }> {
-  const res = await fetch(`/api/v1/community/collections/${id}`)
+  const url = share
+    ? `/api/v1/community/collections/${id}?share=${encodeURIComponent(share)}`
+    : `/api/v1/community/collections/${id}`
+  const res = await fetch(url)
   if (res.status === 404) return { data: null }
   if (!res.ok) throw new Error("Failed to fetch collection")
   return res.json()
@@ -171,6 +178,27 @@ async function deleteCollection(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to delete collection")
 }
 
+async function createCollectionShareLink(
+  id: string,
+): Promise<{ data: { shareToken: string } }> {
+  const res = await fetch(`/api/v1/collections/${id}/share`, {
+    method: "POST",
+  })
+  if (!res.ok) throw new Error("Couldn’t create share link")
+  return res.json()
+}
+
+async function revokeCollectionShareLink(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/collections/${id}/share`, {
+    method: "DELETE",
+  })
+  if (!res.ok) throw new Error("Couldn’t revoke share link")
+}
+
+function copyToClipboard(text: string): void {
+  navigator.clipboard?.writeText(text)
+}
+
 function toView(
   publicData: CommunityCollectionDetailResult,
   ownerData: Collection | null,
@@ -182,7 +210,7 @@ function toView(
       id: publicData.id,
       title: publicData.title,
       description: publicData.description,
-      visibility: ownerData?.visibility ?? "public",
+      visibility: ownerData?.visibility ?? publicData.visibility,
       creatorId: publicData.creatorId,
       creatorName: publicData.creatorName,
       isCurated: publicData.isCurated,
@@ -219,7 +247,7 @@ function toView(
         title: d.title,
         slug: d.slug,
         description: d.description,
-        visibility: "public" as const,
+        visibility: d.visibility ?? "public",
         sourceLanguageId: d.sourceLanguageId,
         targetLanguageId: d.targetLanguageId,
         creatorId: ownerData.creatorId,
@@ -237,6 +265,7 @@ function toView(
 
 export default function CollectionDetail({
   backHref = "/collections",
+  shareToken,
 }: Props) {
   const params = useParams()
   const router = useRouter()
@@ -248,13 +277,14 @@ export default function CollectionDetail({
   const [editing, setEditing] = useState(false)
   const [addOpen, setAddOpen] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
+  const [actionNotice, setActionNotice] = useState<string | null>(null)
   const [pendingAction, setPendingAction] =
     useState<"fork" | "study" | null>(null)
   const [removingDeckId, setRemovingDeckId] = useState<string | null>(null)
 
   const publicQuery = useQuery({
-    queryKey: queryKeys.publicCollection(collectionId),
-    queryFn: () => fetchCommunityCollection(collectionId),
+    queryKey: queryKeys.publicCollection(collectionId, shareToken),
+    queryFn: () => fetchCommunityCollection(collectionId, shareToken ?? null),
   })
 
   const ownerQuery = useQuery({
@@ -409,6 +439,35 @@ export default function CollectionDetail({
     },
   })
 
+  const createShareMutation = useMutation({
+    mutationFn: () => createCollectionShareLink(collectionId),
+    onSuccess: (result) => {
+      copyToClipboard(`${window.location.origin}/s/${result.data.shareToken}`)
+      setActionNotice("Link copied to clipboard")
+      queryClient.invalidateQueries({
+        queryKey: queryKeys.collection(collectionId),
+      })
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t create share link",
+      )
+    },
+  })
+
+  const revokeShareMutation = useMutation({
+    mutationFn: () => revokeCollectionShareLink(collectionId),
+    onSuccess: () => {
+      setActionNotice("Share link revoked")
+      invalidateAll()
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t revoke share link",
+      )
+    },
+  })
+
   const onFork = () => {
     if (!isSignedIn) return
     setActionError(null)
@@ -441,6 +500,35 @@ export default function CollectionDetail({
     }
     setActionError(null)
     deleteMutation.mutate()
+  }
+
+  const hasShareLink = isOwner && collection?.visibility === "private"
+
+  const onCopyLink = () => {
+    if (!collection) return
+    setActionError(null)
+    setActionNotice(null)
+    if (collection.visibility === "public") {
+      copyToClipboard(
+        `${window.location.origin}/explore/collections/${collection.id}`
+      )
+      setActionNotice("Link copied to clipboard")
+      return
+    }
+    const activeToken = ownerQuery.data?.data?.shareToken
+    if (activeToken) {
+      copyToClipboard(`${window.location.origin}/s/${activeToken}`)
+      setActionNotice("Link copied to clipboard")
+      return
+    }
+    createShareMutation.mutate()
+  }
+
+  const onRevokeLink = () => {
+    if (!collection || collection.visibility === "public") return
+    setActionError(null)
+    setActionNotice(null)
+    revokeShareMutation.mutate()
   }
 
   if (isLoading) {
@@ -486,11 +574,18 @@ export default function CollectionDetail({
     const randomIndex = Math.floor(Math.random() * studyableDecks.length)
     const randomDeck = studyableDecks[randomIndex]
     if (!isSignedIn) {
-      startNavigate(() => router.push(`/explore/decks/${randomDeck.id}/study`))
+      startNavigate(() =>
+        router.push(
+          `/explore/decks/${randomDeck.id}/study${shareToken ? `?share=${encodeURIComponent(shareToken)}` : ""}`
+        )
+      )
       return
     }
     onStudyDeck(randomDeck.id)
   }
+
+  const guestStudyHref = (deckId: string) =>
+    `/explore/decks/${deckId}/study${shareToken ? `?share=${encodeURIComponent(shareToken)}` : ""}`
 
   return (
     <div>
@@ -614,6 +709,8 @@ export default function CollectionDetail({
               onEdit={() => setEditing(true)}
               onTogglePublish={onTogglePublish}
               onDelete={onDelete}
+              onCopyLink={onCopyLink}
+              onRevokeLink={hasShareLink ? onRevokeLink : undefined}
               triggerClassName="sm:h-9 sm:w-9"
             />
           </div>
@@ -653,6 +750,15 @@ export default function CollectionDetail({
           className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
         >
           {actionError}
+        </div>
+      )}
+
+      {actionNotice && (
+        <div
+          role="status"
+          className="mb-4 rounded-lg border border-emerald-500/30 bg-emerald-500/8 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400"
+        >
+          {actionNotice}
         </div>
       )}
 
@@ -737,7 +843,7 @@ export default function CollectionDetail({
                     ? () => onStudyDeck(deckRow.id)
                     : (id) =>
                         startNavigate(() =>
-                          router.push(`/explore/decks/${id}/study`),
+                          router.push(guestStudyHref(id)),
                         )
                 }
                 actions={

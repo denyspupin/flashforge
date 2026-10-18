@@ -78,6 +78,13 @@
       "when": 1792333764542,
       "tag": "0010_early_fenris",
       "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1792344489278,
+      "tag": "0011_outstanding_goliath",
+      "breakpoints": true
     }
   ]
 }

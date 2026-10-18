@@ -12,6 +12,7 @@ export type Collection = {
   targetLanguageId: string
   isCurated: boolean
   forkedFromCollectionId: string | null
+  shareToken?: string | null
   deckCount: number
   totalCards: number
   decks?: CollectionDeck[]
@@ -25,6 +26,7 @@ export type CollectionDeck = Pick<
   | "title"
   | "description"
   | "slug"
+  | "visibility"
   | "sourceLanguageId"
   | "targetLanguageId"
   | "cardCount"

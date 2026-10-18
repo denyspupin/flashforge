@@ -207,14 +207,7 @@ export default function ExplorePage() {
             </span>
           </span>
         }
-        onStudy={
-          isSignedIn
-            ? () => onStudy(deck)
-            : (id) =>
-                startNavigate(() =>
-                  router.push(`/explore/decks/${id}/study`)
-                )
-        }
+        onStudy={() => onStudy(deck)}
         actions={
           isSignedIn ? (
             isMine ? (

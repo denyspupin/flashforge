@@ -36,6 +36,61 @@ export type CommunityDeckDetailResult = {
   cardCount: number
 } | null
 
+async function buildDeckDetail(
+  deck: typeof decks.$inferSelect
+): Promise<CommunityDeckDetailResult> {
+  const [deckCards, creatorRows, languageRows, topicRelations] =
+    await Promise.all([
+      db.select().from(cards).where(eq(cards.deckId, deck.id)),
+      db
+        .select({ id: users.id, name: users.name })
+        .from(users)
+        .where(eq(users.id, deck.creatorId)),
+      db
+        .select()
+        .from(languages)
+        .where(
+          inArray(languages.id, [deck.sourceLanguageId, deck.targetLanguageId])
+        ),
+      db
+        .select({
+          id: topics.id,
+          name: topics.name,
+          slug: topics.slug,
+        })
+        .from(deckTopics)
+        .innerJoin(topics, eq(topics.id, deckTopics.topicId))
+        .where(eq(deckTopics.deckId, deck.id)),
+    ])
+
+  const sourceLanguage = languageRows.find(
+    (l) => l.id === deck.sourceLanguageId
+  )
+  const targetLanguage = languageRows.find(
+    (l) => l.id === deck.targetLanguageId
+  )
+
+  return {
+    id: deck.id,
+    title: deck.title,
+    slug: deck.slug,
+    description: deck.description,
+    visibility: deck.visibility,
+    sourceLanguageId: deck.sourceLanguageId,
+    targetLanguageId: deck.targetLanguageId,
+    creatorId: creatorRows[0]?.id ?? deck.creatorId,
+    creatorName: creatorRows[0]?.name ?? "Unknown",
+    isCurated: deck.isCurated,
+    forkedFromDeckId: deck.forkedFromDeckId,
+    createdAt: deck.createdAt,
+    cards: deckCards,
+    topics: topicRelations,
+    sourceLanguage: sourceLanguage ? enrichLanguage(sourceLanguage) : null,
+    targetLanguage: targetLanguage ? enrichLanguage(targetLanguage) : null,
+    cardCount: deckCards.length,
+  }
+}
+
 export const getCommunityDeckById = unstable_cache(
   async (id: string): Promise<CommunityDeckDetailResult> => {
     const deckRows = await db
@@ -47,50 +102,24 @@ export const getCommunityDeckById = unstable_cache(
       return null
     }
 
-    const deck = deckRows[0]
-
-    const [deckCards, creatorRows, languageRows] = await Promise.all([
-      db.select().from(cards).where(eq(cards.deckId, id)),
-      db
-        .select({ id: users.id, name: users.name })
-        .from(users)
-        .where(eq(users.id, deck.creatorId)),
-      db
-        .select()
-        .from(languages)
-        .where(
-          inArray(languages.id, [deck.sourceLanguageId, deck.targetLanguageId])
-        ),
-    ])
-
-    const topicRelations = await db
-      .select({
-        id: topics.id,
-        name: topics.name,
-        slug: topics.slug,
-      })
-      .from(deckTopics)
-      .innerJoin(topics, eq(topics.id, deckTopics.topicId))
-      .where(eq(deckTopics.deckId, id))
-
-    const sourceLanguage = languageRows.find(
-      (l) => l.id === deck.sourceLanguageId
-    )
-    const targetLanguage = languageRows.find(
-      (l) => l.id === deck.targetLanguageId
-    )
-
-    return {
-      ...deck,
-      cards: deckCards,
-      topics: topicRelations,
-      creatorId: creatorRows[0]?.id ?? deck.creatorId,
-      creatorName: creatorRows[0]?.name ?? "Unknown",
-      sourceLanguage: sourceLanguage ? enrichLanguage(sourceLanguage) : null,
-      targetLanguage: targetLanguage ? enrichLanguage(targetLanguage) : null,
-      cardCount: deckCards.length,
-    }
+    return buildDeckDetail(deckRows[0])
   },
   ["community-deck-detail"],
   { revalidate: 300, tags: [COMMUNITY_DECKS_DETAIL_CACHE_TAG] }
 )
+
+export async function getSharedDeckById(
+  id: string,
+  shareToken: string
+): Promise<CommunityDeckDetailResult> {
+  const deckRows = await db
+    .select()
+    .from(decks)
+    .where(and(eq(decks.id, id), eq(decks.shareToken, shareToken)))
+
+  if (!deckRows.length) {
+    return null
+  }
+
+  return buildDeckDetail(deckRows[0])
+}

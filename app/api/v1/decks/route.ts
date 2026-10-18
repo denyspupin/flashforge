@@ -41,6 +41,7 @@ export async function GET() {
       creatorId: decks.creatorId,
       isCurated: decks.isCurated,
       forkedFromDeckId: decks.forkedFromDeckId,
+      shareToken: decks.shareToken,
       createdAt: decks.createdAt,
       updatedAt: decks.updatedAt,
       cardCount: sql<number>`(

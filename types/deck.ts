@@ -18,6 +18,7 @@ export type Deck = {
   creatorName?: string | null
   isCurated: boolean
   forkedFromDeckId: string | null
+  shareToken?: string | null
   cardCount: number
   topics?: DeckTopic[]
   createdAt: string

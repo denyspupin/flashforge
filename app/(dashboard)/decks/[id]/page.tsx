@@ -73,6 +73,7 @@ interface Deck {
   creatorId: string
   isCurated: boolean
   forkedFromDeckId: string | null
+  shareToken: string | null
   createdAt: string
   updatedAt: string
   cards: Card[]
@@ -157,6 +158,23 @@ async function unpublishDeck(id: string): Promise<void> {
   if (!res.ok) throw new Error("Failed to unpublish deck")
 }
 
+async function createDeckShareLink(
+  id: string
+): Promise<{ data: { shareToken: string } }> {
+  const res = await fetch(`/api/v1/decks/${id}/share`, { method: "POST" })
+  if (!res.ok) throw new Error("Couldn’t create share link")
+  return res.json()
+}
+
+async function revokeDeckShareLink(id: string): Promise<void> {
+  const res = await fetch(`/api/v1/decks/${id}/share`, { method: "DELETE" })
+  if (!res.ok) throw new Error("Couldn’t revoke share link")
+}
+
+function copyToClipboard(text: string): void {
+  navigator.clipboard?.writeText(text)
+}
+
 export default function DeckDetailPage() {
   const params = useParams()
   const router = useRouter()
@@ -175,6 +193,7 @@ export default function DeckDetailPage() {
   const [deckTitle, setDeckTitle] = useState("")
   const [deckDescription, setDeckDescription] = useState("")
   const [actionError, setActionError] = useState<string | null>(null)
+  const [actionNotice, setActionNotice] = useState<string | null>(null)
   const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
@@ -286,6 +305,35 @@ export default function DeckDetailPage() {
     },
   })
 
+  const createShareMutation = useMutation({
+    mutationFn: () => createDeckShareLink(deckId),
+    onSuccess: (result) => {
+      copyToClipboard(`${window.location.origin}/s/${result.data.shareToken}`)
+      setActionNotice("Link copied to clipboard")
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t create share link"
+      )
+    },
+  })
+
+  const revokeShareMutation = useMutation({
+    mutationFn: () => revokeDeckShareLink(deckId),
+    onSuccess: () => {
+      setActionNotice("Share link revoked")
+      queryClient.invalidateQueries({ queryKey: queryKeys.deck(deckId) })
+      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
+    },
+    onError: (error) => {
+      setActionError(
+        error instanceof Error ? error.message : "Couldn’t revoke share link"
+      )
+    },
+  })
+
   const cardForm = useForm<CardInput>({
     resolver: zodResolver(cardSchema),
     defaultValues: { front: "", back: "" },
@@ -322,6 +370,32 @@ export default function DeckDetailPage() {
     }
     setActionError(null)
     deleteMutation.mutate()
+  }
+
+  const onCopyLink = () => {
+    if (!deck) return
+    setActionError(null)
+    setActionNotice(null)
+    if (deck.visibility === "public") {
+      copyToClipboard(
+        `${window.location.origin}/explore/decks/${deck.id}`
+      )
+      setActionNotice("Link copied to clipboard")
+      return
+    }
+    if (deck.shareToken) {
+      copyToClipboard(`${window.location.origin}/s/${deck.shareToken}`)
+      setActionNotice("Link copied to clipboard")
+      return
+    }
+    createShareMutation.mutate()
+  }
+
+  const onRevokeLink = () => {
+    if (!deck || deck.visibility === "public") return
+    setActionError(null)
+    setActionNotice(null)
+    revokeShareMutation.mutate()
   }
 
   if (isLoading) {
@@ -379,6 +453,12 @@ export default function DeckDetailPage() {
                 onEdit={onEditDeck}
                 onTogglePublish={onTogglePublish}
                 onDelete={onDeleteDeck}
+                onCopyLink={onCopyLink}
+                onRevokeLink={
+                  deck.visibility === "private" && deck.shareToken
+                    ? onRevokeLink
+                    : undefined
+                }
                 triggerClassName="sm:h-9 sm:w-9"
               />
             </>
@@ -460,6 +540,15 @@ export default function DeckDetailPage() {
             className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
           >
             {actionError}
+          </div>
+        )}
+
+        {actionNotice && (
+          <div
+            role="status"
+            className="rounded-lg border border-emerald-500/30 bg-emerald-500/8 px-3 py-2 text-sm text-emerald-700 dark:text-emerald-400"
+          >
+            {actionNotice}
           </div>
         )}
 

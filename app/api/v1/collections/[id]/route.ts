@@ -69,6 +69,7 @@ export async function GET(
       deckTitle: decks.title,
       deckSlug: decks.slug,
       description: decks.description,
+      visibility: decks.visibility,
       sourceLanguageId: decks.sourceLanguageId,
       targetLanguageId: decks.targetLanguageId,
       cardCount: sql<number>`(
