@@ -1,6 +1,5 @@
 "use client"
 
-import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { BookOpen, Library } from "lucide-react"
 
@@ -36,15 +35,7 @@ export function FavoritesSection() {
 
   return (
     <div className="space-y-3">
-      <div className="flex items-center justify-between">
-        <h2 className="text-lg font-semibold tracking-tight">Favorites</h2>
-        <Link
-          href="/explore"
-          className="text-muted-foreground text-sm hover:text-foreground"
-        >
-          Discover more →
-        </Link>
-      </div>
+      <h2 className="text-lg font-semibold tracking-tight">Favorites</h2>
       <div className={gridClassName}>
         {favoriteDecks.map((deck) => (
           <DeckCard
