@@ -32,7 +32,7 @@ Your sessions are saved as you go, so a short break never means losing your plac
 
 - **Create decks for any language pair.** Add cards individually, add them in bulk, or import a deck you already have.
 - **Study without losing momentum.** Flip cards, mark your answer, revisit misses, and resume a session whenever you return.
-- **Find a useful starting point.** Browse public decks and curated collections; study them as a guest or fork them to tailor them to yourself.
+- **Find a useful starting point.** Browse public decks and curated collections, then fork them to tailor them to yourself.
 - **See your effort add up.** Earn XP, build a daily streak, and unlock achievements through regular practice.
 - **Make it yours.** Keep decks private or share them with the community, and choose light, dark, or system theme.
 

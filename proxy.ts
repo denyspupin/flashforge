@@ -1,9 +1,10 @@
 import { clerkMiddleware, createRouteMatcher } from "@clerk/nextjs/server"
 
+import { isValidShareToken } from "@/lib/share-token"
+
 const isPublicRoute = createRouteMatcher([
   "/",
   "/s(.*)",
-  "/explore(.*)",
   "/login(.*)",
   "/register(.*)",
   "/api/v1/languages",
@@ -12,10 +13,28 @@ const isPublicRoute = createRouteMatcher([
   "/api/webhooks/clerk",
 ])
 
+const isShareLinkRoute = createRouteMatcher([
+  "/explore/decks/:id",
+  "/explore/decks/:id/study",
+  "/explore/collections/:id",
+])
+
 export default clerkMiddleware(async (auth, req) => {
-  if (!isPublicRoute(req)) {
-    await auth.protect()
+  if (isPublicRoute(req)) {
+    return
   }
+
+  // Shared links are the only guest surface: deck and collection detail pages
+  // plus the guest study player open for visitors carrying a share token.
+  // The token's validity against the DB is enforced by the page/route itself.
+  if (
+    isShareLinkRoute(req) &&
+    isValidShareToken(req.nextUrl.searchParams.get("share"))
+  ) {
+    return
+  }
+
+  await auth.protect()
 })
 
 export const config = {

@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { eq } from "drizzle-orm"
 import { setupTestPool, teardownTestPool, withTx } from "../../setup/db"
-import { mockClerk } from "../../setup/clerk"
+import { mockClerk, clearClerk } from "../../setup/clerk"
 import { callRoute } from "../../setup/route-call"
 import { seedLanguage, seedUser } from "../../setup/fixtures"
 import type { TestDb } from "../../setup/db"
@@ -180,6 +180,59 @@ describe("share links", () => {
       })
     })
 
+    test("guest can open a shared deck link but nothing else", async () => {
+      await withTx(async (db) => {
+        const { user, source, target } = await seededPair(db)
+        const privateDeck = await makeDeck(db, {
+          creatorId: user.id,
+          sourceLanguageId: source.id,
+          targetLanguageId: target.id,
+          slug: "share-deck-guest-private",
+        })
+        const publicDeck = await makeDeck(db, {
+          creatorId: user.id,
+          sourceLanguageId: source.id,
+          targetLanguageId: target.id,
+          visibility: "public",
+          slug: "share-deck-guest-public",
+        })
+        mockClerk({ clerkId: user.clerkId })
+        const share = await callRoute<{ shareToken: string }>(createDeckShare, {
+          method: "POST",
+          params: { id: privateDeck.id },
+        })
+        const token = share.data?.shareToken ?? ""
+
+        clearClerk()
+        const byToken = await callRoute(getCommunityDeck, {
+          method: "GET",
+          params: { id: privateDeck.id },
+          searchParams: { share: token },
+        })
+        expect(byToken.status).toBe(200)
+        expect(byToken.data).toMatchObject({ visibility: "private" })
+
+        const privateNoToken = await callRoute(getCommunityDeck, {
+          method: "GET",
+          params: { id: privateDeck.id },
+        })
+        expect(privateNoToken.status).toBe(401)
+
+        const publicNoToken = await callRoute(getCommunityDeck, {
+          method: "GET",
+          params: { id: publicDeck.id },
+        })
+        expect(publicNoToken.status).toBe(401)
+
+        const malformedToken = await callRoute(getCommunityDeck, {
+          method: "GET",
+          params: { id: publicDeck.id },
+          searchParams: { share: "not!a@token#" },
+        })
+        expect(malformedToken.status).toBe(401)
+      })
+    })
+
     test("revoked token stops granting access", async () => {
       await withTx(async (db) => {
         const { user, source, target } = await seededPair(db)
@@ -340,6 +393,41 @@ describe("share links", () => {
           searchParams: { share: token },
         })
         expect(afterRevoke.status).toBe(404)
+      })
+    })
+
+    test("guest can open a shared collection link with valid token, 401 without", async () => {
+      await withTx(async (db) => {
+        const { user, source, target } = await seededPair(db)
+        const collection = await makeCollection(db, {
+          creatorId: user.id,
+          sourceLanguageId: source.id,
+          targetLanguageId: target.id,
+          slug: "share-collection-guest",
+        })
+        mockClerk({ clerkId: user.clerkId })
+        const share = await callRoute<{ shareToken: string }>(
+          createCollectionShare,
+          {
+            method: "POST",
+            params: { id: collection.id },
+          },
+        )
+        const token = share.data?.shareToken ?? ""
+
+        clearClerk()
+        const byToken = await callRoute(getCommunityCollection, {
+          method: "GET",
+          params: { id: collection.id },
+          searchParams: { share: token },
+        })
+        expect(byToken.status).toBe(200)
+
+        const withoutToken = await callRoute(getCommunityCollection, {
+          method: "GET",
+          params: { id: collection.id },
+        })
+        expect(withoutToken.status).toBe(401)
       })
     })
 

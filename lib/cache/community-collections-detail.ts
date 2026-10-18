@@ -10,7 +10,7 @@ import {
   topics,
   users,
 } from "@/lib/db/schema"
-import { eq, and, inArray, asc, sql, or } from "drizzle-orm"
+import { eq, and, inArray, asc, sql } from "drizzle-orm"
 import { enrichLanguage } from "@/lib/languages/flags"
 import { COMMUNITY_COLLECTIONS_CACHE_TAG } from "@/lib/cache/community-collections"
 
@@ -185,15 +185,7 @@ export async function getSharedCollectionById(
   const collectionRows = await db
     .select()
     .from(collections)
-    .where(
-      and(
-        eq(collections.id, id),
-        or(
-          eq(collections.visibility, "public"),
-          eq(collections.shareToken, shareToken)
-        )
-      )
-    )
+    .where(and(eq(collections.id, id), eq(collections.shareToken, shareToken)))
 
   if (!collectionRows.length) {
     return null

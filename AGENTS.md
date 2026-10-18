@@ -22,7 +22,7 @@ Full documentation: `docs/PROJECT.md` · `docs/DEPLOYMENT.md`
 - **Hybrid API routes**: flat for simple resources, nested for complex (see `app/api/v1/`)
 - **Cards inherit language pair from deck** — deck enforces consistency
 - **Study sessions created on start** — resumable if user returns
-- **Public decks visible to non-auth users** — auth required for tracking/forking
+- **Login required for everything except share links** — guests can only open deck/collection links shared via token (and study decks inside a shared collection); public/private visibility separates what logged-in users can browse on the platform
 - **Clerk webhooks sync users** to local DB on `user.created`
 - **UUID primary keys** for Decks, Cards, and Sessions (future-proof for import/export)
 - **Zod validation** on all API inputs

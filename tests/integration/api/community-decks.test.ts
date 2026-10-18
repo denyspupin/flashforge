@@ -1,7 +1,7 @@
 import { afterAll, beforeAll, describe, expect, test } from "vitest"
 import { eq } from "drizzle-orm"
 import { setupTestPool, teardownTestPool, withTx } from "../../setup/db"
-import { clearClerk } from "../../setup/clerk"
+import { clearClerk, mockClerk } from "../../setup/clerk"
 import { callRoute } from "../../setup/route-call"
 import { seedCards, seedLanguage, seedUser } from "../../setup/fixtures"
 import type { TestDb } from "../../setup/db"
@@ -41,6 +41,25 @@ describe("community feed", () => {
     await teardownTestPool()
   })
 
+  test("requires login for signed-out visitors", async () => {
+    await withTx(async (db) => {
+      const user = await seedUser(db, {})
+      const source = await seedLanguage(db, "en")
+      const target = await seedLanguage(db, "es")
+      await makePublicDeck(db, {
+        creatorId: user.id,
+        sourceLanguageId: source.id,
+        targetLanguageId: target.id,
+        title: "Public",
+        slug: "public-guest",
+      })
+
+      clearClerk()
+      const res = await callRoute(listCommunity, { method: "GET" })
+      expect(res.status).toBe(401)
+    })
+  })
+
   test("returns only public decks, not private ones", async () => {
     await withTx(async (db) => {
       const user = await seedUser(db, {})
@@ -62,7 +81,7 @@ describe("community feed", () => {
         visibility: "private",
       })
 
-      clearClerk()
+      mockClerk({ clerkId: user.clerkId })
       const res = await callRoute(listCommunity, { method: "GET" })
       expect(res.status).toBe(200)
       const items = res.data as Array<{ id: string }>
@@ -91,7 +110,7 @@ describe("community feed", () => {
         slug: "food-vocab-q",
       })
 
-      clearClerk()
+      mockClerk({ clerkId: user.clerkId })
       const res = await callRoute(listCommunity, {
         method: "GET",
         searchParams: { q: "TRAVEL" },
@@ -132,7 +151,7 @@ describe("community feed", () => {
       await db.insert(schema.deckTopics).values({ deckId: travelDeck.id, topicId: travel[0].id })
       await db.insert(schema.deckTopics).values({ deckId: travelDeck.id, topicId: food[0].id })
 
-      clearClerk()
+      mockClerk({ clerkId: user.clerkId })
       const res = await callRoute(listCommunity, {
         method: "GET",
         searchParams: { topicId: food[0].id },
@@ -167,7 +186,7 @@ describe("community feed", () => {
       await db.update(schema.decks).set({ createdAt: new Date(Date.now() - 1000) }).where(eq(schema.decks.id, first.id))
       await db.update(schema.decks).set({ createdAt: new Date() }).where(eq(schema.decks.id, second.id))
 
-      clearClerk()
+      mockClerk({ clerkId: user.clerkId })
       const newest = await callRoute(listCommunity, { method: "GET" })
       const newestIds = (newest.data as Array<{ id: string }>).map((d) => d.id)
       expect(newestIds).toEqual([second.id, first.id])
@@ -195,7 +214,7 @@ describe("community feed", () => {
       })
       await seedCards(db, deck.id, 4)
 
-      clearClerk()
+      mockClerk({ clerkId: user.clerkId })
       const res = await callRoute(listCommunity, { method: "GET" })
       const items = res.data as Array<{ id: string; cardCount: number }>
       const counted = items.find((d) => d.id === deck.id)

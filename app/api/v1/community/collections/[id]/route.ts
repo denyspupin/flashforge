@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server"
 import { successResponse, errorResponse } from "@/lib/api/response"
+import { auth } from "@clerk/nextjs/server"
 import {
   getCommunityCollectionById,
   getSharedCollectionById,
@@ -14,6 +15,14 @@ export async function GET(
 ) {
   const { id } = await params
   const share = new URL(request.url).searchParams.get("share")
+
+  const { userId } = await auth()
+  if (!userId && !(share && isValidShareToken(share))) {
+    return NextResponse.json(
+      errorResponse("Authentication required", "UNAUTHORIZED"),
+      { status: 401 }
+    )
+  }
 
   const collection =
     share && isValidShareToken(share)

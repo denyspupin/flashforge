@@ -8,7 +8,7 @@ import {
   topics,
   users,
 } from "@/lib/db/schema"
-import { eq, and, inArray, or } from "drizzle-orm"
+import { eq, and, inArray } from "drizzle-orm"
 import { enrichLanguage } from "@/lib/languages/flags"
 import { COMMUNITY_DECKS_CACHE_TAG } from "@/lib/cache/community-decks"
 
@@ -115,12 +115,7 @@ export async function getSharedDeckById(
   const deckRows = await db
     .select()
     .from(decks)
-    .where(
-      and(
-        eq(decks.id, id),
-        or(eq(decks.visibility, "public"), eq(decks.shareToken, shareToken))
-      )
-    )
+    .where(and(eq(decks.id, id), eq(decks.shareToken, shareToken)))
 
   if (!deckRows.length) {
     return null

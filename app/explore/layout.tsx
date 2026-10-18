@@ -8,7 +8,7 @@ import { DashboardShell } from "@/components/layout/dashboard-chrome"
 export const metadata: Metadata = {
   title: "Explore the library",
   description:
-    "Browse public flashcard decks and collections across nine languages. Study as a guest, or fork one into your own account.",
+    "Browse public flashcard decks and collections across nine languages, then fork one into your own account.",
   alternates: { canonical: "/explore" },
   openGraph: {
     title: "Explore the FlashForge library",

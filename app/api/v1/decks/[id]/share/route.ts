@@ -4,7 +4,7 @@ import { decks } from "@/lib/db/schema"
 import { eq, and } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
-import { generateShareToken } from "@/lib/share-token"
+import { generateShareToken } from "@/lib/share-token.server"
 
 export const dynamic = "force-dynamic"
 
