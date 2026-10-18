@@ -48,6 +48,7 @@ import { Badge } from "@/components/ui/badge"
 import { DeckHistoryPanel } from "@/components/history/deck-history-panel"
 import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
+import { FollowToggleButton } from "@/components/follows/follow-toggle-button"
 import { queryKeys } from "@/hooks"
 
 interface Card {
@@ -369,6 +370,7 @@ export default function DeckDetailPage() {
                 target={{ deckId }}
                 className="sm:h-9 sm:w-9"
               />
+              <FollowToggleButton target={{ deckId }} />
               <DeckActionsMenu
                 deck={{
                   ...deck,

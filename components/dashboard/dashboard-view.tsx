@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button"
 import { ContinueStudyingCard } from "@/components/dashboard/continue-studying-card"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { FavoritesSection } from "@/components/dashboard/favorites-section"
+import { FollowsSection } from "@/components/dashboard/follows-section"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
 import { queryKeys } from "@/hooks"
 import type { DashboardData } from "@/lib/queries/dashboard"
@@ -158,6 +159,8 @@ export function DashboardView() {
       ) : null}
 
       <FavoritesSection />
+
+      <FollowsSection />
 
       {recentDecks.length > 0 ? (
         <div className="space-y-3">

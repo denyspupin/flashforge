@@ -19,6 +19,7 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
+import { FollowToggleButton } from "@/components/follows/follow-toggle-button"
 import { queryKeys } from "@/hooks"
 
 interface PublicCard {
@@ -204,7 +205,10 @@ export default function PublicDeckPage() {
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {isLoaded && isSignedIn && (
-            <FavoriteToggleButton target={{ deckId }} />
+            <>
+              <FavoriteToggleButton target={{ deckId }} />
+              <FollowToggleButton target={{ deckId }} />
+            </>
           )}
           <Badge variant="default">
             <Globe className="h-3 w-3" />

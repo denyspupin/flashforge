@@ -71,6 +71,13 @@
       "when": 1792275745562,
       "tag": "0009_tearful_marauders",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1792333764542,
+      "tag": "0010_early_fenris",
+      "breakpoints": true
     }
   ]
 }
