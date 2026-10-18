@@ -12,6 +12,7 @@ import {
 } from "@/lib/db/schema"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { enrichLanguages } from "@/lib/languages/flags"
+import { loadUserStatsSnapshot, type UserStatsSnapshot } from "@/lib/queries/stats"
 import type { Deck, Language, StudySession } from "@/types"
 
 export type DashboardActiveSession = Pick<
@@ -33,13 +34,14 @@ export type DashboardData = {
   activeSession: DashboardActiveSession | null
   recentDecks: Deck[]
   languagesById: Record<string, Language>
+  stats: UserStatsSnapshot
 }
 
 export async function loadDashboardData(): Promise<DashboardData | null> {
   const user = await requireCurrentUser()
   if (!user) return null
 
-  const [deckCountRow, activeSessionRows, recentDeckRows, displayName] =
+  const [deckCountRow, activeSessionRows, recentDeckRows, displayName, stats] =
     await Promise.all([
       db
         .select({ count: sql<number>`count(*)::int` })
@@ -89,6 +91,7 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
         .orderBy(desc(decks.updatedAt))
         .limit(6),
       resolveDisplayName(user.name),
+      loadUserStatsSnapshot(user.id),
     ])
 
   const activeSession = activeSessionRows[0]
@@ -178,6 +181,7 @@ export async function loadDashboardData(): Promise<DashboardData | null> {
       : null,
     recentDecks,
     languagesById,
+    stats,
   }
 }
 

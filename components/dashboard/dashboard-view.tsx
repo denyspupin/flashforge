@@ -10,6 +10,7 @@ import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
 import { FavoritesSection } from "@/components/dashboard/favorites-section"
 import { FollowsSection } from "@/components/dashboard/follows-section"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
+import { StatsCard } from "@/components/dashboard/stats-card"
 import { queryKeys } from "@/hooks"
 import type { DashboardData } from "@/lib/queries/dashboard"
 import type { ApiResponse } from "@/lib/api/response"
@@ -125,6 +126,8 @@ export function DashboardView() {
           </p>
         </div>
       </div>
+
+      <StatsCard stats={data.stats} />
 
       {activeSession ? (
         <ContinueStudyingCard
