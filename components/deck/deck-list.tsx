@@ -46,6 +46,7 @@ import {
 import { DeckImportSection } from "@/components/deck/deck-import-section"
 import { queryKeys } from "@/hooks"
 import type { ImportDeckResult } from "@/hooks/use-deck-import"
+import { toast } from "@/stores"
 import { cn } from "@/lib/utils"
 import type { Deck, Language } from "@/types/deck"
 
@@ -156,6 +157,13 @@ export default function DeckList() {
   }
 
   const handleImportSuccess = (result: ImportDeckResult) => {
+    const cards = result.cardsCreated
+    const cardCount = `${cards} card${cards === 1 ? "" : "s"}`
+    if (result.mode === "new") {
+      toast.success("Deck imported", `Created deck with ${cardCount}`)
+    } else {
+      toast.success("Deck updated", `Added ${cardCount}`)
+    }
     router.replace("/decks", { scroll: false })
     if (result.mode === "new") {
       startNavigate(() => router.push(`/decks/${result.deckId}`))

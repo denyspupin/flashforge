@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { queryKeys } from "@/hooks/query-keys"
+import { toast } from "@/stores"
 
 export type ToggleFavoriteInput = {
   deckId?: string
@@ -34,9 +35,15 @@ export function useToggleFavorite() {
   const queryClient = useQueryClient()
   return useMutation({
     mutationFn: toggleFavorite,
-    onSuccess: () => {
+    onSuccess: (result) => {
+      toast.success(
+        result.favorited ? "Added to favorites" : "Removed from favorites"
+      )
       queryClient.invalidateQueries({ queryKey: queryKeys.favorites() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+    },
+    onError: (error) => {
+      toast.error("Couldn't update favorites", error.message)
     },
   })
 }

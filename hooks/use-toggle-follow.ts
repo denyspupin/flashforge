@@ -3,6 +3,7 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query"
 
 import { queryKeys } from "@/hooks/query-keys"
+import { toast } from "@/stores"
 
 export type ToggleFollowInput = {
   deckId?: string
@@ -37,6 +38,9 @@ export function useToggleFollow() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: queryKeys.follows() })
       queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
+    },
+    onError: (error) => {
+      toast.error("Couldn't update follows", error.message)
     },
   })
 }

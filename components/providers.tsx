@@ -5,6 +5,8 @@ import dynamic from "next/dynamic"
 import { useState } from "react"
 import { ThemeColorSync } from "@/components/theme/theme-color-sync"
 import { ThemeSync } from "@/components/theme/theme-sync"
+import { Toaster } from "@/components/toast"
+import { toast } from "@/stores"
 import type { Theme } from "@/lib/constants"
 
 const ReactQueryDevtools = dynamic(
@@ -34,11 +36,20 @@ export default function Providers({
       })
   )
 
+  if (process.env.NODE_ENV !== "production" && typeof window !== "undefined") {
+    Object.assign(window, {
+      toastSuccess: toast.success,
+      toastError: toast.error,
+      toastInfo: toast.info,
+    })
+  }
+
   return (
     <QueryClientProvider client={queryClient}>
       <ThemeSync initialTheme={initialTheme} />
       <ThemeColorSync />
       {children}
+      <Toaster />
       <ReactQueryDevtools initialIsOpen={false} />
     </QueryClientProvider>
   )
