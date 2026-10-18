@@ -8,7 +8,7 @@ import type { TestDb } from "../../setup/db"
 import * as schema from "@/lib/db/schema"
 import { POST as startStudy } from "@/app/api/v1/study/route"
 import { POST as completeStudy } from "@/app/api/v1/study/[sessionId]/complete/route"
-import { XP_VALUES } from "@/lib/constants"
+import { XP_VALUES, MAX_SESSION_DURATION_MS } from "@/lib/constants"
 
 type SeedDeckResult = {
   user: typeof schema.users.$inferSelect
@@ -238,6 +238,84 @@ describe("study start + complete", () => {
         cards.length * XP_VALUES.CARD_REVIEWED + 0 * XP_VALUES.CARD_CORRECT + XP_VALUES.DECK_COMPLETE
       expect(result.xpAwarded).toBe(expectedNoPerfect)
       expect(result.session.failedCardIds.sort()).toEqual(cards.map((c) => c.id).sort())
+    })
+  })
+
+  test("complete persists the reported durationMs", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"))
+
+    await withTx(async (db) => {
+      const { user, deck, cards } = await seedOwnedDeckWithCards(db, { cardCount: 1 })
+      mockClerk({ clerkId: user.clerkId })
+
+      const start = await callRoute(startStudy, {
+        method: "POST",
+        body: { deck_id: deck.id },
+      })
+      const { session } = start.data as { session: { id: string } }
+
+      const complete = await callRoute(completeStudy, {
+        method: "POST",
+        params: { sessionId: session.id },
+        body: {
+          results: cards.map((c) => ({ cardId: c.id, correct: true })),
+          durationMs: 95_000,
+        },
+      })
+      expect(complete.status).toBe(200)
+      const result = complete.data as { session: { durationMs: number } }
+      expect(result.session.durationMs).toBe(95_000)
+    })
+  })
+
+  test("complete without durationMs leaves durationMs at 0", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"))
+
+    await withTx(async (db) => {
+      const { user, deck, cards } = await seedOwnedDeckWithCards(db, { cardCount: 1 })
+      mockClerk({ clerkId: user.clerkId })
+
+      const start = await callRoute(startStudy, {
+        method: "POST",
+        body: { deck_id: deck.id },
+      })
+      const { session } = start.data as { session: { id: string } }
+
+      const complete = await callRoute(completeStudy, {
+        method: "POST",
+        params: { sessionId: session.id },
+        body: { results: cards.map((c) => ({ cardId: c.id, correct: true })) },
+      })
+      expect(complete.status).toBe(200)
+      const result = complete.data as { session: { durationMs: number } }
+      expect(result.session.durationMs).toBe(0)
+    })
+  })
+
+  test("complete rejects durationMs outside 0..MAX_SESSION_DURATION_MS", async () => {
+    vi.useFakeTimers()
+    vi.setSystemTime(new Date("2026-06-15T12:00:00Z"))
+
+    await withTx(async (db) => {
+      const { user, deck } = await seedOwnedDeckWithCards(db, { cardCount: 1 })
+      mockClerk({ clerkId: user.clerkId })
+
+      const start = await callRoute(startStudy, {
+        method: "POST",
+        body: { deck_id: deck.id },
+      })
+      const { session } = start.data as { session: { id: string } }
+
+      for (const durationMs of [-1, MAX_SESSION_DURATION_MS + 1]) {
+        const res = await callRoute(completeStudy, {
+          method: "POST",
+          params: { sessionId: session.id },
+          body: { results: [], durationMs },
+        })
+        expect(res.status).toBe(400)
+      }
     })
   })
 

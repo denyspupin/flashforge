@@ -5,7 +5,7 @@ import { eq, and, inArray, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { z } from "zod"
-import { XP_VALUES, STREAK_MULTIPLIERS } from "@/lib/constants"
+import { XP_VALUES, STREAK_MULTIPLIERS, MAX_SESSION_DURATION_MS } from "@/lib/constants"
 
 export const dynamic = "force-dynamic"
 
@@ -16,6 +16,7 @@ const completeSchema = z.object({
       correct: z.boolean(),
     })
   ),
+  durationMs: z.number().int().min(0).max(MAX_SESSION_DURATION_MS).optional(),
 })
 
 function getStreakMultiplier(streak: number): number {
@@ -108,7 +109,7 @@ export async function POST(
     )
   }
 
-  const { results } = parsed.data
+  const { results, durationMs } = parsed.data
 
   const cardsReviewed = results.length
   const correctIds: string[] = []
@@ -140,6 +141,7 @@ export async function POST(
       cardsReviewed,
       cardsCorrect,
       failedCardIds,
+      durationMs: sql`greatest(${studySessions.durationMs}, ${durationMs ?? 0})`,
       xpAwarded,
       updatedAt: now,
     })

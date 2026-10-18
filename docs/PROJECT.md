@@ -188,6 +188,7 @@ study_sessions
 ├── started_at, completed_at
 ├── cards_reviewed, cards_correct
 ├── failed_card_ids   JSONB
+├── duration_ms       client-reported active study time, capped at 6h
 ├── xp_awarded
 ├── created_at, updated_at
 
