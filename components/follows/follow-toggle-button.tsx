@@ -48,37 +48,20 @@ export function FollowToggleButton({
       onClick={() => toggleMutation.mutate(target)}
       disabled={!follows || toggleMutation.isPending}
       className={cn(
-        "group shrink-0",
+        "shrink-0",
         following && "bg-primary/5 text-primary",
         className
       )}
       aria-label={following ? "Unfollow" : "Follow"}
       aria-pressed={following}
-      title={
-        following
-          ? "Unfollow — you’ll still keep your favorites"
-          : "Follow to keep up with updates"
-      }
+      title={following ? undefined : "Follow to keep up with updates"}
     >
       {following ? (
-        <Check className="h-4 w-4 transition-transform group-hover:scale-90" />
+        <Check className="h-4 w-4" />
       ) : (
         <Plus className="h-4 w-4" />
       )}
-      {following ? (
-        <span className="whitespace-nowrap">
-          Following
-          <span
-            aria-hidden="true"
-            className="opacity-0 transition-opacity group-hover:opacity-100"
-          >
-            {" · "}
-            Unfollow
-          </span>
-        </span>
-      ) : (
-        "Follow"
-      )}
+      {following ? "Following" : "Follow"}
     </Button>
   )
 }
