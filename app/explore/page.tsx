@@ -1,13 +1,14 @@
 "use client"
 
-import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
+import { useQuery, useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Copy, Globe, Layers, Loader2, Sparkles } from "lucide-react"
+import { Copy, Globe, Layers, Sparkles } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
+import { FollowToggleButton } from "@/components/follows/follow-toggle-button"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -56,28 +57,6 @@ async function fetchLanguages(): Promise<{ data: Language[] }> {
   return res.json()
 }
 
-async function forkDeck(id: string): Promise<{ data: { id: string } }> {
-  const res = await fetch(`/api/v1/decks/${id}/fork`, { method: "POST" })
-  if (!res.ok) {
-    const body = await res.json().catch(() => null)
-    const message = body?.error?.message ?? "Couldn’t fork this deck"
-    throw new Error(message)
-  }
-  return res.json()
-}
-
-async function forkCollection(
-  id: string
-): Promise<{ data: { id: string } }> {
-  const res = await fetch(`/api/v1/collections/${id}/fork`, { method: "POST" })
-  if (!res.ok) {
-    const body = await res.json().catch(() => null)
-    const message = body?.error?.message ?? "Couldn’t fork this collection"
-    throw new Error(message)
-  }
-  return res.json()
-}
-
 async function startStudy(
   deckId: string
 ): Promise<{ data: { session: { id: string } } }> {
@@ -122,13 +101,11 @@ function groupByLanguagePair<
 
 export default function ExplorePage() {
   const router = useRouter()
-  const queryClient = useQueryClient()
   const { isSignedIn, isLoaded } = useUser()
   const [query, setQuery] = useState("")
   const [tab, setTab] = useState<ExploreTab>("decks")
-  const [pendingForkId, setPendingForkId] = useState<string | null>(null)
   const [pendingStudyId, setPendingStudyId] = useState<string | null>(null)
-  const [forkError, setForkError] = useState<string | null>(null)
+  const [actionError, setActionError] = useState<string | null>(null)
   const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
@@ -159,43 +136,6 @@ export default function ExplorePage() {
     [languagesData]
   )
 
-  const forkMutation = useMutation({
-    mutationFn: forkDeck,
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
-      queryClient.invalidateQueries({ queryKey: ["community-decks"] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      startNavigate(() => router.push(`/decks/${result.data.id}`))
-    },
-    onError: (error) => {
-      setForkError(error instanceof Error ? error.message : "Couldn’t fork this deck")
-    },
-    onSettled: () => {
-      setPendingForkId(null)
-    },
-  })
-
-  const forkCollectionMutation = useMutation({
-    mutationFn: forkCollection,
-    onSuccess: (result) => {
-      queryClient.invalidateQueries({ queryKey: queryKeys.collections() })
-      queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
-      queryClient.invalidateQueries({ queryKey: ["community-collections"] })
-      queryClient.invalidateQueries({ queryKey: queryKeys.dashboard() })
-      startNavigate(() => router.push(`/collections/${result.data.id}`))
-    },
-    onError: (error) => {
-      setForkError(
-        error instanceof Error
-          ? error.message
-          : "Couldn’t fork this collection"
-      )
-    },
-    onSettled: () => {
-      setPendingForkId(null)
-    },
-  })
-
   const studyMutation = useMutation({
     mutationFn: startStudy,
     onSuccess: (result) => {
@@ -206,7 +146,7 @@ export default function ExplorePage() {
       )
     },
     onError: (error) => {
-      setForkError(
+      setActionError(
         error instanceof Error ? error.message : "Couldn’t start a study session"
       )
     },
@@ -237,7 +177,6 @@ export default function ExplorePage() {
 
   const renderDeckCard = (deck: Deck) => {
     const isMine = myId && deck.creatorId === myId
-    const isForking = pendingForkId === deck.id
     return (
       <DeckCard
         key={deck.id}
@@ -278,29 +217,22 @@ export default function ExplorePage() {
         }
         actions={
           isSignedIn ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
-              disabled={isForking}
-              onClick={(e) => {
-                e.stopPropagation()
-                if (isMine) {
+            isMine ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation()
                   startNavigate(() => router.push(`/decks/${deck.id}`))
-                  return
-                }
-                onForkDeck(deck)
-              }}
-            >
-              {isForking ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : isMine ? (
+                }}
+              >
                 <Globe className="mr-1.5 h-3.5 w-3.5" />
-              ) : (
-                <Copy className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
-            </Button>
+                Edit yours
+              </Button>
+            ) : (
+              <FollowToggleButton target={{ deckId: deck.id }} />
+            )
           ) : undefined
         }
       />
@@ -309,7 +241,6 @@ export default function ExplorePage() {
 
   const renderCollectionCard = (collection: Collection) => {
     const isMine = myId && collection.creatorId === myId
-    const isForking = pendingForkId === collection.id
     return (
       <CollectionCard
         key={collection.id}
@@ -338,56 +269,35 @@ export default function ExplorePage() {
         }
         actions={
           isSignedIn ? (
-            <Button
-              size="sm"
-              variant="ghost"
-              className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
-              disabled={isForking}
-              onClick={(e) => {
-                e.stopPropagation()
-                if (isMine) {
+            isMine ? (
+              <Button
+                size="sm"
+                variant="ghost"
+                className="h-8 sm:h-8 px-3 sm:px-3 text-xs"
+                onClick={(e) => {
+                  e.stopPropagation()
                   startNavigate(() =>
                     router.push(`/collections/${collection.id}`)
                   )
-                  return
-                }
-                onForkCollection(collection)
-              }}
-            >
-              {isForking ? (
-                <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-              ) : isMine ? (
+                }}
+              >
                 <Globe className="mr-1.5 h-3.5 w-3.5" />
-              ) : (
-                <Copy className="mr-1.5 h-3.5 w-3.5" />
-              )}
-              {isMine ? "Edit yours" : isForking ? "Forking…" : "Fork"}
-            </Button>
+                Edit yours
+              </Button>
+            ) : (
+              <FollowToggleButton target={{ collectionId: collection.id }} />
+            )
           ) : undefined
         }
       />
     )
   }
 
-  const onForkDeck = (deck: Deck) => {
-    if (!isSignedIn) return
-    setForkError(null)
-    setPendingForkId(deck.id)
-    forkMutation.mutate(deck.id)
-  }
-
   const onStudy = (deck: Deck) => {
     if (!isSignedIn) return
-    setForkError(null)
+    setActionError(null)
     setPendingStudyId(deck.id)
     studyMutation.mutate(deck.id)
-  }
-
-  const onForkCollection = (collection: Collection) => {
-    if (!isSignedIn) return
-    setForkError(null)
-    setPendingForkId(collection.id)
-    forkCollectionMutation.mutate(collection.id)
   }
 
   return (
@@ -398,7 +308,7 @@ export default function ExplorePage() {
             Explore
           </h1>
           <p className="text-muted-foreground mt-1">
-            Discover decks and collections shared by the community — fork any of them to make them your own.
+            Discover decks and collections shared by the community — follow them to keep up with updates.
           </p>
         </div>
         <div className="w-full sm:max-w-xs">
@@ -428,12 +338,12 @@ export default function ExplorePage() {
         </TabsList>
 
         <TabsContent value="decks">
-          {forkError && isSignedIn ? (
+          {actionError && isSignedIn ? (
             <div
               role="alert"
               className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
             >
-              {forkError}
+              {actionError}
             </div>
           ) : null}
 
@@ -496,12 +406,12 @@ export default function ExplorePage() {
         </TabsContent>
 
         <TabsContent value="collections">
-          {forkError && isSignedIn ? (
+          {actionError && isSignedIn ? (
             <div
               role="alert"
               className="mb-4 rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
             >
-              {forkError}
+              {actionError}
             </div>
           ) : null}
 

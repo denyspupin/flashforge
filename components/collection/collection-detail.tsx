@@ -35,6 +35,7 @@ import { CollectionAddDecksDialog } from "@/components/collection/collection-add
 import { CollectionActionsMenu } from "@/components/collection/collection-actions-menu"
 import { DeckInCollectionActionsMenu } from "@/components/collection/deck-in-collection-actions-menu"
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
+import { FollowToggleButton } from "@/components/follows/follow-toggle-button"
 import { queryKeys } from "@/hooks"
 import type { Collection } from "@/types/collection"
 import type { Deck, Language } from "@/types/deck"
@@ -526,10 +527,15 @@ export default function CollectionDetail({
         </div>
         <div className="flex shrink-0 items-center gap-1.5">
           {isLoaded && isSignedIn && (
-            <FavoriteToggleButton
-              target={{ collectionId: collectionId }}
-              className="sm:h-9 sm:w-9"
-            />
+            <>
+              <FavoriteToggleButton
+                target={{ collectionId: collectionId }}
+                className="sm:h-9 sm:w-9"
+              />
+              <FollowToggleButton
+                target={{ collectionId: collectionId }}
+              />
+            </>
           )}
           <Badge variant={isPublic ? "default" : "secondary"}>
             {isPublic ? (

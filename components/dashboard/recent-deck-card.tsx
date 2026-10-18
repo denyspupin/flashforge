@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
 import { DeckCard } from "@/components/deck/deck-card"
@@ -18,11 +19,16 @@ type RecentDeckCardProps = {
 
 export function RecentDeckCard({ deck, languageNames }: RecentDeckCardProps) {
   const router = useRouter()
+  const { user } = useUser()
 
   return (
     <DeckCard
       deck={deck}
-      href={`/decks/${deck.id}`}
+      href={
+        deck.creatorId === user?.id
+          ? `/decks/${deck.id}`
+          : `/explore/decks/${deck.id}`
+      }
       languageNames={languageNames}
       footerLeft={
         <span>

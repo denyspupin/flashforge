@@ -11,6 +11,7 @@ export const queryKeys = {
   languages: () => ["languages"] as const,
   topics: () => ["topics"] as const,
   favorites: () => ["favorites"] as const,
+  follows: () => ["follows"] as const,
   communityDecks: (q?: string) => ["community-decks", q ?? ""] as const,
   publicDeck: (id: string) => ["public-deck", id] as const,
   communityCollections: (q?: string) => ["community-collections", q ?? ""] as const,
