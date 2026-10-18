@@ -12,7 +12,9 @@ export default async function DashboardLayout({
   return (
     <DashboardShell>
       {children}
-      {user && !user.onboardedAt && <OnboardingGate onboarded={false} />}
+      {user && !user.onboardedAt && (
+        <OnboardingGate onboarded={false} userId={user.id} />
+      )}
     </DashboardShell>
   )
 }

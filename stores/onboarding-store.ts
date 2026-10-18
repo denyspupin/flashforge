@@ -7,7 +7,7 @@ type OnboardingState = {
   isOpen: boolean
   hasStarted: boolean
 
-  start: () => void
+  start: (userId: string) => void
   next: () => void
   prev: () => void
   goTo: (index: number) => void
@@ -24,109 +24,54 @@ const initial = {
 
 const TOTAL_STEPS = ONBOARDING.STEPS.length
 
-type PersistedState = {
-  stepIndex: number
-  hasStarted: boolean
+function shownKey(userId: string) {
+  return `${ONBOARDING.STORAGE_KEY}:${userId}`
 }
 
-function loadPersisted(): PersistedState | null {
-  if (typeof window === "undefined") return null
+function hasShownTo(userId: string) {
+  if (typeof window === "undefined") return true
   try {
-    const raw = localStorage.getItem(ONBOARDING.STORAGE_KEY)
-    if (!raw) return null
-    const value = JSON.parse(raw) as PersistedState
-    if (typeof value.stepIndex !== "number" || typeof value.hasStarted !== "boolean") return null
-    return value
+    return localStorage.getItem(shownKey(userId)) === "1"
   } catch {
-    return null
+    return true
   }
 }
 
-function savePersisted(state: PersistedState) {
+function markShown(userId: string) {
   if (typeof window === "undefined") return
   try {
-    localStorage.setItem(ONBOARDING.STORAGE_KEY, JSON.stringify(state))
+    localStorage.setItem(shownKey(userId), "1")
   } catch {
     // ignore quota / disabled
   }
 }
 
-function clearPersisted() {
-  if (typeof window === "undefined") return
-  try {
-    localStorage.removeItem(ONBOARDING.STORAGE_KEY)
-  } catch {
-    // ignore
-  }
-}
+export const useOnboardingStore = create<OnboardingState>((set) => ({
+  ...initial,
 
-function persistCurrent(get: () => OnboardingState) {
-  const state = get()
-  if (!state.hasStarted) return
-  savePersisted({
-    stepIndex: state.stepIndex,
-    hasStarted: state.hasStarted,
-  })
-}
+  start: (userId) => {
+    if (hasShownTo(userId)) return
+    markShown(userId)
+    set({ stepIndex: 0, isOpen: true, hasStarted: true })
+  },
 
-export const useOnboardingStore = create<OnboardingState>((set, get) => {
-  const apply = (partial: Partial<OnboardingState>) => {
-    set(partial)
-    persistCurrent(get)
-  }
+  next: () => {
+    set((s) =>
+      s.stepIndex < TOTAL_STEPS - 1 ? { stepIndex: s.stepIndex + 1 } : s
+    )
+  },
 
-  return {
-    ...initial,
+  prev: () => {
+    set((s) => (s.stepIndex > 0 ? { stepIndex: s.stepIndex - 1 } : s))
+  },
 
-    start: () => {
-      const state = get()
-      if (state.hasStarted) {
-        const saved = loadPersisted()
-        if (saved && saved.hasStarted) {
-          set({
-            stepIndex: Math.min(saved.stepIndex, TOTAL_STEPS - 1),
-            isOpen: true,
-            hasStarted: true,
-          })
-          return
-        }
-      }
-      apply({ stepIndex: 0, isOpen: true, hasStarted: true })
-    },
+  goTo: (index) => {
+    set((s) => (index >= 0 && index < TOTAL_STEPS ? { stepIndex: index } : s))
+  },
 
-    next: () => {
-      const state = get()
-      if (state.stepIndex < TOTAL_STEPS - 1) {
-        apply({ stepIndex: state.stepIndex + 1 })
-      }
-    },
+  skip: () => set({ ...initial }),
 
-    prev: () => {
-      const state = get()
-      if (state.stepIndex > 0) {
-        apply({ stepIndex: state.stepIndex - 1 })
-      }
-    },
+  complete: () => set({ ...initial }),
 
-    goTo: (index) => {
-      if (index >= 0 && index < TOTAL_STEPS) {
-        apply({ stepIndex: index })
-      }
-    },
-
-    skip: () => {
-      clearPersisted()
-      set({ ...initial })
-    },
-
-    complete: () => {
-      clearPersisted()
-      set({ ...initial })
-    },
-
-    reset: () => {
-      clearPersisted()
-      set({ ...initial })
-    },
-  }
-})
+  reset: () => set({ ...initial }),
+}))
