@@ -271,6 +271,38 @@ export const collectionDecks = pgTable(
   ]
 )
 
+export const favoriteDecks = pgTable(
+  "favorite_decks",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    deckId: uuid("deck_id")
+      .references(() => decks.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.deckId] })]
+)
+
+export const favoriteCollections = pgTable(
+  "favorite_collections",
+  {
+    userId: uuid("user_id")
+      .references(() => users.id, { onDelete: "cascade" })
+      .notNull(),
+    collectionId: uuid("collection_id")
+      .references(() => collections.id, { onDelete: "cascade" })
+      .notNull(),
+    createdAt: timestamp("created_at", { withTimezone: true })
+      .defaultNow()
+      .notNull(),
+  },
+  (table) => [primaryKey({ columns: [table.userId, table.collectionId] })]
+)
+
 export const promptTemplates = pgTable(
   "prompt_templates",
   {
