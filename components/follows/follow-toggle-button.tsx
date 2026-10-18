@@ -48,7 +48,7 @@ export function FollowToggleButton({
       onClick={() => toggleMutation.mutate(target)}
       disabled={!follows || toggleMutation.isPending}
       className={cn(
-        "shrink-0",
+        "group shrink-0",
         following && "bg-primary/5 text-primary",
         className
       )}
@@ -61,11 +61,22 @@ export function FollowToggleButton({
       }
     >
       {following ? (
-        <Check className="h-4 w-4" />
+        <Check className="h-4 w-4 transition-transform group-hover:scale-90" />
       ) : (
         <Plus className="h-4 w-4" />
       )}
-      {following ? "Following" : "Follow"}
+      {following ? (
+        <span className="grid">
+          <span className="col-start-1 row-start-1 justify-self-center group-hover:invisible">
+            Following
+          </span>
+          <span className="col-start-1 row-start-1 justify-self-center invisible group-hover:visible">
+            Unfollow
+          </span>
+        </span>
+      ) : (
+        "Follow"
+      )}
     </Button>
   )
 }
