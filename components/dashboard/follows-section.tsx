@@ -1,6 +1,7 @@
 "use client"
 
 import { useRouter } from "next/navigation"
+import { useUser } from "@clerk/nextjs"
 import { BookOpen, Library } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
@@ -22,6 +23,7 @@ function FollowsTypeBadge({ type }: { type: "deck" | "collection" }) {
 
 export function FollowsSection() {
   const router = useRouter()
+  const { user } = useUser()
   const { data } = useFollowsQuery()
 
   if (!data) return null
@@ -46,7 +48,11 @@ export function FollowsSection() {
           <DeckCard
             key={deck.id}
             deck={deck}
-            href={`/decks/${deck.id}?from=${encodeURIComponent("/dashboard")}`}
+            href={
+              deck.creatorId === user?.id
+                ? `/decks/${deck.id}?from=${encodeURIComponent("/dashboard")}`
+                : `/explore/decks/${deck.id}`
+            }
             languageNames={{
               source: languagesById[deck.sourceLanguageId]?.name,
               target: languagesById[deck.targetLanguageId]?.name,
