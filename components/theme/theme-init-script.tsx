@@ -31,6 +31,10 @@ export function ThemeInitScript({ initialTheme }: ThemeInitScriptProps) {
 })();
 `
   return (
-    <script dangerouslySetInnerHTML={{ __html: script }} />
+    <script
+      type={typeof window === "undefined" ? "text/javascript" : "text/plain"}
+      suppressHydrationWarning
+      dangerouslySetInnerHTML={{ __html: script }}
+    />
   )
 }

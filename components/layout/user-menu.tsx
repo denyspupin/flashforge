@@ -92,7 +92,11 @@ export function UserMenu({
     return (
       <div
         aria-hidden
-        className={cn("h-8 w-8 animate-pulse rounded-full bg-ink/10", className)}
+        className={cn(
+          "animate-pulse rounded-full bg-ink/10",
+          presentation === "row" ? "h-7 w-7" : "h-8 w-8",
+          className,
+        )}
       />
     )
   }
@@ -119,7 +123,7 @@ export function UserMenu({
               type="button"
               aria-label="Open user menu"
               className={cn(
-                "flex w-full items-center gap-3 rounded-xl px-2 py-2 text-left transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
+                "flex w-full items-center gap-3 rounded-xl px-3 py-1 text-left transition-colors hover:bg-ink/5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
                 className,
               )}
             />
@@ -135,14 +139,19 @@ export function UserMenu({
           )
         }
       >
-        <span className="relative flex h-8 w-8 shrink-0 items-center justify-center overflow-hidden rounded-full">
+        <span
+          className={cn(
+            "relative flex shrink-0 items-center justify-center overflow-hidden rounded-full",
+            presentation === "row" ? "h-7 w-7" : "h-8 w-8",
+          )}
+        >
           {avatarUrl ? (
             <Image
               src={avatarUrl}
               alt=""
               aria-hidden
-              width={32}
-              height={32}
+              width={presentation === "row" ? 28 : 32}
+              height={presentation === "row" ? 28 : 32}
               unoptimized
               className="h-full w-full object-cover"
             />

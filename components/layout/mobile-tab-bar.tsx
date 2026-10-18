@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { usePathname } from "next/navigation"
-import { Compass, Layers, LayoutDashboard, Library, Menu } from "lucide-react"
+import { ChevronsUp, Compass, Layers, LayoutDashboard, Library } from "lucide-react"
 
 import { MobileUserFooterWithAdmin } from "@/components/layout/mobile-user-footer-with-admin"
 import { MobileNav } from "@/components/layout/mobile-nav"
@@ -78,7 +78,7 @@ export function MobileTabBar() {
               aria-current={menuActive ? "page" : undefined}
               className={tabClass(menuActive)}
             >
-              <Menu
+              <ChevronsUp
                 className={cn("h-6 w-6", menuActive && "text-ember")}
                 strokeWidth={menuActive ? 2 : 1.75}
               />
