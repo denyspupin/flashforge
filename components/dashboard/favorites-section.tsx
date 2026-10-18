@@ -1,0 +1,90 @@
+"use client"
+
+import Link from "next/link"
+import { useRouter } from "next/navigation"
+
+import { DeckCard } from "@/components/deck/deck-card"
+import { CollectionCard } from "@/components/collection/collection-card"
+import {
+  FavoriteToggleButton,
+} from "@/components/favorites/favorite-toggle-button"
+import { useFavoritesQuery } from "@/hooks"
+
+export function FavoritesSection() {
+  const router = useRouter()
+  const { data } = useFavoritesQuery()
+
+  if (!data) return null
+  const { favoriteDecks, favoriteCollections, languagesById } = data
+  if (favoriteDecks.length === 0 && favoriteCollections.length === 0) {
+    return null
+  }
+
+  const gridClassName =
+    "grid grid-cols-1 gap-4 [contain:layout] sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]"
+
+  return (
+    <div className="space-y-3">
+      <div className="flex items-center justify-between">
+        <h2 className="text-lg font-semibold tracking-tight">Favorites</h2>
+        <Link
+          href="/explore"
+          className="text-muted-foreground text-sm hover:text-foreground"
+        >
+          Discover more →
+        </Link>
+      </div>
+      <div className={gridClassName}>
+        {favoriteDecks.map((deck) => (
+          <DeckCard
+            key={deck.id}
+            deck={deck}
+            href={`/decks/${deck.id}?from=${encodeURIComponent("/dashboard")}`}
+            languageNames={{
+              source: languagesById[deck.sourceLanguageId]?.name,
+              target: languagesById[deck.targetLanguageId]?.name,
+              sourceFlag: languagesById[deck.sourceLanguageId]?.flag,
+              targetFlag: languagesById[deck.targetLanguageId]?.flag,
+            }}
+            badges={
+              <>
+                <DeckCard.CuratedBadge />
+                <DeckCard.TopicBadges topics={deck.topics} />
+              </>
+            }
+            footerLeft={
+              <span>
+                {deck.cardCount} {deck.cardCount === 1 ? "card" : "cards"}
+              </span>
+            }
+            onStudy={(deckId) =>
+              router.push(
+                `/study?deckId=${deckId}&from=${encodeURIComponent("/dashboard")}`
+              )
+            }
+            actions={<FavoriteToggleButton target={{ deckId: deck.id }} />}
+          />
+        ))}
+        {favoriteCollections.map((collection) => (
+          <CollectionCard
+            key={collection.id}
+            collection={collection}
+            href={`/collections/${collection.id}?from=${encodeURIComponent("/dashboard")}`}
+            languageNames={{
+              source: languagesById[collection.sourceLanguageId]?.name,
+              target: languagesById[collection.targetLanguageId]?.name,
+              sourceFlag: languagesById[collection.sourceLanguageId]?.flag,
+              targetFlag: languagesById[collection.targetLanguageId]?.flag,
+            }}
+            actions={
+              <FavoriteToggleButton
+                target={{ collectionId: collection.id }}
+                className="text-ink/60 hover:text-ink"
+              />
+            }
+          />
+        ))}
+      </div>
+    </div>
+  )
+}

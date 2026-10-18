@@ -7,6 +7,7 @@ import { BookOpen, Flame, Plus, Star } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { ContinueStudyingCard } from "@/components/dashboard/continue-studying-card"
 import { DashboardSkeleton } from "@/components/dashboard/dashboard-skeleton"
+import { FavoritesSection } from "@/components/dashboard/favorites-section"
 import { RecentDeckCard } from "@/components/dashboard/recent-deck-card"
 import { queryKeys } from "@/hooks"
 import type { DashboardData } from "@/lib/queries/dashboard"
@@ -155,6 +156,8 @@ export function DashboardView() {
           </div>
         </div>
       ) : null}
+
+      <FavoritesSection />
 
       {recentDecks.length > 0 ? (
         <div className="space-y-3">

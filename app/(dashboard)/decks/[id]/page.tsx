@@ -47,6 +47,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { Badge } from "@/components/ui/badge"
 import { DeckHistoryPanel } from "@/components/history/deck-history-panel"
 import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
+import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
 import { queryKeys } from "@/hooks"
 
 interface Card {
@@ -363,16 +364,22 @@ export default function DeckDetailPage() {
             )}
           </div>
           {!editingDeck && (
-            <DeckActionsMenu
-              deck={{
-                ...deck,
-                cardCount: deck.cards?.length ?? 0,
-              }}
-              onEdit={onEditDeck}
-              onTogglePublish={onTogglePublish}
-              onDelete={onDeleteDeck}
-              triggerClassName="sm:h-9 sm:w-9"
-            />
+            <>
+              <FavoriteToggleButton
+                target={{ deckId }}
+                className="sm:h-9 sm:w-9"
+              />
+              <DeckActionsMenu
+                deck={{
+                  ...deck,
+                  cardCount: deck.cards?.length ?? 0,
+                }}
+                onEdit={onEditDeck}
+                onTogglePublish={onTogglePublish}
+                onDelete={onDeleteDeck}
+                triggerClassName="sm:h-9 sm:w-9"
+              />
+            </>
           )}
         </div>
 
