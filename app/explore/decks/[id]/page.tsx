@@ -2,13 +2,14 @@
 
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query"
 import Link from "next/link"
-import { useParams, useRouter } from "next/navigation"
+import { useParams, useRouter, useSearchParams } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
 import {
   ArrowLeft,
   Award,
   Globe,
+  Lock,
   BookOpen,
   Copy,
   Play,
@@ -32,7 +33,7 @@ interface PublicDeck {
   id: string
   title: string
   description: string | null
-  visibility: "public"
+  visibility: "private" | "public"
   creatorId: string
   creatorName: string
   cards: PublicCard[]
@@ -44,8 +45,14 @@ interface PublicDeck {
   topics: { id: string; name: string; slug: string }[]
 }
 
-async function fetchPublicDeck(id: string): Promise<{ data: PublicDeck }> {
-  const res = await fetch(`/api/v1/community/decks/${id}`)
+async function fetchPublicDeck(
+  id: string,
+  share: string | null
+): Promise<{ data: PublicDeck }> {
+  const url = share
+    ? `/api/v1/community/decks/${id}?share=${encodeURIComponent(share)}`
+    : `/api/v1/community/decks/${id}`
+  const res = await fetch(url)
   if (!res.ok) throw new Error("Failed to fetch deck")
   return res.json()
 }
@@ -57,8 +64,14 @@ async function fetchMe(): Promise<{ data: { id: string } | null }> {
   return res.json()
 }
 
-async function forkDeck(id: string): Promise<{ data: { id: string } }> {
-  const res = await fetch(`/api/v1/decks/${id}/fork`, { method: "POST" })
+async function forkDeck(
+  id: string,
+  share: string | null
+): Promise<{ data: { id: string } }> {
+  const url = share
+    ? `/api/v1/decks/${id}/fork?share=${encodeURIComponent(share)}`
+    : `/api/v1/decks/${id}/fork`
+  const res = await fetch(url, { method: "POST" })
   if (!res.ok) {
     const body = await res.json().catch(() => null)
     const message = body?.error?.message ?? "Couldn’t fork this deck"
@@ -68,12 +81,13 @@ async function forkDeck(id: string): Promise<{ data: { id: string } }> {
 }
 
 async function startStudy(
-  deckId: string
+  deckId: string,
+  share: string | null
 ): Promise<{ data: { session: { id: string } } }> {
   const res = await fetch("/api/v1/study", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ deck_id: deckId }),
+    body: JSON.stringify(share ? { deck_id: deckId, share } : { deck_id: deckId }),
   })
   if (!res.ok) {
     const body = await res.json().catch(() => null)
@@ -87,15 +101,17 @@ export default function PublicDeckPage() {
   const router = useRouter()
   const queryClient = useQueryClient()
   const params = useParams()
+  const searchParams = useSearchParams()
   const { isSignedIn, isLoaded } = useUser()
   const deckId = params.id as string
+  const share = searchParams.get("share")
   const [actionError, setActionError] = useState<string | null>(null)
   const [pendingAction, setPendingAction] = useState<"fork" | "study" | null>(null)
   const [, startNavigate] = useTransition()
 
   const { data, isLoading } = useQuery({
-    queryKey: queryKeys.publicDeck(deckId),
-    queryFn: () => fetchPublicDeck(deckId),
+    queryKey: queryKeys.publicDeck(deckId, share),
+    queryFn: () => fetchPublicDeck(deckId, share),
   })
 
   const meQuery = useQuery({
@@ -112,7 +128,7 @@ export default function PublicDeckPage() {
   )
 
   const forkMutation = useMutation({
-    mutationFn: () => forkDeck(deckId),
+    mutationFn: () => forkDeck(deckId, share),
     onSuccess: (result) => {
       queryClient.invalidateQueries({ queryKey: queryKeys.decks() })
       queryClient.invalidateQueries({ queryKey: ["community-decks"] })
@@ -126,7 +142,7 @@ export default function PublicDeckPage() {
   })
 
   const studyMutation = useMutation({
-    mutationFn: () => startStudy(deckId),
+    mutationFn: () => startStudy(deckId, share),
     onSuccess: (result) => {
       startNavigate(() =>
         router.push(
@@ -210,9 +226,18 @@ export default function PublicDeckPage() {
               <FollowToggleButton target={{ deckId }} />
             </>
           )}
-          <Badge variant="default">
-            <Globe className="h-3 w-3" />
-            Public
+          <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
+            {deck.visibility === "public" ? (
+              <>
+                <Globe className="h-3 w-3" />
+                Public
+              </>
+            ) : (
+              <>
+                <Lock className="h-3 w-3" />
+                Private
+              </>
+            )}
           </Badge>
           {deck.isCurated && (
             <Badge variant="highlight">
@@ -289,7 +314,7 @@ export default function PublicDeckPage() {
         ) : (
           <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
             <Link
-              href={`/explore/decks/${deck.id}/study`}
+              href={`/explore/decks/${deck.id}/study${share ? `?share=${encodeURIComponent(share)}` : ""}`}
               className="w-full sm:w-auto"
             >
               <Button
@@ -302,7 +327,7 @@ export default function PublicDeckPage() {
             </Link>
             <Link
               href={`/login?redirect_url=${encodeURIComponent(
-                `/explore/decks/${deck.id}/study`,
+                `/explore/decks/${deck.id}/study${share ? `?share=${encodeURIComponent(share)}` : ""}`,
               )}`}
               className="w-full sm:w-auto"
             >

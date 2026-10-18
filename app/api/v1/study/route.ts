@@ -10,6 +10,7 @@ export const dynamic = "force-dynamic"
 
 const startSchema = z.object({
   deck_id: z.string().uuid(),
+  share: z.string().max(64).optional(),
 })
 
 export async function POST(request: Request) {
@@ -67,13 +68,16 @@ export async function POST(request: Request) {
   const deck = deckRows[0]
   const isOwner = deck.creatorId === user.id
   const isPublic = deck.visibility === "public"
+  const isShared = deck.shareToken !== null && deck.shareToken === parsed.data.share
 
-  if (!isOwner && !isPublic) {
+  if (!isOwner && !isPublic && !isShared) {
     return NextResponse.json(
       errorResponse("Deck not found", "NOT_FOUND"),
       { status: 404 }
     )
   }
+
+  const { shareToken: _shareToken, ...deckData } = deck
 
   let session = existing[0]
 
@@ -93,7 +97,7 @@ export async function POST(request: Request) {
   return NextResponse.json(
     successResponse({
       session,
-      deck,
+      deck: deckData,
       cards: deckCards,
     })
   )

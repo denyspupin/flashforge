@@ -1,11 +1,12 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
 import { decks, deckTopics, cards, notifications } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, or } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
 import { getActiveLanguageIds } from "@/lib/languages/valid"
 import { uniqueSlug } from "@/lib/slug"
+import { isValidShareToken } from "@/lib/share-token"
 
 export const dynamic = "force-dynamic"
 
@@ -23,10 +24,21 @@ export async function POST(
     )
   }
 
+  const share = new URL(request.url).searchParams.get("share")
+  const shareToken = isValidShareToken(share) ? share : undefined
+
   const originalDeck = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.visibility, "public")))
+    .where(
+      and(
+        eq(decks.id, id),
+        or(
+          eq(decks.visibility, "public"),
+          shareToken ? eq(decks.shareToken, shareToken) : undefined
+        )
+      )
+    )
 
   if (!originalDeck.length) {
     return NextResponse.json(

@@ -1,30 +1,46 @@
 import { notFound, redirect } from "next/navigation"
 import { auth } from "@clerk/nextjs/server"
-import { asc, and, eq, inArray } from "drizzle-orm"
+import { asc, and, eq, inArray, or } from "drizzle-orm"
 
 import { db } from "@/lib/db/client"
 import { cards, decks, languages } from "@/lib/db/schema"
 import { getLanguageFlag } from "@/lib/languages/flags"
+import { isValidShareToken } from "@/lib/share-token"
 import { GuestStudyPlayer } from "@/components/study"
 
 export const dynamic = "force-dynamic"
 
 export default async function GuestStudyPage({
   params,
+  searchParams,
 }: {
   params: Promise<{ id: string }>
+  searchParams: Promise<{ share?: string }>
 }) {
   const { id } = await params
+  const { share } = await searchParams
 
   const { userId } = await auth()
   if (userId) {
-    redirect(`/explore/decks/${id}`)
+    redirect(
+      share && isValidShareToken(share)
+        ? `/explore/decks/${id}?share=${encodeURIComponent(share)}`
+        : `/explore/decks/${id}`
+    )
   }
 
   const deckRows = await db
     .select()
     .from(decks)
-    .where(and(eq(decks.id, id), eq(decks.visibility, "public")))
+    .where(
+      and(
+        eq(decks.id, id),
+        or(
+          eq(decks.visibility, "public"),
+          isValidShareToken(share) ? eq(decks.shareToken, share) : undefined
+        )
+      )
+    )
 
   if (!deckRows.length) {
     notFound()

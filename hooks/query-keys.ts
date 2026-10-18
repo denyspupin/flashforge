@@ -13,9 +13,13 @@ export const queryKeys = {
   favorites: () => ["favorites"] as const,
   follows: () => ["follows"] as const,
   communityDecks: (q?: string) => ["community-decks", q ?? ""] as const,
-  publicDeck: (id: string) => ["public-deck", id] as const,
+  publicDeck: (id: string, share?: string | null) =>
+    share ? (["public-deck", id, share] as const) : (["public-deck", id] as const),
   communityCollections: (q?: string) => ["community-collections", q ?? ""] as const,
-  publicCollection: (id: string) => ["public-collection", id] as const,
+  publicCollection: (id: string, share?: string | null) =>
+    share
+      ? (["public-collection", id, share] as const)
+      : (["public-collection", id] as const),
   studySession: (id: string) => ["study", id] as const,
   studyHistory: (filters?: StudyHistoryFilters) =>
     ["study", "history", filters ?? {}] as const,

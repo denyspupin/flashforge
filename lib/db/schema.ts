@@ -99,6 +99,7 @@ export const decks = pgTable(
       .notNull(),
     isCurated: boolean("is_curated").default(false).notNull(),
     forkedFromDeckId: uuid("forked_from_deck_id"),
+    shareToken: varchar("share_token", { length: 32 }).unique(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()
@@ -236,6 +237,7 @@ export const collections = pgTable(
       .notNull(),
     isCurated: boolean("is_curated").default(false).notNull(),
     forkedFromCollectionId: uuid("forked_from_collection_id"),
+    shareToken: varchar("share_token", { length: 32 }).unique(),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
       .defaultNow()

@@ -47,6 +47,7 @@ export async function GET() {
       creatorId: collections.creatorId,
       isCurated: collections.isCurated,
       forkedFromCollectionId: collections.forkedFromCollectionId,
+      shareToken: collections.shareToken,
       sourceLanguageId: collections.sourceLanguageId,
       targetLanguageId: collections.targetLanguageId,
       createdAt: collections.createdAt,
