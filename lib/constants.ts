@@ -6,6 +6,8 @@ export const XP_VALUES = {
   STREAK_BONUS_MULTIPLIER: 0.1,
 } as const
 
+export const MAX_SESSION_DURATION_MS = 6 * 60 * 60 * 1000
+
 export const STREAK_MULTIPLIERS = [
   { days: 0, multiplier: 1 },
   { days: 3, multiplier: 1.5 },

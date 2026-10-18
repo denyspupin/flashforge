@@ -18,6 +18,7 @@ type SessionData = {
   session: {
     id: string
     status: "active" | "completed" | "abandoned"
+    durationMs: number
   }
   deck: {
     id: string
@@ -122,6 +123,7 @@ export default function StudySessionPage() {
       deck={deck}
       cards={cards}
       initialStreak={streak}
+      initialDurationMs={session.durationMs}
       returnHref={returnHref}
     />
   )

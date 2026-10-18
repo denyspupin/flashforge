@@ -1,0 +1,1 @@
+ALTER TABLE "study_sessions" ADD COLUMN "duration_ms" integer DEFAULT 0 NOT NULL;

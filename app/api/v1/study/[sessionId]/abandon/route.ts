@@ -1,11 +1,17 @@
 import { NextResponse } from "next/server"
 import { db } from "@/lib/db/client"
 import { studySessions } from "@/lib/db/schema"
-import { eq, and } from "drizzle-orm"
+import { eq, and, sql } from "drizzle-orm"
 import { successResponse, errorResponse } from "@/lib/api/response"
 import { requireCurrentUser } from "@/lib/auth/user"
+import { MAX_SESSION_DURATION_MS } from "@/lib/constants"
+import { z } from "zod"
 
 export const dynamic = "force-dynamic"
+
+const abandonSchema = z.object({
+  durationMs: z.number().int().min(0).max(MAX_SESSION_DURATION_MS).optional(),
+})
 
 export async function POST(
   request: Request,
@@ -39,10 +45,22 @@ export async function POST(
     )
   }
 
+  const parsed = abandonSchema.safeParse(
+    await request.json().catch(() => ({}))
+  )
+
+  if (!parsed.success) {
+    return NextResponse.json(
+      errorResponse("Invalid request body", "VALIDATION_ERROR"),
+      { status: 400 }
+    )
+  }
+
   const [updated] = await db
     .update(studySessions)
     .set({
       status: "abandoned",
+      durationMs: sql`greatest(${studySessions.durationMs}, ${parsed.data.durationMs ?? 0})`,
       updatedAt: new Date(),
     })
     .where(eq(studySessions.id, sessionId))

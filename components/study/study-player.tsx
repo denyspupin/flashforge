@@ -30,17 +30,19 @@ type StudyPlayerProps = {
   deck: StudyDeckInfo
   cards: StudyCard[]
   initialStreak: number
+  initialDurationMs?: number
   returnHref?: string
 }
 
 async function postComplete(
   sessionId: string,
-  results: { cardId: string; correct: boolean }[]
+  results: { cardId: string; correct: boolean }[],
+  durationMs: number
 ): Promise<{ data: CompleteResponse }> {
   const res = await fetch(`/api/v1/study/${sessionId}/complete`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ results }),
+    body: JSON.stringify({ results, durationMs }),
   })
   if (!res.ok) throw new Error("Failed to complete session")
   return res.json()
@@ -75,12 +77,16 @@ function CompletionRunner({
 }: {
   onReady: (retry: () => void) => void
 }) {
-  const { state, meta } = useStudyContext()
+  const { state, actions, meta } = useStudyContext()
   const { setSummary, setPhase } = useStudySummary<CompleteResponse>()
 
   const mutation = useMutation({
     mutationFn: () =>
-      postComplete(meta.sessionId, selectResults(useStudyStore.getState())),
+      postComplete(
+        meta.sessionId,
+        selectResults(useStudyStore.getState()),
+        actions.getDurationMs()
+      ),
     onSuccess: (res) => {
       setSummary(res.data)
       setPhase("ready")
@@ -245,6 +251,7 @@ export function StudyPlayer({
   deck,
   cards,
   initialStreak,
+  initialDurationMs,
   returnHref = "/decks",
 }: StudyPlayerProps) {
   const exitHref = returnHref
@@ -256,6 +263,7 @@ export function StudyPlayer({
         deck={deck}
         cards={cards}
         initialStreak={initialStreak}
+        initialDurationMs={initialDurationMs}
         exitHref={exitHref}
       >
         <EmptyState />
@@ -269,6 +277,7 @@ export function StudyPlayer({
       deck={deck}
       cards={cards}
       initialStreak={initialStreak}
+      initialDurationMs={initialDurationMs}
       exitHref={exitHref}
     >
       <StudySummaryProvider>
