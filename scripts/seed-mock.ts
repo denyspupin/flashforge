@@ -47,7 +47,7 @@ const MOCK_USERS: Array<{
     key: "you",
     name: "You",
     nativeLang: "en",
-    xp: 1200,
+    xp: 3400,
     streak: 5,
     role: "curator",
     daysAgoStreakUpdate: 0,
@@ -1063,6 +1063,49 @@ const STUDY_SESSIONS: StudySessionSeed[] = [
   },
 ]
 
+// Recent 7-day study history for "you" — concentrates real dashboard-visible
+// activity on days 0-6, while older days feed history, XP coherence, and any
+// future longer-range view. Days 0-6 are covered by the hand-written sessions
+// above.
+const YOU_RECENT_HISTORY: Array<
+  [deckSlug: string, daysAgo: number, cardsReviewed: number, cardsCorrect: number]
+> = [
+  ["restaurant-essentials-de", 7, 14, 11],
+  ["travel-phrases-it", 9, 12, 10],
+  ["pet-vocabulary-pt", 10, 16, 13],
+  ["office-meeting-fr", 12, 10, 8],
+  ["personal-german-notes", 13, 14, 10],
+  ["shopping-for-clothes-it", 15, 12, 9],
+  ["travel-phrases-it", 17, 15, 11],
+  ["pet-vocabulary-pt", 19, 11, 8],
+  ["restaurant-essentials-de", 20, 20, 15],
+  ["shopping-for-clothes-it", 22, 14, 9],
+  ["personal-german-notes", 23, 10, 7],
+  ["office-meeting-fr", 26, 12, 8],
+  ["restaurant-essentials-de", 28, 16, 9],
+  ["travel-phrases-it", 29, 10, 6],
+]
+
+const YOU_RECENT_SESSIONS: StudySessionSeed[] = YOU_RECENT_HISTORY.flatMap(
+  ([deckSlug, startedDaysAgo, cardsReviewed, cardsCorrect]) => [
+    {
+      user: "you" as const,
+      deckSlug,
+      status: "completed" as const,
+      cardsReviewed,
+      cardsCorrect,
+      failedCount: cardsReviewed - cardsCorrect,
+      startedDaysAgo,
+      completedDaysAgo: startedDaysAgo,
+    },
+  ]
+)
+
+const ALL_STUDY_SESSIONS: StudySessionSeed[] = [
+  ...STUDY_SESSIONS,
+  ...YOU_RECENT_SESSIONS,
+]
+
 const USER_ACHIEVEMENTS: Record<MockUserKey, AchievementName[]> = {
   you: ["First Steps", "Perfect Score", "Card Collector", "Topic Explorer"],
   maria: [
@@ -1425,7 +1468,7 @@ async function seedStudySessionsData(
   userIds: Map<MockUserKey, string>,
   deckIdBySlug: Map<string, string>
 ) {
-  const rows = STUDY_SESSIONS.map((s) => {
+  const rows = ALL_STUDY_SESSIONS.map((s) => {
     const userId = userIds.get(s.user)
     const deckId = deckIdBySlug.get(`${MOCK_DECK_SLUG_PREFIX}${s.deckSlug}`)
     if (!userId || !deckId) {
@@ -1437,6 +1480,9 @@ async function seedStudySessionsData(
       s.status === "completed" && s.completedDaysAgo !== undefined
         ? daysAgo(s.completedDaysAgo)
         : null
+
+    // Deterministic ~20-35s per card, so "Time studied" tiles are believable.
+    const secondsPerCard = 20 + (s.startedDaysAgo % 6) * 3
 
     return {
       userId,
@@ -1450,6 +1496,7 @@ async function seedStudySessionsData(
         { length: s.failedCount },
         (_, i) => `placeholder-${i}`
       ),
+      durationMs: s.cardsReviewed * secondsPerCard * 1000,
     }
   })
 
@@ -1572,7 +1619,7 @@ async function main() {
   console.log(`  decks:         ${deckIdBySlug.size}`)
   console.log(`  collections:   ${collectionIdBySlug.size}`)
   console.log(`  achievements:  ${achievementIds.size}`)
-  console.log(`  sessions:      ${STUDY_SESSIONS.length}`)
+  console.log(`  sessions:      ${ALL_STUDY_SESSIONS.length}`)
   console.log(`  notifications: ${NOTIFICATIONS.length}`)
   if (envClerkId) {
     console.log()

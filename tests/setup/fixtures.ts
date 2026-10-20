@@ -165,6 +165,7 @@ export async function seedSession(
     cardsCorrect?: number
     failedCardIds?: string[]
     xpAwarded?: number
+    durationMs?: number
   },
 ): Promise<typeof studySessions.$inferSelect> {
   const [row] = await db
@@ -179,6 +180,7 @@ export async function seedSession(
       cardsCorrect: overrides.cardsCorrect ?? 0,
       failedCardIds: overrides.failedCardIds ?? [],
       xpAwarded: overrides.xpAwarded ?? 0,
+      durationMs: overrides.durationMs ?? 0,
     })
     .returning()
   return row
