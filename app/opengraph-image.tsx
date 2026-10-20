@@ -53,6 +53,8 @@ export default function Image() {
         <div style={{ display: "flex", flexDirection: "column" }}>
           <div
             style={{
+              display: "flex",
+              flexDirection: "column",
               fontSize: 92,
               fontWeight: 500,
               lineHeight: 0.95,
@@ -60,8 +62,7 @@ export default function Image() {
               maxWidth: 1000,
             }}
           >
-            Forge your fluency,
-            <br />
+            <span>Forge your fluency,</span>
             <span style={{ color: "#d97142" }}>one flash at a time.</span>
           </div>
           <div
