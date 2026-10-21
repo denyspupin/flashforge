@@ -88,7 +88,7 @@ export function StudyCardArea() {
   }
 
   return (
-    <div className="relative flex items-center justify-center lg:flex-1 lg:min-h-0">
+    <div className="relative flex items-center justify-center lg:flex-1 lg:min-h-0 lg:pb-8">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current.id}
