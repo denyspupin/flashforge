@@ -50,7 +50,7 @@ export default async function GuestStudyPage({
   const targetLanguage = languageRows.find((l) => l.id === deck.targetLanguageId)
 
   return (
-    <div className="mx-auto w-full max-w-2xl py-4 sm:py-6">
+    <div className="mx-auto w-full max-w-2xl py-4 sm:py-6 [--study-above:96px]">
       <GuestStudyPlayer
         deck={{
           id: deck.id,

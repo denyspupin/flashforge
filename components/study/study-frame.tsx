@@ -13,7 +13,7 @@ import { useStudyContext } from "@/components/study/study-context"
 
 export function StudyFrame({ children }: { children: ReactNode }) {
   return (
-    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 sm:gap-8 lg:max-w-3xl">
+    <div className="mx-auto flex w-full max-w-2xl flex-col gap-6 sm:gap-8 lg:h-[calc(100dvh-3rem-var(--study-above,0px))] lg:gap-5 lg:min-h-[700px] lg:max-w-3xl">
       {children}
     </div>
   )
@@ -88,7 +88,7 @@ export function StudyCardArea() {
   }
 
   return (
-    <div className="relative">
+    <div className="relative flex items-center justify-center lg:flex-1 lg:min-h-0">
       <AnimatePresence mode="wait" initial={false}>
         <motion.div
           key={current.id}
@@ -96,7 +96,7 @@ export function StudyCardArea() {
           animate={{ opacity: 1, y: 0 }}
           exit={{ opacity: 0, y: -12 }}
           transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
-          className="perspective-1000 mx-auto aspect-[5/6] w-full max-w-[420px] sm:max-w-[480px] lg:max-w-[560px]"
+          className="perspective-1000 mx-auto aspect-[5/6] w-full max-w-[420px] sm:max-w-[480px] lg:h-full lg:w-auto lg:max-w-[620px]"
         >
           <FlipCard
             flipped={flipped}
