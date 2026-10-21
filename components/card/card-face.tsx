@@ -16,7 +16,7 @@ export function CardFront({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-card p-6 shadow-[0_40px_80px_-20px_rgba(0,0,0,0.3),0_2px_4px_-1px_rgba(0,0,0,0.1)] sm:p-8",
+        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-card p-6 sm:p-8",
         className,
       )}
     >
@@ -78,7 +78,7 @@ export function CardBack({ data, className, size = "default" }: FaceProps) {
   return (
     <div
       className={cn(
-        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-ink p-6 text-paper shadow-[0_30px_80px_-30px_rgba(0,0,0,0.4)] sm:p-8",
+        "ink-stamp flex h-full w-full flex-col justify-between rounded-[2rem] bg-ink p-6 text-paper sm:p-8",
         className,
       )}
     >
