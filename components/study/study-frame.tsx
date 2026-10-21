@@ -102,6 +102,7 @@ export function StudyCardArea() {
             flipped={flipped}
             onFlip={flip}
             keyboardFlip={false}
+            shadowOpacity={0.22}
             front={<CardFront data={cardData} size="lg" />}
             back={<CardBack data={cardData} size="lg" />}
           />
