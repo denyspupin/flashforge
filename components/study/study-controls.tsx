@@ -27,7 +27,7 @@ export function StudyControls({
         >
           Reveal answer
           <span className="ml-2.5 hidden pointer-fine:inline-flex">
-            <Kbd className="border-paper/20 bg-paper/10 text-paper/85">Space</Kbd>
+            <Kbd className="border-paper/20 bg-paper/10 text-paper/85 dark:border-paper/20 dark:bg-paper/10 dark:text-paper/85">Space</Kbd>
           </span>
         </Button>
       </div>
@@ -46,7 +46,7 @@ export function StudyControls({
         <X className="mr-2 h-4 w-4" strokeWidth={2.5} />
         Missed it
         <span className="ml-2.5 hidden pointer-fine:inline-flex">
-          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">1</Kbd>
+          <Kbd className="border-paper/20 bg-paper/10 text-paper/85 dark:border-paper/20 dark:bg-paper/10 dark:text-paper/85">1</Kbd>
         </span>
       </Button>
       <Button
@@ -57,7 +57,7 @@ export function StudyControls({
         <Check className="mr-2 h-4 w-4" strokeWidth={2.5} />
         {nextLabel}
         <span className="ml-2.5 hidden pointer-fine:inline-flex">
-          <Kbd className="border-paper/20 bg-paper/10 text-paper/85">2</Kbd>
+          <Kbd className="border-paper/20 bg-paper/10 text-paper/85 dark:border-paper/20 dark:bg-paper/10 dark:text-paper/85">2</Kbd>
         </span>
       </Button>
     </div>
