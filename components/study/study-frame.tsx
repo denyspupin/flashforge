@@ -101,9 +101,10 @@ export function StudyCardArea() {
           <FlipCard
             flipped={flipped}
             onFlip={flip}
+            keyboardFlip={false}
+            shadow={false}
             front={<CardFront data={cardData} size="lg" />}
             back={<CardBack data={cardData} size="lg" />}
-            className="h-full"
           />
         </motion.div>
       </AnimatePresence>
