@@ -68,7 +68,7 @@ describe("mid-session init re-runs (TanStack refetch)", () => {
 
     expect(afterState.phase).toBe("pass1")
     expect(afterState.index).toBe(3)
-    expect(Object.fromEntries(after)).toEqual(Object.fromEntries(before))
+    expect(after).toEqual(before)
   })
 
   it("preserves final results and phase when init re-runs after completion", () => {
