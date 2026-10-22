@@ -120,6 +120,7 @@ export const useStudyStore = create<StudyState>((set, get) => {
     ...initial,
 
     init: (sessionId, cards) => {
+      if (get().sessionId === sessionId) return
       const saved = loadPersisted(sessionId)
       if (saved && saved.cards.length === cards.length) {
         const restoredResults: Record<string, boolean> = Object.fromEntries(
