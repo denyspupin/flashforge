@@ -63,8 +63,7 @@ export const collectionImportPayloadSchema = z.object({
   }),
   decks: z
     .array(collectionImportDeckSchema)
-    .min(1)
-    .max(COLLECTION_EXPORT.MAX_IMPORT_DECKS),
+    .min(1),
 })
 
 export type CollectionImportPayload = z.infer<typeof collectionImportPayloadSchema>

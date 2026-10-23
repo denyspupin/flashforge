@@ -193,7 +193,6 @@ Harness contract:
   - import `flashforge.collection` JSON, new collection mode, all member decks and cards appear
   - import into an existing collection is rejected (collections don't support the `existing` target mode in v1)
   - mismatched language pair → 400
-  - > 20 decks → 400
   - > 2000 cards → 400
 
 ## Out of scope (this phase)

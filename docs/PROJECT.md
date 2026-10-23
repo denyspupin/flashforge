@@ -123,7 +123,7 @@ Three notification types live in the `notification_type` enum: `fork_received`, 
 ### Import / export
 
 - Decks: `GET /api/v1/decks/:id/export` produces a JSON document under the `flashforge.deck` format (v1.0). `POST /api/v1/decks/import` accepts the same shape and either appends to an existing deck (matching language pair) or creates a new one. Capped at 1,000 cards per import.
-- Collections: same idea, capped at 20 decks and 2,000 cards per import (`flashforge.collection` format).
+- Collections: same idea, capped at 2,000 cards per import (`flashforge.collection` format).
 - Foreign language pairs and oversized payloads are rejected with `400 VALIDATION_ERROR`.
 
 ---

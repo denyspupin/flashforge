@@ -120,4 +120,39 @@ describe("collections / import", () => {
       await db.execute(CLEANUP_SQL)
     })
   })
+
+  test("imports more than 20 decks (no deck-count cap)", async () => {
+    await withTx(async (db) => {
+      const user = await seedUser(db, {})
+      await seedLanguage(db, "en")
+      await seedLanguage(db, "es")
+      mockClerk({ clerkId: user.clerkId })
+
+      const payload: CollectionImportPayload = {
+        format: COLLECTION_EXPORT.FORMAT,
+        formatVersion: COLLECTION_EXPORT.FORMAT_VERSION,
+        collection: {
+          title: "Huge Pack",
+          description: null,
+          sourceLanguage: "en",
+          targetLanguage: "es",
+        },
+        decks: Array.from({ length: 25 }, (_, i) => ({
+          title: `Deck ${i + 1}`,
+          description: null,
+          topics: ["general"],
+          cards: [{ front: `f${i}`, back: `b${i}` }],
+        })),
+      }
+
+      const res = await callRoute(importCollection, {
+        method: "POST",
+        body: { payload },
+      })
+      expect(res.status).toBe(200)
+      expect(res.data).toMatchObject({ decksCreated: 25, cardsCreated: 25 })
+
+      await db.execute(CLEANUP_SQL)
+    })
+  })
 })

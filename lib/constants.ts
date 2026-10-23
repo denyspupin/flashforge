@@ -59,7 +59,6 @@ export const COLLECTION_EXPORT = {
   FORMAT: "flashforge.collection" as const,
   FORMAT_VERSION: "1.0" as const,
   GENERATOR: "flashforge" as const,
-  MAX_IMPORT_DECKS: 20,
   MAX_IMPORT_CARDS: 2000,
 } as const
 
