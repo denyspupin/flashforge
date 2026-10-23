@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { ExpandableText } from "@/components/ui/expandable-text"
 import { Badge } from "@/components/ui/badge"
 import { DeckHistoryPanel } from "@/components/history/deck-history-panel"
 import { DeckActionsMenu } from "@/components/deck/deck-actions-menu"
@@ -340,17 +341,50 @@ export default function DeckDetailPage() {
   return (
     <div className="space-y-6">
       <div className="space-y-4">
-        <div className="flex items-center gap-2 sm:gap-3">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => startNavigate(() => router.push(backHref))}
-            className="shrink-0"
-            aria-label="Back"
-          >
-            <ArrowLeft className="h-4 w-4" />
-          </Button>
-          <div className="min-w-0 flex-1">
+        <div className="flex flex-col gap-4">
+          <div className="flex items-center justify-between gap-2">
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => startNavigate(() => router.push(backHref))}
+              className="shrink-0"
+              aria-label="Back"
+            >
+              <ArrowLeft className="h-4 w-4" />
+            </Button>
+            <div className="flex shrink-0 items-center gap-1.5">
+              <Badge
+                variant={deck.visibility === "public" ? "default" : "secondary"}
+              >
+                {deck.visibility === "public" ? (
+                  <Globe className="h-3 w-3" />
+                ) : (
+                  <Lock className="h-3 w-3" />
+                )}
+                {deck.visibility}
+              </Badge>
+              {!editingDeck && (
+                <>
+                  <FavoriteToggleButton
+                    target={{ deckId }}
+                    className="sm:h-9 sm:w-9"
+                  />
+                  <FollowToggleButton target={{ deckId }} />
+                  <DeckActionsMenu
+                    deck={{
+                      ...deck,
+                      cardCount: deck.cards?.length ?? 0,
+                    }}
+                    onEdit={onEditDeck}
+                    onTogglePublish={onTogglePublish}
+                    onDelete={onDeleteDeck}
+                    triggerClassName="sm:h-9 sm:w-9"
+                  />
+                </>
+              )}
+            </div>
+          </div>
+          <div className="min-w-0">
             {editingDeck ? (
               <Input
                 value={deckTitle}
@@ -359,30 +393,11 @@ export default function DeckDetailPage() {
                 className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
               />
             ) : (
-              <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
+              <h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
                 {deck.title}
               </h1>
             )}
           </div>
-          {!editingDeck && (
-            <>
-              <FavoriteToggleButton
-                target={{ deckId }}
-                className="sm:h-9 sm:w-9"
-              />
-              <FollowToggleButton target={{ deckId }} />
-              <DeckActionsMenu
-                deck={{
-                  ...deck,
-                  cardCount: deck.cards?.length ?? 0,
-                }}
-                onEdit={onEditDeck}
-                onTogglePublish={onTogglePublish}
-                onDelete={onDeleteDeck}
-                triggerClassName="sm:h-9 sm:w-9"
-              />
-            </>
-          )}
         </div>
 
         {editingDeck ? (
@@ -422,7 +437,15 @@ export default function DeckDetailPage() {
           </div>
         ) : (
           deck.description && (
-            <p className="text-muted-foreground">{deck.description}</p>
+            <div>
+              <ExpandableText
+                text={deck.description}
+                collapsedClassName="line-clamp-3"
+                className="text-muted-foreground"
+                moreLabel="Show more"
+                lessLabel="Show less"
+              />
+            </div>
           )
         )}
 
@@ -444,14 +467,6 @@ export default function DeckDetailPage() {
               <span>{targetLanguage.name}</span>
             </span>
           )}
-          <Badge variant={deck.visibility === "public" ? "default" : "secondary"}>
-            {deck.visibility === "public" ? (
-              <Globe className="h-3 w-3" />
-            ) : (
-              <Lock className="h-3 w-3" />
-            )}
-            {deck.visibility}
-          </Badge>
         </div>
 
         {actionError && (

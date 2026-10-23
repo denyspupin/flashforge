@@ -16,6 +16,8 @@ Full documentation: `docs/PROJECT.md` · `docs/DEPLOYMENT.md`
 
 **Never run destructive SQL (`DELETE`, `TRUNCATE`, `DROP`, mass `UPDATE`) against the dev database (`flashforge`) unless the user explicitly asks for it in that same message.** All destructive operations during debugging, testing, or exploration must target `flashforge_test` only. The dev DB holds the user's real local data and is not backed up.
 
+**Never seed, insert, or backfill test/placeholder data into the production database (the Neon DB behind `flashforge.denyspupin.dev`), no matter what.** Test data lives in the dev DB or `flashforge_test` only; prod receives data exclusively through the running application.
+
 ## Key Decisions
 
 - **Type-based component organization** (`components/deck/`, `components/card/`, etc.)

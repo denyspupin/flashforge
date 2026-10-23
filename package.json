@@ -30,6 +30,7 @@
     "db:seed:mock": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts",
     "db:seed:mock:reset": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-mock.ts --reset",
     "db:seed:prompts": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-prompts.ts",
+    "db:seed:long-text": "node --env-file=.env.local --experimental-strip-types --disable-warning=ExperimentalWarning --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/seed-long-text.ts",
     "test": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run",
     "test:watch": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs",
     "test:unit": "node --env-file=tests/.env.test node_modules/vitest/vitest.mjs run tests/unit",

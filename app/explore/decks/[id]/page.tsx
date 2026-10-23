@@ -18,6 +18,7 @@ import {
 
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import { ExpandableText } from "@/components/ui/expandable-text"
 import { FavoriteToggleButton } from "@/components/favorites/favorite-toggle-button"
 import { FollowToggleButton } from "@/components/follows/follow-toggle-button"
 import { queryKeys } from "@/hooks"
@@ -185,42 +186,48 @@ export default function PublicDeckPage() {
 
   return (
     <div>
-      <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => startNavigate(() => router.push("/explore"))}
-          className="shrink-0"
-          aria-label="Back to explore"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
-            {deck.title}
-          </h1>
-          {deck.description && (
-            <p className="text-muted-foreground mt-1">{deck.description}</p>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          {isLoaded && isSignedIn && (
-            <>
-              <FavoriteToggleButton target={{ deckId }} />
-              <FollowToggleButton target={{ deckId }} />
-            </>
-          )}
-          <Badge variant="default">
-            <Globe className="h-3 w-3" />
-            Public
-          </Badge>
-          {deck.isCurated && (
-            <Badge variant="highlight">
-              <Award className="h-3 w-3" />
-              Curated
+      <div className="mb-6 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => startNavigate(() => router.push("/explore"))}
+            className="shrink-0"
+            aria-label="Back to explore"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Badge variant="default">
+              <Globe className="h-3 w-3" />
+              Public
             </Badge>
-          )}
+            {deck.isCurated && (
+              <Badge variant="highlight">
+                <Award className="h-3 w-3" />
+                Curated
+              </Badge>
+            )}
+            {isLoaded && isSignedIn && (
+              <>
+                <FavoriteToggleButton target={{ deckId }} />
+                <FollowToggleButton target={{ deckId }} />
+              </>
+            )}
+          </div>
         </div>
+        <h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
+          {deck.title}
+        </h1>
+        {deck.description && (
+          <ExpandableText
+            text={deck.description}
+            collapsedClassName="line-clamp-3"
+            className="text-muted-foreground"
+            moreLabel="Show more"
+            lessLabel="Show less"
+          />
+        )}
       </div>
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
