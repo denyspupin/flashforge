@@ -25,7 +25,7 @@ export const notificationTypeEnum = pgEnum("notification_type", [
   "achievement_unlocked",
   "collection_fork_received",
 ])
-export const roleEnum = pgEnum("role", ["user", "curator", "admin"])
+export const roleEnum = pgEnum("role", ["user", "admin"])
 export const themeEnum = pgEnum("theme", ["light", "dark", "system"])
 
 export const users = pgTable(
@@ -97,7 +97,6 @@ export const decks = pgTable(
     creatorId: uuid("creator_id")
       .references(() => users.id)
       .notNull(),
-    isCurated: boolean("is_curated").default(false).notNull(),
     forkedFromDeckId: uuid("forked_from_deck_id"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })
@@ -235,7 +234,6 @@ export const collections = pgTable(
     targetLanguageId: uuid("target_language_id")
       .references(() => languages.id)
       .notNull(),
-    isCurated: boolean("is_curated").default(false).notNull(),
     forkedFromCollectionId: uuid("forked_from_collection_id"),
     deletedAt: timestamp("deleted_at", { withTimezone: true }),
     createdAt: timestamp("created_at", { withTimezone: true })

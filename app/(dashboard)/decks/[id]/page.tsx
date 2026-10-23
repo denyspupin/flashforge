@@ -72,7 +72,6 @@ interface Deck {
   sourceLanguageId: string
   targetLanguageId: string
   creatorId: string
-  isCurated: boolean
   forkedFromDeckId: string | null
   createdAt: string
   updatedAt: string
@@ -365,11 +364,11 @@ export default function DeckDetailPage() {
               </Badge>
               {!editingDeck && (
                 <>
+                  <FollowToggleButton target={{ deckId }} compact />
                   <FavoriteToggleButton
                     target={{ deckId }}
                     className="sm:h-9 sm:w-9"
                   />
-                  <FollowToggleButton target={{ deckId }} />
                   <DeckActionsMenu
                     deck={{
                       ...deck,

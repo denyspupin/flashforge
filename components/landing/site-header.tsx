@@ -1,7 +1,6 @@
 import Link from "next/link"
 import type { ReactNode } from "react"
 import {
-  Bell,
   Compass,
   Library,
   LayoutDashboard,
@@ -40,11 +39,6 @@ const DASHBOARD_NAV_ITEMS: NavItem[] = [
     href: "/explore",
     label: "Explore",
     icon: <Compass className="h-4 w-4" strokeWidth={1.75} />,
-  },
-  {
-    href: "/notifications",
-    label: "Notifications",
-    icon: <Bell className="h-4 w-4" strokeWidth={1.75} />,
   },
 ]
 

@@ -76,13 +76,12 @@ Everything else requires a Clerk session.
 - Each deck specifies a **language pair** (`source` → `target`) and any number of topics.
 - Cards inherit the deck's language pair — there is no per-card language override.
 - Visibility is `private` (default) or `public`. Public decks appear in `/explore` and can be forked by any authenticated user.
-- Decks can be marked `is_curated` by admins; curated decks are highlighted in the community feed.
 - `forked_from_deck_id` records lineage; the UI does not surface the source.
 
 ### Collections
 
 - A collection is a **thematically grouped bundle of decks** that share a language pair.
-- The collection has its own visibility, slug, and (optional) `is_curated` flag.
+- The collection has its own visibility and slug.
 - Forking a collection creates a new private collection with copies of every member deck.
 - A user who forks a collection sends a `collection_fork_received` notification to the original author.
 
@@ -106,7 +105,7 @@ Three notification types live in the `notification_type` enum: `fork_received`, 
 
 ### Roles, bans, and soft deletes
 
-- The `role` enum is `user | curator | admin`. Roles gate admin routes (collections, decks, languages, topics, prompts, users, stats) and admin-only mutations.
+- The `role` enum is `user | admin`. Roles gate admin routes (collections, decks, languages, topics, prompts, users, stats) and admin-only mutations.
 - `is_banned` hides a user's content from public surfaces without deleting data.
 - Most content tables (`users`, `decks`, `cards`, `languages`, `topics`, `collections`, `prompt_templates`) have a `deleted_at` column. Soft-delete is preferred over hard delete so user-generated content can be recovered. The admin tools support a "restore" route per resource.
 
@@ -141,7 +140,7 @@ users
 ├── native_language_id  → languages.id
 ├── xp, streak
 ├── streak_updated_at
-├── role                user | curator | admin
+├── role                user | admin
 ├── theme               light | dark | system
 ├── is_banned
 ├── deleted_at
@@ -164,7 +163,6 @@ decks
 ├── source_language_id  → languages.id
 ├── target_language_id  → languages.id
 ├── creator_id          → users.id
-├── is_curated
 ├── forked_from_deck_id → decks.id (set null on delete)
 ├── deleted_at
 ├── created_at, updated_at
@@ -216,7 +214,6 @@ collections
 ├── visibility        private | public
 ├── creator_id        → users.id
 ├── source_language_id, target_language_id
-├── is_curated
 ├── forked_from_collection_id → collections.id (set null on delete)
 ├── deleted_at
 ├── created_at, updated_at

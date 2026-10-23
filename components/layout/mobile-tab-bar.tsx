@@ -21,7 +21,7 @@ const TABS = [
   { href: "/explore", label: "Explore", icon: Compass },
 ]
 
-const MORE_ROUTES = ["/notifications", "/history", "/profile", "/admin"]
+const MORE_ROUTES = ["/history", "/profile", "/admin"]
 
 function matches(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)

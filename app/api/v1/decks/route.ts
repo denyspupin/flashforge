@@ -39,7 +39,6 @@ export async function GET() {
       sourceLanguageId: decks.sourceLanguageId,
       targetLanguageId: decks.targetLanguageId,
       creatorId: decks.creatorId,
-      isCurated: decks.isCurated,
       forkedFromDeckId: decks.forkedFromDeckId,
       createdAt: decks.createdAt,
       updatedAt: decks.updatedAt,

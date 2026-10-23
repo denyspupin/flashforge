@@ -100,11 +100,6 @@ export function ProfileView() {
                   <Shield className="h-3 w-3" />
                   Admin
                 </Badge>
-              ) : dbUser.role === "curator" ? (
-                <Badge variant="highlight">
-                  <Award className="h-3 w-3" />
-                  Curator
-                </Badge>
               ) : null}
               {nativeLanguage ? (
                 <Badge variant="outline" className="font-normal">

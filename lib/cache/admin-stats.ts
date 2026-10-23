@@ -26,7 +26,6 @@ export type AdminStats = {
     decks: number
     publicDecks: number
     privateDecks: number
-    curatedDecks: number
     cards: number
     collections: number
   }
@@ -62,7 +61,6 @@ async function loadAdminStatsFresh(): Promise<AdminStats> {
     deckTotalsRow,
     publicDecksRow,
     privateDecksRow,
-    curatedDecksRow,
     cardTotalsRow,
     collectionsRow,
     sessions7dRow,
@@ -96,10 +94,6 @@ async function loadAdminStatsFresh(): Promise<AdminStats> {
       .where(
         and(eq(decks.visibility, "private"), isNull(decks.deletedAt))
       ),
-    db
-      .select({ count: count() })
-      .from(decks)
-      .where(and(eq(decks.isCurated, true), isNull(decks.deletedAt))),
     db
       .select({ count: count() })
       .from(cards)
@@ -188,7 +182,6 @@ async function loadAdminStatsFresh(): Promise<AdminStats> {
       decks: deckTotals?.total ?? 0,
       publicDecks: publicDecksRow[0]?.count ?? 0,
       privateDecks: privateDecksRow[0]?.count ?? 0,
-      curatedDecks: curatedDecksRow[0]?.count ?? 0,
       cards: cardTotalsRow[0]?.count ?? 0,
       collections: collectionsRow[0]?.count ?? 0,
     },

@@ -4,7 +4,7 @@ import { useQuery, useMutation } from "@tanstack/react-query"
 import { useRouter } from "next/navigation"
 import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
-import { Copy, Globe, Layers, Sparkles } from "lucide-react"
+import { Copy, Globe, Layers } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
@@ -161,17 +161,13 @@ export default function ExplorePage() {
     [collectionsQuery.data]
   )
 
-  const curatedDecks = decks.filter((deck) => deck.isCurated)
   const deckGroups = useMemo(
-    () => groupByLanguagePair(decks.filter((deck) => !deck.isCurated)),
+    () => groupByLanguagePair(decks),
     [decks]
-  )
-  const curatedCollections = collections.filter(
-    (collection) => collection.isCurated
   )
   const collectionGroups = useMemo(
     () =>
-      groupByLanguagePair(collections.filter((c) => !c.isCurated)),
+      groupByLanguagePair(collections),
     [collections]
   )
 
@@ -184,7 +180,6 @@ export default function ExplorePage() {
         href={`/explore/decks/${deck.id}`}
         badges={
           <>
-            {deck.isCurated ? <DeckCard.CuratedBadge /> : null}
             {deck.forkedFromDeckId ? <DeckCard.ForkedBadge /> : null}
             <DeckCard.TopicBadges topics={deck.topics} />
           </>
@@ -254,7 +249,6 @@ export default function ExplorePage() {
         }}
         badges={
           <>
-            {collection.isCurated ? <CollectionCard.CuratedBadge /> : null}
             {collection.forkedFromCollectionId ? (
               <CollectionCard.ForkedBadge />
             ) : null}
@@ -360,20 +354,6 @@ export default function ExplorePage() {
             />
           ) : (
             <div className="space-y-10">
-              {curatedDecks.length > 0 ? (
-                <section className="[contain:layout]">
-                  <h2 className="text-ember flex items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Featured
-                    <span className="text-ink/40 ml-1">
-                      · {curatedDecks.length}
-                    </span>
-                  </h2>
-                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
-                    {curatedDecks.map(renderDeckCard)}
-                  </div>
-                </section>
-              ) : null}
               {deckGroups.map((group) => {
                 const source = languagesById[group.items[0].sourceLanguageId]
                 const target = languagesById[group.items[0].targetLanguageId]
@@ -428,20 +408,6 @@ export default function ExplorePage() {
             />
           ) : (
             <div className="space-y-10">
-              {curatedCollections.length > 0 ? (
-                <section className="[contain:layout]">
-                  <h2 className="text-ember flex items-center gap-2 font-mono-tag text-xs font-medium uppercase tracking-widest">
-                    <Sparkles className="h-3.5 w-3.5" />
-                    Featured
-                    <span className="text-ink/40 ml-1">
-                      · {curatedCollections.length}
-                    </span>
-                  </h2>
-                  <div className="mt-3 grid grid-cols-1 gap-4 sm:grid-cols-[repeat(auto-fill,minmax(340px,1fr))]">
-                    {curatedCollections.map(renderCollectionCard)}
-                  </div>
-                </section>
-              ) : null}
               {collectionGroups.map((group) => {
                 const source = languagesById[group.items[0].sourceLanguageId]
                 const target = languagesById[group.items[0].targetLanguageId]

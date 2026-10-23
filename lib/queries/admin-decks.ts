@@ -10,7 +10,6 @@ export type AdminDeckRow = {
   slug: string
   description: string | null
   visibility: "private" | "public"
-  isCurated: boolean
   sourceLanguageId: string
   targetLanguageId: string
   creatorId: string
@@ -44,7 +43,6 @@ export type AdminDeckListResult = {
 export type AdminDeckListFilters = {
   q?: string
   visibility?: "private" | "public"
-  curated?: boolean
   creatorId?: string
   deleted?: boolean
   page?: number
@@ -72,10 +70,6 @@ function buildWhere(filters: AdminDeckListFilters) {
 
   if (filters.visibility) {
     conditions.push(eq(decks.visibility, filters.visibility))
-  }
-
-  if (filters.curated !== undefined) {
-    conditions.push(eq(decks.isCurated, filters.curated))
   }
 
   if (filters.creatorId) {
@@ -107,7 +101,6 @@ export async function listAdminDecks(
         slug: decks.slug,
         description: decks.description,
         visibility: decks.visibility,
-        isCurated: decks.isCurated,
         sourceLanguageId: decks.sourceLanguageId,
         targetLanguageId: decks.targetLanguageId,
         creatorId: decks.creatorId,
@@ -157,7 +150,6 @@ export async function getAdminDeck(id: string): Promise<AdminDeckDetail | null> 
       slug: decks.slug,
       description: decks.description,
       visibility: decks.visibility,
-      isCurated: decks.isCurated,
       sourceLanguageId: decks.sourceLanguageId,
       targetLanguageId: decks.targetLanguageId,
       creatorId: decks.creatorId,

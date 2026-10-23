@@ -7,7 +7,6 @@ import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
 import {
   ArrowLeft,
-  Award,
   Globe,
   BookOpen,
   Copy,
@@ -38,7 +37,6 @@ interface PublicDeck {
   creatorName: string
   cards: PublicCard[]
   cardCount: number
-  isCurated: boolean
   createdAt: string
   sourceLanguage: { id: string; name: string; code: string } | null
   targetLanguage: { id: string; name: string; code: string } | null
@@ -202,16 +200,10 @@ export default function PublicDeckPage() {
               <Globe className="h-3 w-3" />
               Public
             </Badge>
-            {deck.isCurated && (
-              <Badge variant="highlight">
-                <Award className="h-3 w-3" />
-                Curated
-              </Badge>
-            )}
             {isLoaded && isSignedIn && (
               <>
+                <FollowToggleButton target={{ deckId }} compact />
                 <FavoriteToggleButton target={{ deckId }} />
-                <FollowToggleButton target={{ deckId }} />
               </>
             )}
           </div>

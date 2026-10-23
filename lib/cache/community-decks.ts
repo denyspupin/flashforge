@@ -13,7 +13,6 @@ export type CommunityDecksResult = Array<{
   targetLanguageId: string
   creatorId: string
   creatorName: string | null
-  isCurated: boolean
   forkedFromDeckId: string | null
   createdAt: Date
   cardCount: number
@@ -45,7 +44,6 @@ export const getCommunityDecks = unstable_cache(
         targetLanguageId: decks.targetLanguageId,
         creatorId: decks.creatorId,
         creatorName: users.name,
-        isCurated: decks.isCurated,
         forkedFromDeckId: decks.forkedFromDeckId,
         createdAt: decks.createdAt,
         cardCount: sql<number>`(

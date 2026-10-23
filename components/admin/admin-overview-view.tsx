@@ -2,7 +2,6 @@
 
 import { useQuery } from "@tanstack/react-query"
 import {
-  Award,
   BookOpen,
   Flame,
   Layers,
@@ -134,11 +133,6 @@ export function AdminOverviewView() {
             label="Collections"
             value={data.content.collections.toLocaleString()}
             icon={Layers}
-          />
-          <StatTile
-            label="Curated"
-            value={data.content.curatedDecks.toLocaleString()}
-            icon={Award}
           />
           <StatTile
             label="Cards"

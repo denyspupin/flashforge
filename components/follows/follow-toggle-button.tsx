@@ -15,6 +15,7 @@ type FollowTarget = {
 type FollowToggleButtonProps = {
   target: FollowTarget
   className?: string
+  compact?: boolean
 }
 
 function isFollowing(
@@ -35,6 +36,7 @@ function isFollowing(
 export function FollowToggleButton({
   target,
   className,
+  compact = false,
 }: FollowToggleButtonProps) {
   const { data: follows } = useFollowsQuery()
   const toggleMutation = useToggleFollow()
@@ -49,6 +51,8 @@ export function FollowToggleButton({
       disabled={!follows || toggleMutation.isPending}
       className={cn(
         "shrink-0",
+        compact &&
+          "h-6 gap-1 rounded-md px-2 font-mono-tag text-[10px] uppercase tracking-widest sm:h-6 sm:px-2 sm:text-[10px]",
         following && "bg-primary/5 text-primary",
         className
       )}
@@ -57,9 +61,9 @@ export function FollowToggleButton({
       title={following ? undefined : "Follow to keep up with updates"}
     >
       {following ? (
-        <Check className="h-4 w-4" />
+        <Check className={compact ? "size-3" : "h-4 w-4"} />
       ) : (
-        <Plus className="h-4 w-4" />
+        <Plus className={compact ? "size-3" : "h-4 w-4"} />
       )}
       {following ? "Following" : "Follow"}
     </Button>

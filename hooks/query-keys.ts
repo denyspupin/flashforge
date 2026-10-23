@@ -49,7 +49,7 @@ export type AdminPromptFilters = {
 
 export type AdminUserFilters = {
   q?: string
-  role?: "user" | "curator" | "admin"
+  role?: "user" | "admin"
   banned?: boolean
   deleted?: boolean
   page?: number
@@ -59,7 +59,6 @@ export type AdminUserFilters = {
 export type AdminDeckFilters = {
   q?: string
   visibility?: "private" | "public"
-  curated?: boolean
   creatorId?: string
   deleted?: boolean
   page?: number

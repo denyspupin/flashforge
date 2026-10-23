@@ -5,7 +5,6 @@ import Image from "next/image"
 import { useRouter } from "next/navigation"
 import { useClerk, useUser } from "@clerk/nextjs"
 import {
-  Bell,
   History,
   LogOut,
   MoreHorizontal,
@@ -37,7 +36,7 @@ type MeResponse = {
   id: string
   name: string | null
   avatarUrl: string | null
-  role: "user" | "curator" | "admin"
+  role: "user" | "admin"
   theme: "light" | "dark" | "system"
 }
 
@@ -207,11 +206,6 @@ export function UserMenu({
 
         {showQuickLinks ? (
           <>
-            <DropdownMenuItem onClick={() => router.push("/notifications")}>
-              <Bell className="h-4 w-4" />
-              Notifications
-            </DropdownMenuItem>
-
             <DropdownMenuItem onClick={() => router.push("/history")}>
               <History className="h-4 w-4" />
               Study history

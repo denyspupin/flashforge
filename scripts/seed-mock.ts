@@ -40,7 +40,7 @@ const MOCK_USERS: Array<{
   nativeLang: LangCode
   xp: number
   streak: number
-  role: "user" | "curator" | "admin"
+  role: "user" | "admin"
   daysAgoStreakUpdate: number
 }> = [
   {
@@ -49,7 +49,7 @@ const MOCK_USERS: Array<{
     nativeLang: "en",
     xp: 3400,
     streak: 5,
-    role: "curator",
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -58,7 +58,7 @@ const MOCK_USERS: Array<{
     nativeLang: "es",
     xp: 3400,
     streak: 12,
-    role: "curator",
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -67,7 +67,7 @@ const MOCK_USERS: Array<{
     nativeLang: "de",
     xp: 2800,
     streak: 8,
-    role: "curator",
+    role: "user",
     daysAgoStreakUpdate: 0,
   },
   {
@@ -76,7 +76,7 @@ const MOCK_USERS: Array<{
     nativeLang: "fr",
     xp: 1900,
     streak: 4,
-    role: "curator",
+    role: "user",
     daysAgoStreakUpdate: 1,
   },
   {
@@ -185,7 +185,6 @@ type DeckSeed = {
   title: string
   description: string
   visibility: "public" | "private"
-  isCurated: boolean
   creator: MockUserKey
   sourceLang: LangCode
   targetLang: LangCode
@@ -201,7 +200,6 @@ const DECKS: DeckSeed[] = [
     description:
       "Order food, drinks, and pay the bill with confidence in German.",
     visibility: "public",
-    isCurated: true,
     creator: "hans",
     sourceLang: "en",
     targetLang: "de",
@@ -229,7 +227,6 @@ const DECKS: DeckSeed[] = [
     title: "Animals at the Zoo",
     description: "Learn the names of common animals in Spanish.",
     visibility: "public",
-    isCurated: true,
     creator: "maria",
     sourceLang: "en",
     targetLang: "es",
@@ -256,7 +253,6 @@ const DECKS: DeckSeed[] = [
     title: "Around the House",
     description: "Household vocabulary you'll use every single day in French.",
     visibility: "public",
-    isCurated: true,
     creator: "sophie",
     sourceLang: "en",
     targetLang: "fr",
@@ -283,7 +279,6 @@ const DECKS: DeckSeed[] = [
     title: "Travel Phrases",
     description: "Essential Italian phrases for your next trip to Italy.",
     visibility: "public",
-    isCurated: true,
     creator: "you",
     sourceLang: "en",
     targetLang: "it",
@@ -311,7 +306,6 @@ const DECKS: DeckSeed[] = [
     title: "Fruits & Vegetables",
     description: "Stock your kitchen vocabulary in Spanish.",
     visibility: "public",
-    isCurated: true,
     creator: "maria",
     sourceLang: "en",
     targetLang: "es",
@@ -339,7 +333,6 @@ const DECKS: DeckSeed[] = [
     title: "At the Doctor",
     description: "Body parts and symptoms for your German doctor's visit.",
     visibility: "public",
-    isCurated: true,
     creator: "hans",
     sourceLang: "en",
     targetLang: "de",
@@ -366,7 +359,6 @@ const DECKS: DeckSeed[] = [
     title: "Office Meeting",
     description: "Get through your next French work meeting with ease.",
     visibility: "public",
-    isCurated: true,
     creator: "sophie",
     sourceLang: "en",
     targetLang: "fr",
@@ -391,7 +383,6 @@ const DECKS: DeckSeed[] = [
     title: "Daily Greetings",
     description: "Polite hellos, goodbyes, and small talk in German.",
     visibility: "public",
-    isCurated: true,
     creator: "hans",
     sourceLang: "en",
     targetLang: "de",
@@ -414,7 +405,6 @@ const DECKS: DeckSeed[] = [
     title: "Shopping for Clothes",
     description: "Find your size and style in Italian boutiques.",
     visibility: "public",
-    isCurated: true,
     creator: "you",
     sourceLang: "en",
     targetLang: "it",
@@ -440,7 +430,6 @@ const DECKS: DeckSeed[] = [
     title: "Kitchen & Cooking",
     description: "Tools, ingredients, and verbs for cooking in Spanish.",
     visibility: "public",
-    isCurated: true,
     creator: "maria",
     sourceLang: "en",
     targetLang: "es",
@@ -467,7 +456,6 @@ const DECKS: DeckSeed[] = [
     title: "Pet Vocabulary",
     description: "Talk about your beloved pets in Portuguese.",
     visibility: "public",
-    isCurated: false,
     creator: "carlos",
     sourceLang: "en",
     targetLang: "pt",
@@ -492,7 +480,6 @@ const DECKS: DeckSeed[] = [
     title: "Japanese Basics",
     description: "First words and phrases for any Japanese learner.",
     visibility: "public",
-    isCurated: false,
     creator: "yuki",
     sourceLang: "en",
     targetLang: "ja",
@@ -517,7 +504,6 @@ const DECKS: DeckSeed[] = [
     title: "Russian for Tourists",
     description: "Survive your trip to Russia with essential phrases.",
     visibility: "public",
-    isCurated: false,
     creator: "alex",
     sourceLang: "en",
     targetLang: "ru",
@@ -540,7 +526,6 @@ const DECKS: DeckSeed[] = [
     title: "Common Foods",
     description: "Everyday Portuguese foods you'll see on any menu.",
     visibility: "public",
-    isCurated: false,
     creator: "carlos",
     sourceLang: "en",
     targetLang: "pt",
@@ -565,7 +550,6 @@ const DECKS: DeckSeed[] = [
     title: "German Numbers & Colors",
     description: "Count to ten and name every color in the rainbow.",
     visibility: "public",
-    isCurated: false,
     creator: "emma",
     sourceLang: "en",
     targetLang: "de",
@@ -590,7 +574,6 @@ const DECKS: DeckSeed[] = [
     title: "Animals at the Zoo (My Copy)",
     description: "My personal copy to study and customize.",
     visibility: "public",
-    isCurated: false,
     creator: "emma",
     sourceLang: "en",
     targetLang: "es",
@@ -618,7 +601,6 @@ const DECKS: DeckSeed[] = [
     title: "Around the House (My Practice)",
     description: "Yuki's practice version of Sophie's household deck.",
     visibility: "public",
-    isCurated: false,
     creator: "yuki",
     sourceLang: "en",
     targetLang: "fr",
@@ -642,7 +624,6 @@ const DECKS: DeckSeed[] = [
     title: "Personal German Notes",
     description: "My private set of food-related German words I'm studying.",
     visibility: "private",
-    isCurated: false,
     creator: "you",
     sourceLang: "en",
     targetLang: "de",
@@ -671,7 +652,6 @@ const DECKS: DeckSeed[] = [
     title: "Italian Recipes Vocab",
     description: "Words I keep running into while reading Italian recipes.",
     visibility: "private",
-    isCurated: false,
     creator: "you",
     sourceLang: "en",
     targetLang: "it",
@@ -694,7 +674,6 @@ const DECKS: DeckSeed[] = [
     title: "Quick Spanish",
     description: "Phrases for a quick grocery run in Spain.",
     visibility: "private",
-    isCurated: false,
     creator: "you",
     sourceLang: "en",
     targetLang: "es",
@@ -715,7 +694,6 @@ const DECKS: DeckSeed[] = [
     title: "My Russian Study",
     description: "Emma's private Russian travel notes.",
     visibility: "private",
-    isCurated: false,
     creator: "emma",
     sourceLang: "en",
     targetLang: "ru",
@@ -734,7 +712,6 @@ const DECKS: DeckSeed[] = [
     title: "French Notes",
     description: "Alex's private French household vocab list.",
     visibility: "private",
-    isCurated: false,
     creator: "alex",
     sourceLang: "en",
     targetLang: "fr",
@@ -755,7 +732,6 @@ type CollectionSeed = {
   title: string
   description: string
   visibility: "public" | "private"
-  isCurated: boolean
   creator: MockUserKey
   sourceLang: LangCode
   targetLang: LangCode
@@ -769,7 +745,6 @@ const COLLECTIONS: CollectionSeed[] = [
     description:
       "All the German vocabulary you need for a first trip to Berlin.",
     visibility: "public",
-    isCurated: true,
     creator: "hans",
     sourceLang: "en",
     targetLang: "de",
@@ -785,7 +760,6 @@ const COLLECTIONS: CollectionSeed[] = [
     description:
       "Order, shop, and cook your way through Spain with these three decks.",
     visibility: "public",
-    isCurated: true,
     creator: "maria",
     sourceLang: "en",
     targetLang: "es",
@@ -801,7 +775,6 @@ const COLLECTIONS: CollectionSeed[] = [
     description:
       "Travel phrases plus shopping vocabulary for your Italy trip.",
     visibility: "public",
-    isCurated: false,
     creator: "you",
     sourceLang: "en",
     targetLang: "it",
@@ -815,7 +788,6 @@ const COLLECTIONS: CollectionSeed[] = [
     title: "My Private Italian Notes",
     description: "Personal Italian study set I'm working through.",
     visibility: "private",
-    isCurated: false,
     creator: "you",
     sourceLang: "en",
     targetLang: "it",
@@ -1376,7 +1348,6 @@ async function seedDecksAndCards(userIds: Map<MockUserKey, string>) {
         sourceLanguageId,
         targetLanguageId,
         creatorId,
-        isCurated: deck.isCurated,
         forkedFromDeckId: forkedFromDeckId ?? null,
       })
       .returning({ id: decks.id })
@@ -1439,7 +1410,6 @@ async function seedCollectionsAndMembers(
         creatorId,
         sourceLanguageId,
         targetLanguageId,
-        isCurated: coll.isCurated,
       })
       .returning({ id: collections.id })
 

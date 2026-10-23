@@ -22,6 +22,9 @@ const probes: Array<() => string> = [
   () => columnProbe("collections", "is_curated"),
   () => columnProbe("users", "onboarded_at"),
   () => tableProbe("favorite_decks"),
+  () => tableProbe("followed_collections"),
+  () => columnProbe("study_sessions", "duration_ms"),
+  () => columnProbe("decks", "is_curated"),
 ]
 
 function tableProbe(tableName: string) {
@@ -61,7 +64,7 @@ async function main() {
       const probeSql = probes[entry.idx]
       const { rows: probeRows } = await pool.query(probeSql())
       const probePast = probeRows.length > 0
-      const negated = entry.idx === 2
+      const negated = entry.idx === 2 || entry.idx === 12
       const applied = negated ? !probePast : probePast
       const sqlContent = readFileSync(join(MIGRATIONS_DIR, `${entry.tag}.sql`), "utf8")
       const hash = createHash("sha256").update(sqlContent).digest("hex")

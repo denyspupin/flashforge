@@ -20,7 +20,7 @@ export type ProfileData = {
     email: string | null
     avatarUrl: string | null
     nativeLanguageId: string | null
-    role: "user" | "curator" | "admin"
+    role: "user" | "admin"
     theme: "light" | "dark" | "system"
     createdAt: string
     xp: number

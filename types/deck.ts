@@ -16,7 +16,6 @@ export type Deck = {
   targetLanguageId: string
   creatorId: string
   creatorName?: string | null
-  isCurated: boolean
   forkedFromDeckId: string | null
   cardCount: number
   topics?: DeckTopic[]

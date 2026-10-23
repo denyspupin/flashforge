@@ -9,7 +9,7 @@ export type AdminUserRow = {
   clerkId: string
   name: string | null
   avatarUrl: string | null
-  role: "user" | "curator" | "admin"
+  role: "user" | "admin"
   isBanned: boolean
   deletedAt: string | null
   createdAt: string
@@ -34,7 +34,7 @@ export type AdminUserListResult = {
 
 export type AdminUserListFilters = {
   q?: string
-  role?: "user" | "curator" | "admin"
+  role?: "user" | "admin"
   banned?: boolean
   deleted?: boolean
   page?: number

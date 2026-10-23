@@ -46,7 +46,7 @@ Alt text for each screenshot (use the caption as a starting point; keep the alt 
 ## Shipped features (do not include roadmap items here)
 
 - Private and public flashcard decks organised by language pair and topic.
-- Curated collections — group decks by theme and publish them as a single discoverable bundle.
+- Collections — group decks by theme and publish them as a single discoverable bundle.
 - Public discovery and forking for both decks and collections, with `fork_received` and `collection_fork_received` notifications to the original author.
 - Guest study (no account required) with a seamless sign-in upgrade that preserves progress.
 - Resumable study sessions — Zustand state machine persists position to `localStorage`; the server treats an active session as a single, mutable document.
@@ -58,7 +58,7 @@ Alt text for each screenshot (use the caption as a starting point; keep the alt 
 
 ## Engineering focus
 
-- **Authorisation as a first-class concern.** Every API route is gated by `requireCurrentUser` or `requireAdmin`/`requireCuratorOrAdmin`, ownership is checked on every mutation, and the Clerk webhook is the only public mutation entry point — signature-verified with Svix.
+- **Authorisation as a first-class concern.** Every API route is gated by `requireCurrentUser` or `requireAdmin`, ownership is checked on every mutation, and the Clerk webhook is the only public mutation entry point — signature-verified with Svix.
 - **Isolated integration database.** The test suite runs against a separate `flashforge_test` database inside a `BEGIN` / `ROLLBACK` transaction per test, so nothing committed by a test ever touches the dev database.
 - **Migrations and deployment design.** Drizzle is the single source of truth for SQL; migrations are committed to the repo and applied with `pnpm db:migrate`. The deployment runbook in `docs/DEPLOYMENT.md` separates pooled (read/write from Vercel) and direct (DDL from your laptop) Neon endpoints, sets up Cloudflare as DNS-only to avoid the orange-cloud redirect loop, and walks through rollback via Neon Time Travel.
 - **Responsive product UX.** The whole app is keyboard-friendly, theme-aware, and tuned for touch. The branded 404 and 500 pages, `robots.txt`, `sitemap.xml`, and dynamic Open Graph image are all part of the public surface, not an afterthought.

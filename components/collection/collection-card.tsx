@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowRight, Award, Copy, Globe, Layers, Library, Lock } from "lucide-react";
+import { ArrowRight, Copy, Globe, Layers, Library, Lock } from "lucide-react";
 import type { ReactNode } from "react";
 
 import { Badge } from "@/components/ui/badge";
@@ -88,7 +88,7 @@ function CollectionCard({
             </CardDescription>
           </div>
           {actions && (
-            <div className="-mt-1 -mr-1 flex shrink-0 items-center scale-90 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-within:scale-100 focus-within:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100">
+            <div className="-mt-1 -mr-1 flex shrink-0 items-center">
               {actions}
             </div>
           )}
@@ -192,15 +192,6 @@ function VisibilityBadge({
   );
 }
 
-function CuratedBadge() {
-  return (
-    <Badge variant="highlight">
-      <Award className="h-3 w-3" />
-      Curated
-    </Badge>
-  );
-}
-
 function ForkedBadge() {
   return (
     <Badge variant="outline">
@@ -214,7 +205,6 @@ function DefaultCollectionBadges({ collection }: { collection: Collection }) {
   return (
     <>
       <VisibilityBadge visibility={collection.visibility} />
-      {collection.isCurated ? <CuratedBadge /> : null}
       {collection.forkedFromCollectionId ? <ForkedBadge /> : null}
     </>
   );
@@ -224,7 +214,6 @@ type CollectionCardComponent = typeof CollectionCard & {
   Skeleton: typeof CollectionCardSkeleton;
   EmptyState: typeof CollectionCardEmptyState;
   VisibilityBadge: typeof VisibilityBadge;
-  CuratedBadge: typeof CuratedBadge;
   ForkedBadge: typeof ForkedBadge;
   Badges: typeof DefaultCollectionBadges;
 };
@@ -235,7 +224,6 @@ const CollectionCardCompound: CollectionCardComponent = Object.assign(
     Skeleton: CollectionCardSkeleton,
     EmptyState: CollectionCardEmptyState,
     VisibilityBadge,
-    CuratedBadge,
     ForkedBadge,
     Badges: DefaultCollectionBadges,
   },
@@ -243,4 +231,4 @@ const CollectionCardCompound: CollectionCardComponent = Object.assign(
 
 export { CollectionCardCompound as CollectionCard };
 export { CollectionCardSkeleton, CollectionCardEmptyState };
-export { VisibilityBadge, CuratedBadge, ForkedBadge, DefaultCollectionBadges };
+export { VisibilityBadge, ForkedBadge, DefaultCollectionBadges };

@@ -9,7 +9,7 @@ export const dynamic = "force-dynamic"
 
 const querySchema = z.object({
   q: z.string().trim().max(256).optional(),
-  role: z.enum(["user", "curator", "admin"]).optional(),
+  role: z.enum(["user", "admin"]).optional(),
   banned: z
     .union([z.literal("true"), z.literal("false")])
     .optional()

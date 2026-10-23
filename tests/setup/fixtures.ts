@@ -16,7 +16,7 @@ import { DEFAULT_LANGUAGES } from "@/lib/constants"
 type SeedUserOverrides = {
   clerkId?: string
   name?: string | null
-  role?: "user" | "curator" | "admin"
+  role?: "user" | "admin"
   xp?: number
   streak?: number
   streakUpdatedAt?: Date | null
@@ -78,7 +78,6 @@ type SeedDeckOverrides = {
   sourceLanguageId: string
   targetLanguageId: string
   creatorId: string
-  isCurated?: boolean
   forkedFromDeckId?: string | null
 }
 
@@ -103,7 +102,6 @@ export async function seedDeck(
       sourceLanguageId: overrides.sourceLanguageId,
       targetLanguageId: overrides.targetLanguageId,
       creatorId: overrides.creatorId,
-      isCurated: overrides.isCurated ?? false,
       forkedFromDeckId: overrides.forkedFromDeckId ?? null,
     })
     .returning()
@@ -215,7 +213,6 @@ type SeedCollectionOverrides = {
   creatorId: string
   sourceLanguageId: string
   targetLanguageId: string
-  isCurated?: boolean
   forkedFromCollectionId?: string | null
 }
 
@@ -238,7 +235,6 @@ export async function seedCollection(
       creatorId: overrides.creatorId,
       sourceLanguageId: overrides.sourceLanguageId,
       targetLanguageId: overrides.targetLanguageId,
-      isCurated: overrides.isCurated ?? false,
       forkedFromCollectionId: overrides.forkedFromCollectionId ?? null,
     })
     .returning()

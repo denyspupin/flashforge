@@ -1,5 +1,7 @@
 "use client"
 
+import { useState } from "react"
+
 import { Star } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
@@ -38,14 +40,27 @@ export function FavoriteToggleButton({
 }: FavoriteToggleButtonProps) {
   const { data: favorites } = useFavoritesQuery()
   const toggleMutation = useToggleFavorite()
+  const [pending, setPending] = useState<{
+    value: boolean
+    base: boolean
+  } | null>(null)
 
-  const favorited = favorites ? isFavorited(favorites, target) : false
+  const serverFavorited = favorites ? isFavorited(favorites, target) : false
+  const favorited =
+    pending && pending.base === serverFavorited ? pending.value : serverFavorited
+
+  const onToggle = () => {
+    setPending({ value: !favorited, base: serverFavorited })
+    toggleMutation.mutate(target, {
+      onError: () => setPending(null),
+    })
+  }
 
   return (
     <Button
       variant="ghost"
       size="icon"
-      onClick={() => toggleMutation.mutate(target)}
+      onClick={onToggle}
       disabled={!favorites || toggleMutation.isPending}
       className={cn("shrink-0 text-ink/60 hover:text-ink", className)}
       aria-label={favorited ? "Remove from favorites" : "Add to favorites"}

@@ -45,7 +45,6 @@ export async function GET() {
       description: collections.description,
       visibility: collections.visibility,
       creatorId: collections.creatorId,
-      isCurated: collections.isCurated,
       forkedFromCollectionId: collections.forkedFromCollectionId,
       sourceLanguageId: collections.sourceLanguageId,
       targetLanguageId: collections.targetLanguageId,

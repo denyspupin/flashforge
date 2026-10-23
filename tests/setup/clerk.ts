@@ -2,7 +2,7 @@ import { testClerk } from "./global"
 
 export type MockClerkOptions = {
   clerkId: string
-  role?: "user" | "curator" | "admin"
+  role?: "user" | "admin"
   firstName?: string
   lastName?: string
   imageUrl?: string | null

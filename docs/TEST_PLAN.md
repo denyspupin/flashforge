@@ -125,7 +125,7 @@ tests/
 
 Harness contract:
 - `withTx()` opens `BEGIN`, runs the test, `ROLLBACK`s.
-- `mockClerk({ clerkId, role, banned, deletedAt })` rewires `@clerk/nextjs/server` so `requireCurrentUser` / `requireAdmin` / `requireCuratorOrAdmin` resolve to a real DB row.
+- `mockClerk({ clerkId, role, banned, deletedAt })` rewires `@clerk/nextjs/server` so `requireCurrentUser` / `requireAdmin` resolve to a real DB row.
 - `callRoute(handler, { method, body, params })` builds a `Request`, invokes the route handler, parses `NextResponse.json`, returns `{ data, status }`.
 
 - **`decks-crud.test.ts`**

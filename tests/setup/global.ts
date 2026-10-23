@@ -3,7 +3,7 @@ import { vi } from "vitest"
 type TestDb = unknown
 type TestClerk = {
   clerkId: string
-  role?: "user" | "curator" | "admin"
+  role?: "user" | "admin"
   firstName?: string
   lastName?: string
   imageUrl?: string | null

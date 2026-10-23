@@ -13,10 +13,6 @@ export const dynamic = "force-dynamic"
 const querySchema = z.object({
   q: z.string().trim().max(256).optional(),
   visibility: z.enum(["private", "public"]).optional(),
-  curated: z
-    .union([z.literal("true"), z.literal("false")])
-    .optional()
-    .transform((v) => (v === undefined ? undefined : v === "true")),
   creatorId: z.string().uuid().optional(),
   deleted: z
     .union([z.literal("true"), z.literal("false")])
