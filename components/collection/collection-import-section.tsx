@@ -404,15 +404,6 @@ export function CollectionImportSection({
             </ul>
           </div>
 
-          {parsed.decks.length > COLLECTION_EXPORT.MAX_IMPORT_DECKS && (
-            <div
-              role="alert"
-              className="rounded-lg border border-destructive/30 bg-destructive/8 px-3 py-2 text-sm text-destructive"
-            >
-              File contains {parsed.decks.length} decks (max{" "}
-              {COLLECTION_EXPORT.MAX_IMPORT_DECKS}).
-            </div>
-          )}
           {totalCards > COLLECTION_EXPORT.MAX_IMPORT_CARDS && (
             <div
               role="alert"
