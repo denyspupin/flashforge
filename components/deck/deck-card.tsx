@@ -61,7 +61,7 @@ function DeckCard({
       )}
     >
       <CardHeader className="px-5">
-        <div className="flex items-start justify-between gap-2">
+        <div className="flex min-w-0 items-start justify-between gap-2">
           <div className="min-w-0 flex-1">
             {hasLanguagePair ? (
               <div className="flex flex-wrap items-center gap-1.5 font-mono-tag text-sm font-medium uppercase tracking-wider text-ink/70">
@@ -84,7 +84,7 @@ function DeckCard({
                 placeholder
               </div>
             )}
-            <CardTitle className="mt-1 line-clamp-1 text-lg">
+            <CardTitle className="mt-1 line-clamp-1 w-full text-lg break-words">
               <Link
                 href={href}
                 className="rounded-sm outline-none transition-colors hover:text-ink/80 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
@@ -92,7 +92,7 @@ function DeckCard({
                 {deck.title}
               </Link>
             </CardTitle>
-            <CardDescription className="mt-1 line-clamp-2">
+            <CardDescription className="mt-1 line-clamp-2 w-full break-words">
               {deck.description || "No description"}
             </CardDescription>
           </div>

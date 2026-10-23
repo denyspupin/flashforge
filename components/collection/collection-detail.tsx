@@ -27,6 +27,7 @@ import { Card } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Input } from "@/components/ui/input"
 import { Textarea } from "@/components/ui/textarea"
+import { ExpandableText } from "@/components/ui/expandable-text"
 import {
   DeckCard,
   DeckCardEmptyState,
@@ -246,6 +247,8 @@ export default function CollectionDetail({
   const [, startNavigate] = useTransition()
 
   const [editing, setEditing] = useState(false)
+  const [editTitle, setEditTitle] = useState("")
+  const [editDescription, setEditDescription] = useState("")
   const [addOpen, setAddOpen] = useState(false)
   const [actionError, setActionError] = useState<string | null>(null)
   const [pendingAction, setPendingAction] =
@@ -435,6 +438,15 @@ export default function CollectionDetail({
     togglePublishMutation.mutate(collection.visibility !== "public")
   }
 
+  const startEditing = () => {
+    if (!collection) return
+    setEditTitle(collection.title)
+    setEditDescription(collection.description ?? "")
+    setEditing(true)
+  }
+
+  const cancelEditing = () => setEditing(false)
+
   const onDelete = () => {
     if (typeof window !== "undefined" && !window.confirm("Delete this collection? This can’t be undone.")) {
       return
@@ -494,76 +506,112 @@ export default function CollectionDetail({
 
   return (
     <div>
-      <div className="mb-6 flex items-start gap-2 sm:items-center sm:gap-3">
-        <Button
-          variant="ghost"
-          size="icon"
-          onClick={() => startNavigate(() => router.push(backHref))}
-          className="shrink-0"
-          aria-label="Back"
-        >
-          <ArrowLeft className="h-4 w-4" />
-        </Button>
-        <div className="min-w-0 flex-1">
+      <div className="mb-4 flex flex-col gap-4">
+        <div className="flex items-center justify-between gap-2">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => startNavigate(() => router.push(backHref))}
+            className="shrink-0"
+            aria-label="Back"
+          >
+            <ArrowLeft className="h-4 w-4" />
+          </Button>
+          <div className="flex shrink-0 items-center gap-1.5">
+            <Badge variant={isPublic ? "default" : "secondary"}>
+              {isPublic ? (
+                <Globe className="h-3 w-3" />
+              ) : (
+                <Lock className="h-3 w-3" />
+              )}
+              {isPublic ? "Public" : "Private"}
+            </Badge>
+            {isLoaded && isSignedIn && (
+              <>
+                <FavoriteToggleButton
+                  target={{ collectionId: collectionId }}
+                  className="sm:h-9 sm:w-9"
+                />
+                <FollowToggleButton
+                  target={{ collectionId: collectionId }}
+                />
+              </>
+            )}
+            {isOwner && !editing && (
+              <Button
+                variant="ghost"
+                size="icon"
+                onClick={startEditing}
+                className="shrink-0"
+                aria-label="Edit collection"
+              >
+                <Pencil className="h-4 w-4" />
+              </Button>
+            )}
+          </div>
+        </div>
+        <div className="min-w-0">
           {editing && isOwner ? (
-            <CollectionEditForm
-              collection={collection}
-              onSave={(values) => updateMutation.mutate(values)}
-              onCancel={() => setEditing(false)}
-              saving={updateMutation.isPending}
+            <Input
+              value={editTitle}
+              onChange={(e) => setEditTitle(e.target.value)}
+              placeholder="Collection title"
+              className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
+              autoFocus
             />
           ) : (
-            <>
-              <h1 className="truncate text-2xl font-bold tracking-tight sm:text-3xl">
-                {collection.title}
-              </h1>
-              {collection.description && (
-                <p className="text-muted-foreground mt-1">
-                  {collection.description}
-                </p>
-              )}
-            </>
-          )}
-        </div>
-        <div className="flex shrink-0 items-center gap-1.5">
-          {isLoaded && isSignedIn && (
-            <>
-              <FavoriteToggleButton
-                target={{ collectionId: collectionId }}
-                className="sm:h-9 sm:w-9"
-              />
-              <FollowToggleButton
-                target={{ collectionId: collectionId }}
-              />
-            </>
-          )}
-          <Badge variant={isPublic ? "default" : "secondary"}>
-            {isPublic ? (
-              <Globe className="h-3 w-3" />
-            ) : (
-              <Lock className="h-3 w-3" />
-            )}
-            {isPublic ? "Public" : "Private"}
-          </Badge>
-          {collection.isCurated && (
-            <Badge variant="highlight">
-              <Award className="h-3 w-3" />
-              Curated
-            </Badge>
-          )}
-          {isOwner && !editing && (
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setEditing(true)}
-              className="shrink-0"
-              aria-label="Edit collection"
-            >
-              <Pencil className="h-4 w-4" />
-            </Button>
+            <h1 className="break-words text-2xl font-bold tracking-tight sm:text-3xl">
+              {collection.title}
+            </h1>
           )}
         </div>
       </div>
+      {editing && isOwner ? (
+        <div className="mb-6 space-y-2">
+          <Textarea
+            value={editDescription}
+            onChange={(e) => setEditDescription(e.target.value)}
+            placeholder="Description"
+            className="min-h-[60px] bg-white dark:bg-input/30"
+          />
+          <div className="flex justify-end gap-2">
+            <Button
+              size="sm"
+              onClick={() =>
+                updateMutation.mutate({
+                  title: editTitle,
+                  description: editDescription,
+                })
+              }
+              disabled={updateMutation.isPending}
+            >
+              <Save className="mr-2 h-4 w-4" />
+              {updateMutation.isPending ? "Saving…" : "Save"}
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              onClick={cancelEditing}
+              disabled={updateMutation.isPending}
+            >
+              <X className="mr-2 h-4 w-4" />
+              Cancel
+            </Button>
+          </div>
+        </div>
+      ) : (
+        collection.description && (
+          <div className="mb-6">
+            <ExpandableText
+              text={collection.description}
+              collapsedClassName="line-clamp-3"
+              className="text-muted-foreground"
+              moreLabel="Show more"
+              lessLabel="Show less"
+            />
+          </div>
+        )
+      )}
 
       <div className="mb-6 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
         <div className="text-sm text-muted-foreground flex flex-wrap items-center gap-x-3 gap-y-1">
@@ -592,14 +640,20 @@ export default function CollectionDetail({
               </span>
             </>
           )}
+          {collection.isCurated && (
+            <Badge variant="highlight">
+              <Award className="h-3 w-3" />
+              Curated
+            </Badge>
+          )}
         </div>
 
         {isOwner ? (
-          <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:flex-wrap sm:items-center">
+          <div className="flex w-full items-center gap-2 sm:w-auto">
             <Button
               size="lg"
               onClick={() => setAddOpen(true)}
-              className="w-full sm:w-auto"
+              className="flex-1 sm:w-auto"
             >
               <Plus className="mr-2 h-4 w-4" />
               Add Decks
@@ -611,7 +665,7 @@ export default function CollectionDetail({
                 updatedAt: collection.createdAt,
                 decks: undefined,
               }}
-              onEdit={() => setEditing(true)}
+              onEdit={startEditing}
               onTogglePublish={onTogglePublish}
               onDelete={onDelete}
               triggerClassName="sm:h-9 sm:w-9"
@@ -791,50 +845,3 @@ export default function CollectionDetail({
   )
 }
 
-function CollectionEditForm({
-  collection,
-  onSave,
-  onCancel,
-  saving,
-}: {
-  collection: ViewCollection
-  onSave: (values: { title: string; description: string }) => void
-  onCancel: () => void
-  saving: boolean
-}) {
-  const [title, setTitle] = useState(collection.title)
-  const [description, setDescription] = useState(collection.description || "")
-
-  return (
-    <div className="space-y-2">
-      <Input
-        value={title}
-        onChange={(e) => setTitle(e.target.value)}
-        placeholder="Collection title"
-        className="h-auto bg-white py-1 text-xl font-bold dark:bg-input/30"
-        autoFocus
-      />
-      <Textarea
-        value={description}
-        onChange={(e) => setDescription(e.target.value)}
-        placeholder="Description"
-        className="min-h-[60px] bg-white dark:bg-input/30"
-      />
-      <div className="flex justify-end gap-2">
-        <Button size="sm" onClick={() => onSave({ title, description })} disabled={saving}>
-          <Save className="mr-2 h-4 w-4" />
-          {saving ? "Saving…" : "Save"}
-        </Button>
-        <Button
-          size="sm"
-          variant="ghost"
-          onClick={onCancel}
-          disabled={saving}
-        >
-          <X className="mr-2 h-4 w-4" />
-          Cancel
-        </Button>
-      </div>
-    </div>
-  )
-}
