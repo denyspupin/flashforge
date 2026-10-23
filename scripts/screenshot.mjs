@@ -48,15 +48,15 @@ async function main() {
   await shot(page, "03-explore.png", { fullPage: false })
 
   // 4. Public deck detail
-  const curatedDeckId = "3ffb5e7c-14fb-467f-af2e-a526b9d900b9"
-  await page.goto(`${BASE}/explore/decks/${curatedDeckId}`, {
+  const deckId = "3ffb5e7c-14fb-467f-af2e-a526b9d900b9"
+  await page.goto(`${BASE}/explore/decks/${deckId}`, {
     waitUntil: "networkidle",
   })
   await page.waitForTimeout(1500)
   await shot(page, "04-deck-detail.png", { fullPage: false })
 
   // 5. Guest study (front)
-  await page.goto(`${BASE}/explore/decks/${curatedDeckId}/study`, {
+  await page.goto(`${BASE}/explore/decks/${deckId}/study`, {
     waitUntil: "networkidle",
   })
   await page.waitForTimeout(1500)

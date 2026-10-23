@@ -28,7 +28,6 @@ export type CommunityCollectionDeck = {
   sourceLanguageId: string
   targetLanguageId: string
   creatorId: string
-  isCurated: boolean
   forkedFromDeckId: string | null
   cardCount: number
   position: number
@@ -43,7 +42,6 @@ export type CommunityCollectionDetailResult = {
   visibility: "public"
   creatorId: string
   creatorName: string
-  isCurated: boolean
   forkedFromCollectionId: string | null
   sourceLanguageId: string
   targetLanguageId: string
@@ -92,7 +90,6 @@ export const getCommunityCollectionById = unstable_cache(
           sourceLanguageId: decks.sourceLanguageId,
           targetLanguageId: decks.targetLanguageId,
           creatorId: decks.creatorId,
-          isCurated: decks.isCurated,
           forkedFromDeckId: decks.forkedFromDeckId,
           cardCount: sql<number>`(
             SELECT count(*)::int FROM ${cards} WHERE ${cards.deckId} = ${decks.id}
@@ -143,7 +140,6 @@ export const getCommunityCollectionById = unstable_cache(
       visibility: "public" as const,
       creatorId: collection.creatorId,
       creatorName: creatorRows[0]?.name ?? "Unknown",
-      isCurated: collection.isCurated,
       forkedFromCollectionId: collection.forkedFromCollectionId,
       sourceLanguageId: collection.sourceLanguageId,
       targetLanguageId: collection.targetLanguageId,
@@ -161,7 +157,6 @@ export const getCommunityCollectionById = unstable_cache(
         sourceLanguageId: row.sourceLanguageId,
         targetLanguageId: row.targetLanguageId,
         creatorId: row.creatorId,
-        isCurated: row.isCurated,
         forkedFromDeckId: row.forkedFromDeckId,
         cardCount: row.cardCount ?? 0,
         position: row.position,

@@ -44,7 +44,7 @@ async function fetchUser(id: string): Promise<AdminUserDetail> {
   return body.data
 }
 
-type UpdatePayload = { role?: "user" | "curator" | "admin"; isBanned?: boolean }
+type UpdatePayload = { role?: "user" | "admin"; isBanned?: boolean }
 
 async function updateUser(
   id: string,
@@ -254,7 +254,7 @@ export function AdminUserDetailView({
               value={data.role}
               disabled={isDeleted || isSelf || updatePending}
               onValueChange={(v) => {
-                if (v === "user" || v === "curator" || v === "admin") {
+                if (v === "user" || v === "admin") {
                   updateMutation.mutate({ role: v })
                 }
               }}
@@ -264,7 +264,6 @@ export function AdminUserDetailView({
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="user">User</SelectItem>
-                <SelectItem value="curator">Curator</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
               </SelectContent>
             </Select>

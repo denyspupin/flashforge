@@ -57,7 +57,6 @@ export function FavoritesSection() {
             badges={
               <>
                 <FavoritesTypeBadge type="deck" />
-                <DeckCard.CuratedBadge />
                 <DeckCard.TopicBadges topics={deck.topics} />
               </>
             }
@@ -91,7 +90,6 @@ export function FavoritesSection() {
                 <CollectionCard.VisibilityBadge
                   visibility={collection.visibility}
                 />
-                {collection.isCurated ? <CollectionCard.CuratedBadge /> : null}
                 {collection.forkedFromCollectionId ? (
                   <CollectionCard.ForkedBadge />
                 ) : null}

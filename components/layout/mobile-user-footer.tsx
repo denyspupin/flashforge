@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useRouter } from "next/navigation"
 import { useClerk } from "@clerk/nextjs"
-import { Bell, History, LogOut, Settings, User as UserIcon } from "lucide-react"
+import { History, LogOut, Settings, User as UserIcon } from "lucide-react"
 
 import { useMobileNav } from "@/components/layout/mobile-nav"
 
@@ -43,12 +43,6 @@ export function MobileUserFooter() {
 
   return (
     <div className="flex flex-col gap-1">
-      <Link href="/notifications" onClick={close} className={linkClass}>
-        <span className={iconWrapClass}>
-          <Bell className="h-4 w-4" strokeWidth={1.75} />
-        </span>
-        Notifications
-      </Link>
       <Link href="/history" onClick={close} className={linkClass}>
         <span className={iconWrapClass}>
           <History className="h-4 w-4" strokeWidth={1.75} />

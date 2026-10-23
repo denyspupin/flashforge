@@ -11,7 +11,6 @@ import { getAdminDeck } from "@/lib/queries/admin-decks"
 export const dynamic = "force-dynamic"
 
 const updateSchema = z.object({
-  isCurated: z.boolean().optional(),
   title: z.string().min(1).max(256).optional(),
   description: z.string().max(2048).nullable().optional(),
   visibility: z.enum(["private", "public"]).optional(),
@@ -61,7 +60,6 @@ export async function PATCH(
   }
 
   if (
-    parsed.data.isCurated === undefined &&
     parsed.data.title === undefined &&
     parsed.data.description === undefined &&
     parsed.data.visibility === undefined
@@ -73,7 +71,6 @@ export async function PATCH(
   }
 
   const update: Record<string, unknown> = { updatedAt: sql`now()` }
-  if (parsed.data.isCurated !== undefined) update.isCurated = parsed.data.isCurated
   if (parsed.data.title !== undefined) update.title = parsed.data.title
   if (parsed.data.description !== undefined)
     update.description = parsed.data.description

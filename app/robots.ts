@@ -16,7 +16,6 @@ export default function robots(): MetadataRoute.Robots {
           "/decks",
           "/collections",
           "/history",
-          "/notifications",
           "/profile",
           "/study",
           "/login",

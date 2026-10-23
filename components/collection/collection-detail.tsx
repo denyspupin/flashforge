@@ -7,7 +7,6 @@ import { useMemo, useState, useTransition } from "react"
 import { useUser } from "@clerk/nextjs"
 import {
   ArrowLeft,
-  Award,
   Globe,
   Layers,
   Copy,
@@ -56,7 +55,6 @@ type ViewCollection = {
   visibility: "private" | "public"
   creatorId: string
   creatorName: string
-  isCurated: boolean
   forkedFromCollectionId: string | null
   sourceLanguageId: string
   targetLanguageId: string
@@ -186,7 +184,6 @@ function toView(
       visibility: ownerData?.visibility ?? "public",
       creatorId: publicData.creatorId,
       creatorName: publicData.creatorName,
-      isCurated: publicData.isCurated,
       forkedFromCollectionId: publicData.forkedFromCollectionId,
       sourceLanguageId: publicData.sourceLanguageId,
       targetLanguageId: publicData.targetLanguageId,
@@ -208,7 +205,6 @@ function toView(
       visibility: ownerData.visibility,
       creatorId: ownerData.creatorId,
       creatorName: myId === ownerData.creatorId ? "You" : "Unknown",
-      isCurated: ownerData.isCurated,
       forkedFromCollectionId: ownerData.forkedFromCollectionId,
       sourceLanguageId: ownerData.sourceLanguageId,
       targetLanguageId: ownerData.targetLanguageId,
@@ -224,7 +220,6 @@ function toView(
         sourceLanguageId: d.sourceLanguageId,
         targetLanguageId: d.targetLanguageId,
         creatorId: ownerData.creatorId,
-        isCurated: false,
         forkedFromDeckId: null,
         cardCount: d.cardCount,
         position: d.position,
@@ -528,12 +523,13 @@ export default function CollectionDetail({
             </Badge>
             {isLoaded && isSignedIn && (
               <>
+                <FollowToggleButton
+                  target={{ collectionId: collectionId }}
+                  compact
+                />
                 <FavoriteToggleButton
                   target={{ collectionId: collectionId }}
                   className="sm:h-9 sm:w-9"
-                />
-                <FollowToggleButton
-                  target={{ collectionId: collectionId }}
                 />
               </>
             )}
@@ -640,12 +636,6 @@ export default function CollectionDetail({
               </span>
             </>
           )}
-          {collection.isCurated && (
-            <Badge variant="highlight">
-              <Award className="h-3 w-3" />
-              Curated
-            </Badge>
-          )}
         </div>
 
         {isOwner ? (
@@ -749,7 +739,6 @@ export default function CollectionDetail({
               targetLanguageId: deckRow.targetLanguageId,
               creatorId: deckRow.creatorId,
               creatorName: collection.creatorName,
-              isCurated: deckRow.isCurated,
               forkedFromDeckId: deckRow.forkedFromDeckId,
               cardCount: deckRow.cardCount,
               topics: deckRow.topics,
@@ -771,7 +760,6 @@ export default function CollectionDetail({
                 }}
                 badges={
                   <>
-                    {deckRow.isCurated ? <DeckCard.CuratedBadge /> : null}
                     {deckRow.forkedFromDeckId ? (
                       <DeckCard.ForkedBadge />
                     ) : null}

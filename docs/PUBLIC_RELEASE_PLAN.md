@@ -229,7 +229,7 @@ pnpm test
   - guest study vs authenticated study, resume, completion;
   - collection publish + fork;
   - deck and collection import / export round-trip;
-  - role-gated admin routes (one curator + one admin account);
+  - role-gated admin routes (one admin account);
   - 404 + 500 pages on `https://flashforge.denyspupin.dev`;
   - `/robots.txt` and `/sitemap.xml` resolve;
   - Open Graph image renders at `/opengraph-image` (paste a URL into <https://www.opengraph.xyz/> or similar).

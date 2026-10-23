@@ -11,7 +11,7 @@ import { getAdminUser } from "@/lib/queries/admin-users"
 export const dynamic = "force-dynamic"
 
 const updateSchema = z.object({
-  role: z.enum(["user", "curator", "admin"]).optional(),
+  role: z.enum(["user", "admin"]).optional(),
   isBanned: z.boolean().optional(),
 })
 

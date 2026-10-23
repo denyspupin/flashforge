@@ -3,7 +3,6 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import {
-  Bell,
   Compass,
   History,
   Layers,
@@ -25,19 +24,12 @@ const PRIMARY_NAV = [
   { href: "/decks", label: "My Decks", icon: Library },
   { href: "/collections", label: "Collections", icon: Layers },
   { href: "/explore", label: "Explore", icon: Compass },
-]
-
-const SECONDARY_NAV = [
-  { href: "/notifications", label: "Notifications", icon: Bell },
   { href: "/history", label: "Study history", icon: History },
 ]
 
 function matches(pathname: string, href: string) {
   return pathname === href || pathname.startsWith(`${href}/`)
 }
-
-const groupLabelClass =
-  "px-3 pt-4 pb-1 text-[10px] font-medium uppercase tracking-widest text-muted-foreground"
 
 const linkBaseClass =
   "flex items-center gap-3 rounded-xl px-3 py-2 text-sm font-medium transition-colors"
@@ -93,17 +85,6 @@ export function AppSidebar() {
             label={item.label}
             icon={item.icon}
             match={"match" in item ? item.match : undefined}
-            pathname={pathname}
-          />
-        ))}
-
-        <p className={groupLabelClass}>Account</p>
-        {SECONDARY_NAV.map((item) => (
-          <NavItem
-            key={item.href}
-            href={item.href}
-            label={item.label}
-            icon={item.icon}
             pathname={pathname}
           />
         ))}

@@ -142,7 +142,6 @@ async function upsertDeck(input: {
         creatorId: input.creatorId,
         sourceLanguageId: input.sourceLangId,
         targetLanguageId: input.targetLangId,
-        isCurated: false,
       })
       .returning({ id: decks.id })
     deckId = row.id
@@ -226,7 +225,6 @@ async function upsertCollection(input: {
         creatorId: input.creatorId,
         sourceLanguageId: input.sourceLangId,
         targetLanguageId: input.targetLangId,
-        isCurated: true,
       })
       .returning({ id: collections.id })
     collectionId = row.id

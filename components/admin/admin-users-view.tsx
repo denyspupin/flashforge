@@ -52,11 +52,8 @@ async function fetchUsers(
   return body.data
 }
 
-function roleVariant(
-  role: "user" | "curator" | "admin"
-): "default" | "highlight" | "secondary" {
+function roleVariant(role: "user" | "admin"): "default" | "highlight" {
   if (role === "admin") return "highlight"
-  if (role === "curator") return "secondary"
   return "default"
 }
 
@@ -84,9 +81,7 @@ export function AdminUsersView() {
     const q = searchParams.get("q") ?? undefined
     const roleParam = searchParams.get("role")
     const role =
-      roleParam === "user" || roleParam === "curator" || roleParam === "admin"
-        ? roleParam
-        : undefined
+      roleParam === "user" || roleParam === "admin" ? roleParam : undefined
     const bannedParam = searchParams.get("banned")
     const banned =
       bannedParam === "true" ? true : bannedParam === "false" ? false : undefined
@@ -146,7 +141,7 @@ export function AdminUsersView() {
           value={filters.role ?? ALL}
           onValueChange={(v) =>
             updateFilters({
-              role: v === ALL ? undefined : (v as "user" | "curator" | "admin"),
+              role: v === ALL ? undefined : (v as "user" | "admin"),
               page: 1,
             })
           }
@@ -157,7 +152,6 @@ export function AdminUsersView() {
           <SelectContent>
             <SelectItem value={ALL}>All roles</SelectItem>
             <SelectItem value="user">User</SelectItem>
-            <SelectItem value="curator">Curator</SelectItem>
             <SelectItem value="admin">Admin</SelectItem>
           </SelectContent>
         </Select>

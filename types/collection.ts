@@ -10,7 +10,6 @@ export type Collection = {
   creatorName?: string | null
   sourceLanguageId: string
   targetLanguageId: string
-  isCurated: boolean
   forkedFromCollectionId: string | null
   deckCount: number
   totalCards: number

@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation"
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query"
 import {
   ArrowLeft,
-  Award,
   Eye,
   EyeOff,
   Library,
@@ -39,7 +38,6 @@ async function fetchDeck(id: string): Promise<AdminDeckDetail> {
 }
 
 type UpdatePayload = {
-  isCurated?: boolean
   visibility?: "private" | "public"
 }
 
@@ -167,12 +165,6 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
             </div>
           </div>
           <div className="flex flex-wrap items-center gap-2">
-            {data.isCurated ? (
-              <Badge variant="highlight">
-                <Award className="h-3 w-3" />
-                Curated
-              </Badge>
-            ) : null}
             {data.visibility === "public" ? (
               <Badge variant="default">
                 <Eye className="h-3 w-3" />
@@ -236,31 +228,10 @@ export function AdminDeckDetailView({ deckId }: { deckId: string }) {
         <CardHeader>
           <CardTitle>Moderation</CardTitle>
           <CardDescription>
-            Curated decks appear highlighted across the platform.
+            Manage visibility and restore soft-deleted decks.
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
-          <div className="space-y-1.5">
-            <label className="text-sm font-medium">Curated status</label>
-            <div>
-              <Button
-                variant={data.isCurated ? "outline" : "default"}
-                size="sm"
-                disabled={isDeleted || updatePending}
-                onClick={() =>
-                  updateMutation.mutate({ isCurated: !data.isCurated })
-                }
-              >
-                {updatePending ? (
-                  <Loader2 className="mr-1.5 h-3.5 w-3.5 animate-spin" />
-                ) : data.isCurated ? (
-                  <Award className="mr-1.5 h-3.5 w-3.5" />
-                ) : null}
-                {data.isCurated ? "Remove from curated" : "Mark as curated"}
-              </Button>
-            </div>
-          </div>
-
           <div className="space-y-1.5">
             <label className="text-sm font-medium">Visibility</label>
             <div className="flex gap-2">

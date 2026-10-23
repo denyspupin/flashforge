@@ -26,7 +26,6 @@ export type CommunityDeckDetailResult = {
   targetLanguageId: string
   creatorId: string
   creatorName: string
-  isCurated: boolean
   forkedFromDeckId: string | null
   createdAt: Date
   cards: Array<{ id: string; deckId: string; front: string; back: string }>

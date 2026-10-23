@@ -2,7 +2,6 @@
 
 import Link from "next/link"
 import {
-  Award,
   BookOpen,
   Copy,
   Globe,
@@ -97,7 +96,7 @@ function DeckCard({
             </CardDescription>
           </div>
           {actions && (
-            <div className="-mt-1 -mr-1 flex shrink-0 items-center scale-90 opacity-0 transition-[opacity,transform] duration-200 ease-out group-hover:scale-100 group-hover:opacity-100 group-focus-within:scale-100 group-focus-within:opacity-100 focus-within:scale-100 focus-within:opacity-100 [@media(hover:none)]:scale-100 [@media(hover:none)]:opacity-100">
+            <div className="-mt-1 -mr-1 flex shrink-0 items-center">
               {actions}
             </div>
           )}
@@ -185,15 +184,6 @@ function VisibilityBadge({ visibility }: { visibility: Deck["visibility"] }) {
   )
 }
 
-function CuratedBadge() {
-  return (
-    <Badge variant="highlight">
-      <Award className="h-3 w-3" />
-      Curated
-    </Badge>
-  )
-}
-
 function ForkedBadge() {
   return (
     <Badge variant="outline">
@@ -219,7 +209,6 @@ function DefaultDeckBadges({ deck }: { deck: Deck }) {
   return (
     <>
       <VisibilityBadge visibility={deck.visibility} />
-      {deck.isCurated ? <CuratedBadge /> : null}
       {deck.forkedFromDeckId ? <ForkedBadge /> : null}
       <TopicBadges topics={deck.topics} />
     </>
@@ -230,7 +219,6 @@ type DeckCardComponent = typeof DeckCard & {
   Skeleton: typeof DeckCardSkeleton
   EmptyState: typeof DeckCardEmptyState
   VisibilityBadge: typeof VisibilityBadge
-  CuratedBadge: typeof CuratedBadge
   ForkedBadge: typeof ForkedBadge
   TopicBadges: typeof TopicBadges
   Badges: typeof DefaultDeckBadges
@@ -240,7 +228,6 @@ const DeckCardCompound: DeckCardComponent = Object.assign(DeckCard, {
   Skeleton: DeckCardSkeleton,
   EmptyState: DeckCardEmptyState,
   VisibilityBadge,
-  CuratedBadge,
   ForkedBadge,
   TopicBadges,
   Badges: DefaultDeckBadges,
@@ -248,4 +235,4 @@ const DeckCardCompound: DeckCardComponent = Object.assign(DeckCard, {
 
 export { DeckCardCompound as DeckCard }
 export { DeckCardSkeleton, DeckCardEmptyState }
-export { VisibilityBadge, CuratedBadge, ForkedBadge, TopicBadges, DefaultDeckBadges }
+export { VisibilityBadge, ForkedBadge, TopicBadges, DefaultDeckBadges }

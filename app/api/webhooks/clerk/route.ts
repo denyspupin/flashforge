@@ -7,7 +7,7 @@ import { successResponse, errorResponse } from "@/lib/api/response"
 
 export const dynamic = "force-dynamic"
 
-const VALID_ROLES = new Set(["user", "curator", "admin"])
+const VALID_ROLES = new Set(["user", "admin"])
 
 interface ClerkUserData {
   id: string
@@ -22,11 +22,11 @@ interface ClerkWebhookEvent {
   data: ClerkUserData
 }
 
-function readRole(metadata: unknown): "user" | "curator" | "admin" {
+function readRole(metadata: unknown): "user" | "admin" {
   if (!metadata || typeof metadata !== "object") return "user"
   const role = (metadata as { role?: unknown }).role
   if (typeof role === "string" && VALID_ROLES.has(role)) {
-    return role as "user" | "curator" | "admin"
+    return role as "user" | "admin"
   }
   return "user"
 }

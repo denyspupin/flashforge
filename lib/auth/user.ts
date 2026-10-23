@@ -4,10 +4,10 @@ import { eq, sql } from "drizzle-orm"
 import { db } from "@/lib/db/client"
 import { users } from "@/lib/db/schema"
 
-export type AppRole = "user" | "curator" | "admin"
+export type AppRole = "user" | "admin"
 export type DbUser = typeof users.$inferSelect
 
-const VALID_ROLES: readonly AppRole[] = ["user", "curator", "admin"]
+const VALID_ROLES: readonly AppRole[] = ["user", "admin"]
 
 function parseRole(value: unknown): AppRole {
   if (typeof value === "string" && (VALID_ROLES as readonly string[]).includes(value)) {
@@ -104,26 +104,11 @@ export function isAdmin(
   return user?.role === "admin"
 }
 
-export function isCuratorOrAdmin(
-  user: Pick<DbUser, "role"> | null | undefined
-): boolean {
-  return user?.role === "admin" || user?.role === "curator"
-}
-
 export async function requireAdmin(): Promise<DbUser | null> {
   const user = await requireCurrentUser()
   if (!user) return null
   if (user.isBanned) return null
   if (user.deletedAt) return null
   if (!isAdmin(user)) return null
-  return user
-}
-
-export async function requireCuratorOrAdmin(): Promise<DbUser | null> {
-  const user = await requireCurrentUser()
-  if (!user) return null
-  if (user.isBanned) return null
-  if (user.deletedAt) return null
-  if (!isCuratorOrAdmin(user)) return null
   return user
 }

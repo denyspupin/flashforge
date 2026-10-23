@@ -13,7 +13,7 @@ type MeResponse = {
   id: string
   name: string | null
   avatarUrl: string | null
-  role: "user" | "curator" | "admin"
+  role: "user" | "admin"
 }
 
 async function fetchMe(): Promise<{ data: MeResponse }> {

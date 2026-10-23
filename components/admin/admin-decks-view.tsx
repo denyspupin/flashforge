@@ -4,7 +4,7 @@ import * as React from "react"
 import Link from "next/link"
 import { useQuery } from "@tanstack/react-query"
 import { useRouter, useSearchParams } from "next/navigation"
-import { Award, Eye, EyeOff, Library, Search, Trash2 } from "lucide-react"
+import { Eye, EyeOff, Library, Search, Trash2 } from "lucide-react"
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
@@ -29,7 +29,6 @@ function toQueryString(filters: AdminDeckFilters): string {
   const params = new URLSearchParams()
   if (filters.q) params.set("q", filters.q)
   if (filters.visibility) params.set("visibility", filters.visibility)
-  if (filters.curated !== undefined) params.set("curated", String(filters.curated))
   if (filters.creatorId) params.set("creatorId", filters.creatorId)
   if (filters.deleted !== undefined)
     params.set("deleted", String(filters.deleted))
@@ -68,13 +67,6 @@ export function AdminDecksView() {
       visibilityParam === "public" || visibilityParam === "private"
         ? visibilityParam
         : undefined
-    const curatedParam = searchParams.get("curated")
-    const curated =
-      curatedParam === "true"
-        ? true
-        : curatedParam === "false"
-          ? false
-          : undefined
     const deletedParam = searchParams.get("deleted")
     const deleted =
       deletedParam === "true"
@@ -84,7 +76,7 @@ export function AdminDecksView() {
           : undefined
     const page = Number(searchParams.get("page")) || 1
     const limit = Number(searchParams.get("limit")) || 20
-    return { q, visibility, curated, deleted, page, limit }
+    return { q, visibility, deleted, page, limit }
   }, [searchParams])
 
   const updateFilters = React.useCallback(
@@ -113,7 +105,7 @@ export function AdminDecksView() {
       <div>
         <h1 className="text-2xl font-semibold tracking-tight">Decks</h1>
         <p className="text-muted-foreground text-sm">
-          Curate featured decks, moderate content, restore soft-deleted decks
+          Moderate content and restore soft-deleted decks
         </p>
       </div>
 
@@ -146,20 +138,12 @@ export function AdminDecksView() {
           </SelectContent>
         </Select>
         <Select
-          value={
-            filters.curated === true
-              ? "curated"
-              : filters.deleted === true
-                ? "deleted"
-                : "active"
-          }
+          value={filters.deleted === true ? "deleted" : "active"}
           onValueChange={(v) => {
-            if (v === "curated") {
-              updateFilters({ curated: true, deleted: undefined, page: 1 })
-            } else if (v === "deleted") {
-              updateFilters({ deleted: true, curated: undefined, page: 1 })
+            if (v === "deleted") {
+              updateFilters({ deleted: true, page: 1 })
             } else {
-              updateFilters({ deleted: false, curated: undefined, page: 1 })
+              updateFilters({ deleted: false, page: 1 })
             }
           }}
         >
@@ -168,7 +152,6 @@ export function AdminDecksView() {
           </SelectTrigger>
           <SelectContent>
             <SelectItem value="active">Active only</SelectItem>
-            <SelectItem value="curated">Curated</SelectItem>
             <SelectItem value="deleted">Soft-deleted</SelectItem>
           </SelectContent>
         </Select>
@@ -224,12 +207,6 @@ export function AdminDecksView() {
                           <span className="min-w-0">
                             <span className="text-ink/90 flex items-center gap-1.5 truncate font-medium">
                               {deck.title}
-                              {deck.isCurated ? (
-                                <Award
-                                  className="text-ember h-3.5 w-3.5 shrink-0"
-                                  strokeWidth={1.75}
-                                />
-                              ) : null}
                               {deck.deletedAt ? (
                                 <Trash2
                                   className="text-destructive h-3.5 w-3.5 shrink-0"

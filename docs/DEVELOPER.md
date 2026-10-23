@@ -11,7 +11,6 @@ A vocabulary learning platform built around flashcard decks, study sessions, and
 
 - **Decks organised by language pairs and topics** — source/target language enforced at the deck level, with cards inheriting the pair.
 - **Public discovery and forking** — publish any deck or collection to the community feed; anyone can fork a public one to their own account.
-- **Curated collections** — trusted curators publish featured collections highlighted on the platform.
 - **Study sessions** — front-of-card reveal flow with Pass/Fail, summary screen with the missed list, resumable across visits.
 - **Gamification** — XP awarded per session, daily streaks with multipliers, achievement unlocks.
 - **Notifications** — fork events and achievement unlocks surfaced in-app.

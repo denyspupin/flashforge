@@ -16,7 +16,6 @@ export type CommunityCollectionsResult = Array<{
   visibility: "private" | "public"
   creatorId: string
   creatorName: string | null
-  isCurated: boolean
   forkedFromCollectionId: string | null
   sourceLanguageId: string
   targetLanguageId: string
@@ -44,7 +43,6 @@ export const getCommunityCollections = unstable_cache(
         visibility: collections.visibility,
         creatorId: collections.creatorId,
         creatorName: users.name,
-        isCurated: collections.isCurated,
         forkedFromCollectionId: collections.forkedFromCollectionId,
         sourceLanguageId: collections.sourceLanguageId,
         targetLanguageId: collections.targetLanguageId,
