@@ -8,14 +8,12 @@ type StudyControlsProps = {
   flipped: boolean
   onFlip: () => void
   onAnswer: (correct: boolean) => void
-  isLast: boolean
 }
 
 export function StudyControls({
   flipped,
   onFlip,
   onAnswer,
-  isLast,
 }: StudyControlsProps) {
   if (!flipped) {
     return (
@@ -33,8 +31,6 @@ export function StudyControls({
       </div>
     )
   }
-
-  const nextLabel = isLast ? "Finish session" : "Next card"
 
   return (
     <div className="grid w-full grid-cols-2 gap-3">
@@ -55,7 +51,7 @@ export function StudyControls({
         className="h-14 sm:h-14 rounded-full bg-forest text-[15px] text-paper hover:bg-forest/90"
       >
         <Check className="mr-2 h-4 w-4" strokeWidth={2.5} />
-        {nextLabel}
+        Got it
         <span className="ml-2.5 hidden pointer-fine:inline-flex">
           <Kbd className="border-paper/20 bg-paper/10 text-paper/85 dark:border-paper/20 dark:bg-paper/10 dark:text-paper/85">2</Kbd>
         </span>

@@ -4,7 +4,7 @@ import { useEffect, useState } from "react"
 import Link from "next/link"
 import { motion } from "framer-motion"
 import {
-  ArrowRight,
+  ArrowLeft,
   Check,
   Flame,
   Star,
@@ -200,8 +200,8 @@ export function StudySummary({
             size="lg"
             className="h-12 sm:h-12 rounded-full bg-ink px-6 sm:px-6 text-[15px] text-paper hover:bg-ink/90"
           >
+            <ArrowLeft className="mr-1.5 h-4 w-4" />
             {backLabel(backHref)}
-            <ArrowRight className="ml-1.5 h-4 w-4" />
           </Button>
         </Link>
         {!isPerfect && (
