@@ -1,5 +1,6 @@
 import { afterEach, beforeEach, describe, expect, test, vi } from "vitest"
 import {
+  selectCanComplete,
   selectCurrentCard,
   selectProgress,
   selectResults,
@@ -264,5 +265,39 @@ describe("useStudyStore", () => {
       orders.add(store.getState().cards.map((c) => c.id).join(","))
     }
     expect(orders.size).toBeGreaterThan(1)
+  })
+
+  test("a finished session does not contaminate the next session", () => {
+    const store = useStudyStore
+    store.getState().init("s1", makeCards(3))
+    store.getState().answer(true)
+    store.getState().answer(false)
+    store.getState().answer(true)
+    expect(store.getState().phase).toBe("done")
+
+    store.getState().init("s2", makeCards(3))
+    const s = store.getState()
+    expect(s.sessionId).toBe("s2")
+    expect(s.phase).toBe("pass1")
+    expect(s.index).toBe(0)
+    expect(Object.values(s.results).every((v) => v === false)).toBe(true)
+
+    store.getState().answer(true)
+    store.getState().answer(true)
+    store.getState().answer(true)
+    expect(store.getState().phase).toBe("done")
+    expect(selectResults(store.getState()).every((r) => r.correct)).toBe(true)
+  })
+
+  test("selectCanComplete only fires for the store's own finished session", () => {
+    const store = useStudyStore
+    store.getState().init("s1", makeCards(2))
+    expect(selectCanComplete(store.getState(), "s1")).toBe(false)
+
+    store.getState().answer(true)
+    store.getState().answer(false)
+    expect(selectCanComplete(store.getState(), "s1")).toBe(true)
+
+    expect(selectCanComplete(store.getState(), "s2")).toBe(false)
   })
 })

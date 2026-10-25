@@ -14,7 +14,7 @@ import {
   useStudySummary,
   type StudyDeckInfo,
 } from "@/components/study/study"
-import { selectResults, useStudyStore, type StudyCard } from "@/stores/study-store"
+import { selectCanComplete, selectResults, useStudyStore, type StudyCard } from "@/stores/study-store"
 import { StudySummary } from "./study-summary"
 
 type CompleteResponse = {
@@ -99,12 +99,16 @@ function CompletionRunner({
   const startedRef = useRef(false)
 
   useEffect(() => {
-    if (state.phase === "done" && !startedRef.current) {
+    if (
+      state.phase === "done" &&
+      selectCanComplete(useStudyStore.getState(), meta.sessionId) &&
+      !startedRef.current
+    ) {
       startedRef.current = true
       setPhase("loading")
       mutation.mutate()
     }
-  }, [state.phase, setPhase, mutation])
+  }, [state.phase, meta.sessionId, setPhase, mutation])
 
   useEffect(() => {
     onReady(() => {
