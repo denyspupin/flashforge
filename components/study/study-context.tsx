@@ -22,6 +22,7 @@ import {
   type StudyPhase,
 } from "@/stores/study-store"
 import { MAX_SESSION_DURATION_MS } from "@/lib/constants"
+import { Loader2 } from "lucide-react"
 
 export type StudyDeckInfo = {
   id: string
@@ -77,6 +78,17 @@ export function useStudyContext(): StudyContextValue {
 
 const FLUSH_INTERVAL_MS = 30_000
 
+function StudyInitFallback({ deckTitle }: { deckTitle: string }) {
+  return (
+    <div className="mx-auto flex w-full max-w-2xl flex-col items-center justify-center gap-3 py-24 text-ink/60">
+      <Loader2 className="h-6 w-6 animate-spin text-ember" aria-hidden />
+      <p className="font-mono-tag text-[11px] uppercase tracking-widest">
+        Preparing “{deckTitle}”…
+      </p>
+    </div>
+  )
+}
+
 type StudyProviderProps = {
   sessionId: string
   deck: StudyDeckInfo
@@ -104,6 +116,7 @@ export function StudyProvider({
   const phase = useStudyStore((s) => s.phase)
   const flipped = useStudyStore((s) => s.flipped)
   const index = useStudyStore((s) => s.index)
+  const storeSessionId = useStudyStore((s) => s.sessionId)
   const current = useStudyStore(selectCurrentCard)
   const isLast = useStudyStore(selectIsLast)
   const { position, total } = useStudyStore(useShallow(selectProgress))
@@ -264,6 +277,10 @@ export function StudyProvider({
       initialDurationMs,
     ],
   )
+
+  if (storeSessionId !== sessionId) {
+    return <StudyInitFallback deckTitle={deck.title} />
+  }
 
   return <StudyContext value={value}>{children}</StudyContext>
 }

@@ -207,3 +207,7 @@ export function selectResults(state: StudyState): {
     correct,
   }))
 }
+
+export function selectCanComplete(state: StudyState, sessionId: string): boolean {
+  return state.sessionId === sessionId && state.phase === "done"
+}

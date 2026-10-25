@@ -76,6 +76,7 @@ function SummaryView() {
   const { summary, setSummary, setPhase } = useStudySummary<GuestSummary>()
 
   const handleRetry = useCallback(() => {
+    useStudyStore.getState().reset()
     useStudyStore.getState().init(state.deck.id, state.cards)
     setSummary(null)
     setPhase("idle")
