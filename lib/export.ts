@@ -1,14 +1,16 @@
-import { and, asc, eq, inArray } from "drizzle-orm"
+import { and, asc, eq, inArray, isNull } from "drizzle-orm"
 
 import { db } from "@/lib/db/client"
 import {
   cards,
+  collectionDecks,
+  collections,
   deckTopics,
   decks,
   languages,
   topics,
 } from "@/lib/db/schema"
-import { DECK_EXPORT } from "@/lib/constants"
+import { COLLECTION_EXPORT, DECK_EXPORT } from "@/lib/constants"
 import type {
   CollectionImportPayload,
   ImportPayload,
@@ -132,6 +134,91 @@ export async function buildExportPayload(
       topics: topicRows.map((t) => t.slug),
     },
     cards: cardRows,
+  }
+}
+
+export async function buildCollectionExportPayload(
+  collectionId: string
+): Promise<CollectionImportPayload | null> {
+  const collectionRows = await db
+    .select()
+    .from(collections)
+    .where(eq(collections.id, collectionId))
+
+  if (!collectionRows.length) return null
+  const collection = collectionRows[0]
+
+  const [sourceLangRows, targetLangRows] = await Promise.all([
+    db.select().from(languages).where(eq(languages.id, collection.sourceLanguageId)),
+    db.select().from(languages).where(eq(languages.id, collection.targetLanguageId)),
+  ])
+
+  if (!sourceLangRows.length || !targetLangRows.length) return null
+
+  const memberRows = await db
+    .select({
+      deckId: collectionDecks.deckId,
+      position: collectionDecks.position,
+      title: decks.title,
+      description: decks.description,
+    })
+    .from(collectionDecks)
+    .innerJoin(decks, eq(decks.id, collectionDecks.deckId))
+    .where(
+      and(
+        eq(collectionDecks.collectionId, collectionId),
+        isNull(decks.deletedAt)
+      )
+    )
+    .orderBy(asc(collectionDecks.position), asc(collectionDecks.createdAt))
+
+  const deckIds = memberRows.map((r) => r.deckId)
+
+  const topicsByDeck = new Map<string, string[]>()
+  if (deckIds.length) {
+    const topicRows = await db
+      .select({ deckId: deckTopics.deckId, slug: topics.slug })
+      .from(deckTopics)
+      .innerJoin(topics, eq(topics.id, deckTopics.topicId))
+      .where(inArray(deckTopics.deckId, deckIds))
+    for (const row of topicRows) {
+      const list = topicsByDeck.get(row.deckId) ?? []
+      list.push(row.slug)
+      topicsByDeck.set(row.deckId, list)
+    }
+  }
+
+  const cardsByDeck = new Map<string, { front: string; back: string }[]>()
+  if (deckIds.length) {
+    const cardRows = await db
+      .select({ deckId: cards.deckId, front: cards.front, back: cards.back })
+      .from(cards)
+      .where(inArray(cards.deckId, deckIds))
+      .orderBy(asc(cards.createdAt))
+    for (const row of cardRows) {
+      const list = cardsByDeck.get(row.deckId) ?? []
+      list.push({ front: row.front, back: row.back })
+      cardsByDeck.set(row.deckId, list)
+    }
+  }
+
+  return {
+    format: COLLECTION_EXPORT.FORMAT,
+    formatVersion: COLLECTION_EXPORT.FORMAT_VERSION,
+    generator: COLLECTION_EXPORT.GENERATOR,
+    exportedAt: new Date().toISOString(),
+    collection: {
+      title: collection.title,
+      description: collection.description,
+      sourceLanguage: sourceLangRows[0].code,
+      targetLanguage: targetLangRows[0].code,
+    },
+    decks: memberRows.map((row) => ({
+      title: row.title,
+      description: row.description,
+      topics: topicsByDeck.get(row.deckId) ?? [],
+      cards: cardsByDeck.get(row.deckId) ?? [],
+    })),
   }
 }
 
