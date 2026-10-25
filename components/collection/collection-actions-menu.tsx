@@ -1,6 +1,13 @@
 "use client"
 
-import { Globe, Lock, MoreHorizontal, Pencil, Trash2 } from "lucide-react"
+import {
+  Download,
+  Globe,
+  Lock,
+  MoreHorizontal,
+  Pencil,
+  Trash2,
+} from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -28,6 +35,17 @@ export function CollectionActionsMenu({
   triggerClassName,
 }: CollectionActionsMenuProps) {
   const isPrivate = collection.visibility === "private"
+
+  const handleExport = () => {
+    const url = `/api/v1/collections/${collection.id}/export`
+    const a = document.createElement("a")
+    a.href = url
+    a.download = ""
+    a.rel = "noopener"
+    document.body.appendChild(a)
+    a.click()
+    document.body.removeChild(a)
+  }
 
   return (
     <DropdownMenu>
@@ -60,6 +78,10 @@ export function CollectionActionsMenu({
               Make Private
             </>
           )}
+        </DropdownMenuItem>
+        <DropdownMenuItem onClick={handleExport}>
+          <Download className="mr-2 h-4 w-4" />
+          Export
         </DropdownMenuItem>
         <DropdownMenuItem className="text-destructive" onClick={onDelete}>
           <Trash2 className="mr-2 h-4 w-4" />

@@ -298,7 +298,7 @@ Error codes: `UNAUTHORIZED`, `FORBIDDEN`, `NOT_FOUND`, `VALIDATION_ERROR`, `CONF
 | POST | `/collections/:id/decks` | Add a deck to a collection. |
 | POST | `/collections/:id/decks/bulk` | Bulk add decks. |
 | DELETE | `/collections/:id/decks/:deckId` | Remove a deck. |
-| GET | `/collections/import` | (See source — collection export shape) |
+| GET | `/collections/:id/export` | JSON export (`flashforge.collection` format). |
 | POST | `/collections/import` | Import. |
 | POST | `/study` | Start (or resume) a session. |
 | GET | `/study/:id` | Read session. |
