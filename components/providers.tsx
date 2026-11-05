@@ -39,7 +39,9 @@ export default function Providers({
       <ThemeSync initialTheme={initialTheme} />
       <ThemeColorSync />
       {children}
-      <ReactQueryDevtools initialIsOpen={false} />
+      {process.env.NODE_ENV === "development" && (
+        <ReactQueryDevtools initialIsOpen={false} />
+      )}
     </QueryClientProvider>
   )
 }
