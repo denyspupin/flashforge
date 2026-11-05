@@ -31,6 +31,11 @@ All notable changes to FlashForge are recorded here. The format is based on [Kee
 - `scripts/apply-migration.mjs` — a one-off helper that hardcoded `drizzle/0007_*.sql`; the latest migration in the repo is `0007`, so the script is now obsolete and would silently no-op. Deleted from the worktree.
 
 ### Security
+- Resolved 13 of 14 open Dependabot alerts (`pnpm audit --prod`: clean).
+  - `@tanstack/react-query-devtools` moved to `devDependencies` and gated behind `NODE_ENV === "development"` in `components/providers.tsx`, so it no longer ships to production (removes the `seroval` findings from the prod bundle); `seroval` updated to 1.6.12.
+  - `fast-uri` 3.1.8 → 3.1.9 (via `ajv` range), `vite` → 8.3.5 (now an explicit devDependency), `shadcn` 4.22.0 → 4.23.0.
+  - Pinned via `overrides` in `pnpm-workspace.yaml` (package.json `pnpm` field is no longer read): `systeminformation` 5.33.19, `esbuild` 0.28.2 under `@esbuild-kit`, `minimatch` 11.0.1 under `@ts-morph` / `@typescript-eslint`.
+  - Remaining: `deepmerge` prototype poisoning (via `shadcn`, dev-only) has no upstream fix; accepted risk.
 - Local secret scan and full `git log --all -p` scan for `sk_live_*`, `pk_live_*`, `whsec_*`, `postgres://…:…@…` connection strings, `VERCEL_TOKEN`, `GITHUB_TOKEN`, and Slack tokens: no findings.
 - Dependency audit (`pnpm audit --prod`): 1 high-severity transitive (`hono` via `shadcn`) and 6 moderate resolved by moving `shadcn` to `devDependencies`. Remaining 1 moderate is transitive `postcss` via `next`; fixed upstream when `next` ships a patch.
 - `gitleaks/gitleaks-action` bumped from `@v2` (Node 20, removed Sep 2026) to `@v3` (Node 24). `audit.yml` cron comment corrected — GitHub Actions cron runs in UTC, not Europe/London.
